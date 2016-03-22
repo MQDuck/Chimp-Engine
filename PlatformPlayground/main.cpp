@@ -16,7 +16,7 @@ static const int
     SCREEN_WIDTH   = 800,
     SCREEN_HEIGHT  = 600;
 static const float
-    RUN_IMPULSE    = 5,
+    RUN_IMPULSE    = 8,
     RUN_ACCEL      = 2,
     //RUN_SPEED      = 10,
     JUMP_IMPULSE   = -20,
