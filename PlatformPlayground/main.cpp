@@ -16,12 +16,15 @@ static const int
     SCREEN_WIDTH   = 800,
     SCREEN_HEIGHT  = 600;
 static const float
-    RUN_SPEED      = 10,
+    RUN_IMPULSE    = 5,
+    RUN_ACCEL      = 2,
+    //RUN_SPEED      = 10,
     JUMP_IMPULSE   = -20,
     JUMP_ACCEL     = -1.8,
     GRAVITY        = 2.0,
     STOP_FACTOR    = 0.9,
-    RESISTANCE     = 0.1;
+    RESISTANCE_X   = 0.2,
+    RESISTANCE_Y   = 0.1;
 
 // Derived constants:
 static const float
@@ -40,6 +43,7 @@ int main(int argc, char **argv)
     SDL_Rect playerTexRect, playerLocRect;
     std::chrono::high_resolution_clock::time_point t1, t2;
     float accelY = 0;
+    float accelX = 0;
     float velocityX = 0;
     float velocityY = 0;
     bool keyJumpPressed = false;
@@ -119,11 +123,15 @@ int main(int argc, char **argv)
                 switch(e.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
-                    velocityX = RUN_SPEED;
+                    if(!running)
+                        velocityX += RUN_IMPULSE;
+                    velocityX += (RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
                 case SDLK_LEFT:
-                    velocityX = -RUN_SPEED;
+                    if(!running)
+                        velocityX -= RUN_IMPULSE;
+                    velocityX += (-RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
                 case SDLK_UP:
@@ -143,11 +151,17 @@ int main(int argc, char **argv)
                 {
                 case SDLK_RIGHT:
                     if(velocityX > 0)
+                    {
+                        accelX = 0;
                         running = false;
+                    }
                     break;
                 case SDLK_LEFT:
                     if(velocityX < 0)
+                    {
+                        accelX = 0;
                         running = false;
+                    }
                     break;
                 case SDLK_UP:
                 case SDLK_SPACE:
@@ -175,7 +189,7 @@ int main(int argc, char **argv)
         if(velocityY > 0)
             accelY = GRAVITY;
         
-        velocityY += accelY - velocityY * RESISTANCE;
+        velocityY += (accelY - velocityY * RESISTANCE_Y) * duration;
         
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, playerTex, &playerTexRect, &playerLocRect);
