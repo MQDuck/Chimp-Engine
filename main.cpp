@@ -1,17 +1,17 @@
 /*
     Copyright 2016 Jeffrey Thomas Piercy
   
-    This file is part of Platform Playground.
- 
-    Platform Playground is free software: you can redistribute it and/or
-    modify it under the terms of the GNU General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+    This file is part of Chimp Out!.
 
-    Platform Playground is distributed in the hope that it will be
-    useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
+    Chimp Out! is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Chimp Out! is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
@@ -25,60 +25,21 @@
 #include <cmath>
 #include "SDLUtils.h"
 #include "cleanup.h"
+#include "ChimpConstants.h"
+#include "ChimpObject.h"
+#include "ChimpMobile.h"
 
 using std::cout;
 using std::endl;
 
-static const int
-    PLAYER_WIDTH        = 68,
-    PLAYER_HEIGHT       = 97,
-    SCREEN_WIDTH        = 800,
-    SCREEN_HEIGHT       = 600;
-static const float
-    RUN_IMPULSE         = 5,
-    RUN_ACCEL           = 2,
-    JUMP_IMPULSE        = -20,
-    DOUBLE_JUMP_IMPULSE = JUMP_IMPULSE / 2,
-    JUMP_ACCEL          = -1.8,
-    GRAVITY             = 2.0,
-    STOP_FACTOR         = 0.9,
-    RESISTANCE_X        = 0.15,
-    RESISTANCE_Y        = 0.1,
-	APPROX_ZERO         = RUN_IMPULSE / 1000;
 
-// Derived constants:
-static const float
-    JUMP_ACCEL_NET = JUMP_ACCEL + GRAVITY;
-
-bool approxZero(float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
+inline bool approxZero(const float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
 
 int main(int argc, char **argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* playerTex;
-    SDL_Event e;
-    bool quit = false;
-    SDL_Rect playerTexRect, playerLocRect;
-    std::chrono::high_resolution_clock::time_point t1, t2;
-    float accelY = 0;
-    float accelX = 0;
-    float velocityX = 0;
-    float velocityY = 0;
-    bool keyJumpPressed = false;
-    //bool keyLeftPressed = false;
-    //bool keyRightPressed = false;
-    bool running = false;
-    bool doubleJumped = false;
-    
-    playerTexRect.x = 0;
-    playerTexRect.y = 0;
-    playerTexRect.w = PLAYER_WIDTH;
-    playerTexRect.h = PLAYER_HEIGHT;
-    playerLocRect.x = (SCREEN_WIDTH - PLAYER_WIDTH) / 2;
-    playerLocRect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
-    playerLocRect.w = PLAYER_WIDTH;
-    playerLocRect.h = PLAYER_HEIGHT;
     
     if(SDL_Init(SDL_INIT_EVERYTHING & ~SDL_INIT_HAPTIC) != 0)
     {
@@ -86,7 +47,7 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    window = SDL_CreateWindow("Platform Playground", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Chimp Out!", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(window == nullptr)
     {
         logSDLError(std::cout, "CreateWindow");
@@ -122,6 +83,31 @@ int main(int argc, char **argv)
         SDL_Quit();
     }
     
+    
+    SDL_Rect playerTexRect, playerLocRect;
+    SDL_Event e;
+    playerTexRect.x = 0;
+    playerTexRect.y = 0;
+    playerTexRect.w = PLAYER_WIDTH;
+    playerTexRect.h = PLAYER_HEIGHT;
+    playerLocRect.x = (SCREEN_WIDTH - PLAYER_WIDTH) / 2;
+    playerLocRect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
+    playerLocRect.w = PLAYER_WIDTH;
+    playerLocRect.h = PLAYER_HEIGHT;
+    ChimpMobile player(playerTex, playerTexRect, renderer, SCREEN_WIDTH>>1, 0);
+    bool quit = false;
+    std::chrono::high_resolution_clock::time_point t1, t2;
+    float accelY = 0;
+    float accelX = 0;
+    float velocityX = 0;
+    float velocityY = 0;
+    bool keyJumpPressed = false;
+    //bool keyLeftPressed = false;
+    //bool keyRightPressed = false;
+    bool running = false;
+    bool doubleJumped = false;
+    
+    
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
     t1 = std::chrono::high_resolution_clock::now();
@@ -144,13 +130,19 @@ int main(int argc, char **argv)
                 {
                 case SDLK_RIGHT:
                     if( approxZero(velocityX) )
+                    {
+                        //cout << "impulse" << endl;
                         velocityX += RUN_IMPULSE;
+                    }
                     velocityX += (RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
                 case SDLK_LEFT:
                     if( approxZero(velocityX) )
+                    {
+                        //cout << "impulse" << endl;
                         velocityX -= RUN_IMPULSE;
+                    }
                     velocityX += (-RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
@@ -221,6 +213,7 @@ int main(int argc, char **argv)
         
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, playerTex, &playerTexRect, &playerLocRect);
+        player.render();
         SDL_RenderPresent(renderer);
         SDL_Delay(10);
     }

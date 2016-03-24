@@ -29,7 +29,7 @@ void cleanup(T *t, Args&&... args)
  */
 
 template<>
-void cleanup<SDL_Window>(SDL_Window *win)
+inline void cleanup<SDL_Window>(SDL_Window *win)
 {
 	if (!win)
 		return;
@@ -37,7 +37,7 @@ void cleanup<SDL_Window>(SDL_Window *win)
 }
 
 template<>
-void cleanup<SDL_Renderer>(SDL_Renderer *ren)
+inline void cleanup<SDL_Renderer>(SDL_Renderer *ren)
 {
 	if (!ren)
 		return;
@@ -45,7 +45,7 @@ void cleanup<SDL_Renderer>(SDL_Renderer *ren)
 }
 
 template<>
-void cleanup<SDL_Texture>(SDL_Texture *tex)
+inline void cleanup<SDL_Texture>(SDL_Texture *tex)
 {
 	if (!tex)
 		return;
@@ -53,7 +53,7 @@ void cleanup<SDL_Texture>(SDL_Texture *tex)
 }
 
 template<>
-void cleanup<SDL_Surface>(SDL_Surface *surf)
+inline void cleanup<SDL_Surface>(SDL_Surface *surf)
 {
 	if (!surf)
 		return;
