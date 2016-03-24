@@ -11,20 +11,20 @@ using std::cout;
 using std::endl;
 
 static const int
-    PLAYER_WIDTH   = 68,
-    PLAYER_HEIGHT  = 97,
-    SCREEN_WIDTH   = 800,
-    SCREEN_HEIGHT  = 600;
+    PLAYER_WIDTH        = 68,
+    PLAYER_HEIGHT       = 97,
+    SCREEN_WIDTH        = 800,
+    SCREEN_HEIGHT       = 600;
 static const float
-    RUN_IMPULSE    = 8,
-    RUN_ACCEL      = 2,
-    //RUN_SPEED      = 10,
-    JUMP_IMPULSE   = -20,
-    JUMP_ACCEL     = -1.8,
-    GRAVITY        = 2.0,
-    STOP_FACTOR    = 0.9,
-    RESISTANCE_X   = 0.2,
-    RESISTANCE_Y   = 0.1;
+    RUN_IMPULSE         = 8,
+    RUN_ACCEL           = 2,
+    JUMP_IMPULSE        = -20,
+    DOUBLE_JUMP_IMPULSE = JUMP_IMPULSE / 2,
+    JUMP_ACCEL          = -1.8,
+    GRAVITY             = 2.0,
+    STOP_FACTOR         = 0.9,
+    RESISTANCE_X        = 0.2,
+    RESISTANCE_Y        = 0.1;
 
 // Derived constants:
 static const float
@@ -50,6 +50,7 @@ int main(int argc, char **argv)
     //bool keyLeftPressed = false;
     //bool keyRightPressed = false;
     bool running = false;
+    bool doubleJumped = false;
     
     playerTexRect.x = 0;
     playerTexRect.y = 0;
@@ -123,24 +124,31 @@ int main(int argc, char **argv)
                 switch(e.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
-                    if(!running)
+                    if(velocityX == 0)
                         velocityX += RUN_IMPULSE;
                     velocityX += (RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
                 case SDLK_LEFT:
-                    if(!running)
+                    if(velocityX == 0)
                         velocityX -= RUN_IMPULSE;
                     velocityX += (-RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
                 case SDLK_UP:
                 case SDLK_SPACE:
-                    if(!keyJumpPressed && playerLocRect.y == SCREEN_HEIGHT - PLAYER_HEIGHT)
+                    //if(!keyJumpPressed && playerLocRect.y == SCREEN_HEIGHT - PLAYER_HEIGHT)
+                    if(!keyJumpPressed && !doubleJumped)
                     {
-                        keyJumpPressed = true;
-                        velocityY = JUMP_IMPULSE;
+                        if(playerLocRect.y < SCREEN_HEIGHT - PLAYER_HEIGHT)
+                        {
+                            doubleJumped = true;
+                            velocityY = DOUBLE_JUMP_IMPULSE;
+                        }
+                        else
+                            velocityY = JUMP_IMPULSE;
                         accelY = JUMP_ACCEL_NET;
+                        keyJumpPressed = true;
                     }
                     break;
                 }
@@ -173,12 +181,13 @@ int main(int argc, char **argv)
             }
         }
         
-        playerLocRect.x += round(velocityX * duration);
+        playerLocRect.x += round(velocityX * duration); // Rounding might no be necessary
         if(playerLocRect.y > SCREEN_HEIGHT - PLAYER_HEIGHT)
         {
             playerLocRect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
             velocityY = 0;
             accelY = 0;
+            doubleJumped = false;
         }
         else
             playerLocRect.y += round(velocityY * duration);
