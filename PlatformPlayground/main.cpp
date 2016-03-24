@@ -1,3 +1,22 @@
+/*
+    Copyright 2016 Jeffrey Thomas Piercy
+  
+    This file is part of Platform Playground.
+ 
+    Platform Playground is free software: you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    Platform Playground is distributed in the hope that it will be
+    useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -24,7 +43,7 @@ static const float
     GRAVITY             = 2.0,
     STOP_FACTOR         = 0.9,
     RESISTANCE_X        = 0.15,
-    RESISTANCE_Y        = 0.1.
+    RESISTANCE_Y        = 0.1,
 	APPROX_ZERO         = RUN_IMPULSE / 1000;
 
 // Derived constants:
