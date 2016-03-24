@@ -16,22 +16,22 @@ static const int
     SCREEN_WIDTH        = 800,
     SCREEN_HEIGHT       = 600;
 static const float
-    RUN_IMPULSE         = 8,
+    RUN_IMPULSE         = 5,
     RUN_ACCEL           = 2,
     JUMP_IMPULSE        = -20,
     DOUBLE_JUMP_IMPULSE = JUMP_IMPULSE / 2,
     JUMP_ACCEL          = -1.8,
     GRAVITY             = 2.0,
     STOP_FACTOR         = 0.9,
-    RESISTANCE_X        = 0.2,
-    RESISTANCE_Y        = 0.1;
+    RESISTANCE_X        = 0.15,
+    RESISTANCE_Y        = 0.1.
+	APPROX_ZERO         = RUN_IMPULSE / 1000;
 
 // Derived constants:
 static const float
     JUMP_ACCEL_NET = JUMP_ACCEL + GRAVITY;
 
-//int playerX = SCREEN_WIDTH / 2;
-//int playerY = SCREEN_HEIGHT / 2;
+bool approxZero(float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
 
 int main(int argc, char **argv)
 {
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    window = SDL_CreateWindow("DSMaze", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Platform Playground", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(window == nullptr)
     {
         logSDLError(std::cout, "CreateWindow");
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         SDL_Quit();
         return 1;
     }*/
-    playerTex = loadTexture("../assets/player.png", renderer);
+    playerTex = loadTexture("assets/player.png", renderer);
     if(playerTex == nullptr)
     {
         cleanup(window, renderer, playerTex);
@@ -124,13 +124,13 @@ int main(int argc, char **argv)
                 switch(e.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
-                    if(velocityX == 0)
+                    if( approxZero(velocityX) )
                         velocityX += RUN_IMPULSE;
                     velocityX += (RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
                     break;
                 case SDLK_LEFT:
-                    if(velocityX == 0)
+                    if( approxZero(velocityX) )
                         velocityX -= RUN_IMPULSE;
                     velocityX += (-RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
                     running = true;
@@ -208,6 +208,7 @@ int main(int argc, char **argv)
     
     return 0;
 }
+
 
 
 
