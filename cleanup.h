@@ -29,35 +29,45 @@ void cleanup(T *t, Args&&... args)
  */
 
 template<>
-inline void cleanup<SDL_Window>(SDL_Window *win)
+inline void cleanup<SDL_Window>(SDL_Window* win)
 {
-	if (!win)
-		return;
-	SDL_DestroyWindow(win);
+	if (win)
+        SDL_DestroyWindow(win);
 }
 
 template<>
-inline void cleanup<SDL_Renderer>(SDL_Renderer *ren)
+inline void cleanup<SDL_Renderer>(SDL_Renderer* ren)
 {
-	if (!ren)
-		return;
-	SDL_DestroyRenderer(ren);
+	if (ren)
+        SDL_DestroyRenderer(ren);
 }
 
 template<>
-inline void cleanup<SDL_Texture>(SDL_Texture *tex)
+inline void cleanup<SDL_Texture>(SDL_Texture* tex)
 {
-	if (!tex)
-		return;
-	SDL_DestroyTexture(tex);
+	if (tex)
+        SDL_DestroyTexture(tex);
 }
 
 template<>
-inline void cleanup<SDL_Surface>(SDL_Surface *surf)
+inline void cleanup<SDL_Surface>(SDL_Surface* surf)
 {
-	if (!surf)
-		return;
-	SDL_FreeSurface(surf);
+	if (surf)
+        SDL_FreeSurface(surf);
+}
+
+template<>
+inline void cleanup<SDL_Joystick>(SDL_Joystick* joy)
+{
+    if(joy)
+        SDL_JoystickClose(joy);
 }
 
 #endif
+
+
+
+
+
+
+

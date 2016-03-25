@@ -40,6 +40,7 @@ int main(int argc, char **argv)
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* playerTex;
+    SDL_Joystick* controller;
     
     if(SDL_Init(SDL_INIT_EVERYTHING & ~SDL_INIT_HAPTIC) != 0)
     {
@@ -82,140 +83,146 @@ int main(int argc, char **argv)
         cleanup(window, renderer, playerTex);
         SDL_Quit();
     }
+    if(SDL_GameControllerAddMappingsFromFile("gamecontrollerdb") == -1)
+        logSDLError(std::cout, "GameControllerAddMappingsFromFile");
+    /*for(int i = 0; i < SDL_NumJoysticks(); ++i)
+    {
+        SDL_GameController *pad = SDL_GameControllerOpen(i);
+        SDL_Joystick *joy = SDL_GameControllerGetJoystick( pad );
+    }*/
+    if(SDL_NumJoysticks() > 0)
+    {
+        controller = SDL_JoystickOpen(0);
+        if(!controller)
+            logSDLError(std::cout, "JoystickOpen");
+    }
     
     
-    SDL_Rect playerTexRect, playerLocRect;
+    SDL_GameController *ctrl;
+    int i;
+    
+    SDL_Rect textureRect;
     SDL_Event e;
-    playerTexRect.x = 0;
-    playerTexRect.y = 0;
-    playerTexRect.w = PLAYER_WIDTH;
-    playerTexRect.h = PLAYER_HEIGHT;
-    playerLocRect.x = (SCREEN_WIDTH - PLAYER_WIDTH) / 2;
-    playerLocRect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
-    playerLocRect.w = PLAYER_WIDTH;
-    playerLocRect.h = PLAYER_HEIGHT;
-    ChimpMobile player(playerTex, playerTexRect, renderer, SCREEN_WIDTH>>1, 0);
+    textureRect.x = 0;
+    textureRect.y = 0;
+    textureRect.w = PLAYER_WIDTH;
+    textureRect.h = PLAYER_HEIGHT;
+    ChimpMobile player(playerTex, textureRect, renderer, SCREEN_WIDTH>>1, 0);
     bool quit = false;
-    std::chrono::high_resolution_clock::time_point t1, t2;
-    float accelY = 0;
-    float accelX = 0;
-    float velocityX = 0;
-    float velocityY = 0;
     bool keyJumpPressed = false;
-    //bool keyLeftPressed = false;
-    //bool keyRightPressed = false;
-    bool running = false;
-    bool doubleJumped = false;
-    
+    //int t1, t2;
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    cout << "SDL_CONTROLLER_BUTTON_A = " << SDL_CONTROLLER_BUTTON_A << endl;
     
-    t1 = std::chrono::high_resolution_clock::now();
     while(!quit)
     {
-        t2 = std::chrono::high_resolution_clock::now();
-        int duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 10;
-        t1 = t2;
-        
-        while ( SDL_PollEvent(&e) )
+        while( SDL_PollEvent(&e) )
         {
-            if (e.type == SDL_QUIT)
+            switch(e.type)
+            {
+            case SDL_QUIT:
             {
                 quit = true;
                 continue;
             }
-            if (e.type == SDL_KEYDOWN)
+            case SDL_KEYDOWN:
             {
                 switch(e.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
-                    if( approxZero(velocityX) )
-                    {
-                        //cout << "impulse" << endl;
-                        velocityX += RUN_IMPULSE;
-                    }
-                    velocityX += (RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
-                    running = true;
+                    player.runRight();
                     break;
                 case SDLK_LEFT:
-                    if( approxZero(velocityX) )
-                    {
-                        //cout << "impulse" << endl;
-                        velocityX -= RUN_IMPULSE;
-                    }
-                    velocityX += (-RUN_ACCEL - velocityX * RESISTANCE_X) * duration;
-                    running = true;
+                    player.runLeft();
                     break;
                 case SDLK_UP:
                 case SDLK_SPACE:
-                    //if(!keyJumpPressed && playerLocRect.y == SCREEN_HEIGHT - PLAYER_HEIGHT)
-                    if(!keyJumpPressed && !doubleJumped)
+                    if(!keyJumpPressed)
                     {
-                        if(playerLocRect.y < SCREEN_HEIGHT - PLAYER_HEIGHT)
-                        {
-                            doubleJumped = true;
-                            velocityY = DOUBLE_JUMP_IMPULSE;
-                        }
-                        else
-                            velocityY = JUMP_IMPULSE;
-                        accelY = JUMP_ACCEL_NET;
+                        player.jump();
                         keyJumpPressed = true;
                     }
                     break;
                 }
+                break;
             }
-            else if (e.type == SDL_KEYUP)
+            case SDL_KEYUP:
             {
                 switch(e.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
-                    if(velocityX > 0)
-                    {
-                        accelX = 0;
-                        running = false;
-                    }
+                    player.stopRunningRight();
                     break;
                 case SDLK_LEFT:
-                    if(velocityX < 0)
-                    {
-                        accelX = 0;
-                        running = false;
-                    }
+                    player.stopRunningLeft();
                     break;
                 case SDLK_UP:
                 case SDLK_SPACE:
+                    player.stopJumping();
                     keyJumpPressed = false;
-                    if(velocityY < 0)
-                        accelY = GRAVITY;
                     break;
                 }
+                break;
+            }
+            case SDL_JOYBUTTONDOWN:
+            {
+                cout << "e.jbutton.button = " << int(e.jbutton.button) << endl;
+                switch(e.jbutton.button)
+                {
+                case 2:
+                    if(!keyJumpPressed)
+                    {
+                        player.jump();
+                        keyJumpPressed = true;
+                    }
+                    break;
+                }
+                break;
+            }
+            case SDL_JOYBUTTONUP:
+            {
+                switch(e.jbutton.button)
+                {
+                case 2:
+                    player.stopJumping();
+                    keyJumpPressed = false;
+                    break;
+                }
+                break;
+            }
+            case SDL_JOYAXISMOTION:
+            {
+                switch(e.jaxis.axis)
+                {
+                case 0:
+                    if(e.jaxis.value > JOYSTICK_DEAD_ZONE)
+                    {
+                        cout << "right" << endl;
+                        player.stopRunning();
+                        player.runRight();
+                    }
+                    else if(e.jaxis.value > -JOYSTICK_DEAD_ZONE)
+                    {
+                        cout << "left" << endl;
+                        player.stopRunning();
+                        player.runLeft();
+                    }
+                    else
+                    {
+                        cout << "zero" << endl;
+                        player.stopRunning();
+                    }
+                }
+            }
             }
         }
         
-        playerLocRect.x += round(velocityX * duration); // Rounding might no be necessary
-        if(playerLocRect.y > SCREEN_HEIGHT - PLAYER_HEIGHT)
-        {
-            playerLocRect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
-            velocityY = 0;
-            accelY = 0;
-            doubleJumped = false;
-        }
-        else
-            playerLocRect.y += round(velocityY * duration);
-        
-        if(velocityX != 0 && running == false)
-            velocityX *= STOP_FACTOR;
-            
-        if(velocityY > 0)
-            accelY = GRAVITY;
-        
-        velocityY += (accelY - velocityY * RESISTANCE_Y) * duration;
-        
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, playerTex, &playerTexRect, &playerLocRect);
         player.render();
         SDL_RenderPresent(renderer);
-        SDL_Delay(10);
+        
+        SDL_Delay(1);
     }
     
     return 0;

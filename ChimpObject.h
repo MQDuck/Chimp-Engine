@@ -32,7 +32,7 @@ using std::endl;
 
 class ChimpObject
 {
-private:
+protected:
     SDL_Texture* texture;
     SDL_Rect textureRect;
     SDL_Renderer* renderer;
@@ -44,7 +44,7 @@ public:
     inline int getX() { return positionRect.x + (positionRect.w >> 1); }
     inline int getY() { return SCREEN_HEIGHT - positionRect.y - positionRect.h; }
     
-    inline void render() { SDL_RenderCopy(renderer, texture, &textureRect, &positionRect); cout << "here i am" << endl; }
+    inline void render() { SDL_RenderCopy(renderer, texture, &textureRect, &positionRect); }
 };
 
 #endif // CHIMPOBJECT_H
