@@ -17,25 +17,26 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <fstream>
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 //#include <SDL2/SDL_ttf.h>
-#include <vector>
-#include <fstream>
+#include <SDL2/SDL_gamecontroller.h>
 #include <string>
-#include "SDLUtils.h"
+#include <vector>
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
+#include "SDLUtils.h"
 
 using std::cout;
 using std::endl;
 
 
-inline bool approxZero(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }
 bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect> &rects, SDL_Renderer* renderer);
+void addController(int id);
 
 int main(int argc, char **argv)
 {
@@ -43,9 +44,9 @@ int main(int argc, char **argv)
     SDL_Renderer* renderer;
     std::vector<SDL_Texture*> textures;
     std::vector<SDL_Rect> textureRects;
-    SDL_Joystick* controller;
+    std::vector<SDL_GameController*> controllers;
     
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
     {
         logSDLError(std::cout, "SDL_Init");
         return 1;
@@ -90,14 +91,13 @@ int main(int argc, char **argv)
     }
     if(SDL_GameControllerAddMappingsFromFile("gamecontrollerdb") == -1)
         logSDLError(std::cout, "GameControllerAddMappingsFromFile");
-    if(SDL_NumJoysticks() > 0)
+    for(int i = 0; i < SDL_NumJoysticks(); ++i)
     {
-        controller = SDL_JoystickOpen(0);
-        if(!controller)
-            logSDLError(std::cout, "JoystickOpen");
+        if( SDL_IsGameController(i) )
+            controllers.push_back( SDL_GameControllerOpen(i) );
     }
     
-    SDL_Event e;
+    SDL_Event event;
     bool quit = false;
     bool keyJumpPressed = false;
     ChimpMobile player(textures[0], textureRects[0], renderer, SCREEN_WIDTH>>1, 30, 1, 1);
@@ -110,9 +110,9 @@ int main(int argc, char **argv)
     
     while(!quit)
     {
-        while( SDL_PollEvent(&e) )
+        while( SDL_PollEvent(&event) )
         {
-            switch(e.type)
+            switch(event.type)
             {
             case SDL_QUIT:
             {
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
             }
             case SDL_KEYDOWN:
             {
-                switch(e.key.keysym.sym)
+                switch(event.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
                     player.runRight();
@@ -137,12 +137,15 @@ int main(int argc, char **argv)
                         keyJumpPressed = true;
                     }
                     break;
+                case SDLK_x:
+                    player.sprint();
+                    break;
                 }
                 break;
             }
             case SDL_KEYUP:
             {
-                switch(e.key.keysym.sym)
+                switch(event.key.keysym.sym)
                 {
                 case SDLK_RIGHT:
                     player.stopRunningRight();
@@ -155,59 +158,44 @@ int main(int argc, char **argv)
                     player.stopJumping();
                     keyJumpPressed = false;
                     break;
-                }
-                break;
-            }
-            case SDL_JOYBUTTONDOWN:
-            {
-                cout << "e.jbutton.button = " << int(e.jbutton.button) << endl;
-                switch(e.jbutton.button)
-                {
-                case 2:
-                    if(!keyJumpPressed)
-                    {
-                        player.jump();
-                        keyJumpPressed = true;
-                    }
+                case SDLK_x:
+                    player.stopSprinting();
                     break;
                 }
                 break;
             }
-            case SDL_JOYBUTTONUP:
+            case SDL_CONTROLLERBUTTONDOWN:
             {
-                switch(e.jbutton.button)
+                if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A && !keyJumpPressed)
                 {
-                case 2:
+                    player.jump();
+                    keyJumpPressed = true;
+                }
+                else if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
+                    player.sprint();
+                break;
+            }
+            case SDL_CONTROLLERBUTTONUP:
+            {
+                if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
+                {
                     player.stopJumping();
                     keyJumpPressed = false;
-                    break;
                 }
+                else if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
+                    player.stopSprinting();
                 break;
             }
-            case SDL_JOYAXISMOTION:
-            {
-                switch(e.jaxis.axis)
+            case SDL_CONTROLLERAXISMOTION:
+                if(event.caxis.axis == 0)
                 {
-                case 0:
-                    if(e.jaxis.value > JOYSTICK_DEAD_ZONE)
-                    {
-                        cout << "right" << endl;
-                        player.stopRunning();
+                    if(event.caxis.value > JOYSTICK_DEAD_ZONE)
                         player.runRight();
-                    }
-                    else if(e.jaxis.value > -JOYSTICK_DEAD_ZONE)
-                    {
-                        cout << "left" << endl;
-                        player.stopRunning();
+                    else if(event.caxis.value < -JOYSTICK_DEAD_ZONE)
                         player.runLeft();
-                    }
                     else
-                    {
-                        cout << "zero" << endl;
                         player.stopRunning();
-                    }
                 }
-            }
             }
         }
         
@@ -225,23 +213,33 @@ int main(int argc, char **argv)
 
 bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect> &rects, SDL_Renderer* renderer)
 {
-    std::ifstream data("assets/texture_data");
+    std::ifstream data(TEXTURE_METADATA_FILE);
     std::string line;
     int sub1, sub2;
+    int numTextures;
+    bool numTexturesLoaded = false;
     
     if( !data.is_open() )
     {
         std::cout << "Couldn't open texture data file.";
         return false;
     }
-    std::getline(data, line);
-    sub1 = line.find(";") + 1;
-    sub2 = line.find(";", sub1);
-    int numTextures = std::stoi( line.substr(sub1, sub2-sub1) );
+    
+    while(!numTexturesLoaded)
+    {
+        std::getline(data, line);
+        sub1 = line.find(";");
+        if(sub1 == std::string::npos)
+            continue;
+        ++sub1;
+        sub2 = line.find(";", sub1);
+        numTextures = std::stoi( line.substr(sub1, sub2-sub1) );
+        numTexturesLoaded = true;
+    }
     
     for(int i = 0; i < numTextures; ++i)
     {
-        getline(data, line);
+        std::getline(data, line);
         sub1 = line.find(TEXTURE_DELIMITER);
         if(sub1 == std::string::npos)
         {
@@ -276,6 +274,19 @@ bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect
     data.close();
     return true;
 }
+
+/*void addController(int id)
+{
+    if( SDL_IsGameController(id) )
+    {
+        SDL_GameController* pad = SDL_GameControllerOpen(id);
+        if(pad)
+        {
+            SDL_Joystick* joy = SDL_GameControllerGetJoystick(pad);
+            int instanceID = SDL_JoystickInstanceID(joy);
+        }
+    }
+}*/
 
 
 

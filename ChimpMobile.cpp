@@ -30,9 +30,11 @@ ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend
     accelerationY = 0;
     velocityX = 0;
     velocityY = GRAVITY;
-    running = false;
+    runningRight = false;
+    runningLeft = false;
     doubleJumped = false;
     standing = false;
+    sprinting = false;
 }
 
 void ChimpMobile::runRight()
@@ -40,8 +42,8 @@ void ChimpMobile::runRight()
     //cout << "running right" << endl;
     if( approxZero(velocityX) )
         velocityX += RUN_IMPULSE - velocityX * RESISTANCE_X;
-    velocityX += RUN_ACCEL - velocityX * RESISTANCE_X;
-    running = true;
+    runningRight = true;
+    runningLeft = false;
 }
 
 void ChimpMobile::runLeft()
@@ -49,24 +51,41 @@ void ChimpMobile::runLeft()
     //cout << "running left" << endl;
     if( approxZero(velocityX) )
         velocityX -= RUN_IMPULSE - velocityX * RESISTANCE_X;
-    velocityX += -RUN_ACCEL - velocityX * RESISTANCE_X;
-    running = true;
+    runningLeft = true;
+    runningRight = false;
 }
 
 void ChimpMobile::stopRunningRight()
 {
     if(velocityX > 0)
-        running = false;
+        runningRight = false;
 }
 
 void ChimpMobile::stopRunningLeft()
 {
     if(velocityX < 0)
-        running = false;
+        runningLeft = false;
 }
 void ChimpMobile::stopRunning()
 {
-    running = false;
+    runningRight = false;
+    runningLeft = false;
+}
+
+void ChimpMobile::accelerateRight()
+{
+    if(sprinting)
+        velocityX += RUN_ACCEL*SPRINT_FACTOR - velocityX*RESISTANCE_X;
+    else
+        velocityX += RUN_ACCEL - velocityX*RESISTANCE_X;
+}
+
+void ChimpMobile::accelerateLeft()
+{
+    if(sprinting)
+        velocityX += -RUN_ACCEL*SPRINT_FACTOR - velocityX*RESISTANCE_X;
+    else
+        velocityX += -RUN_ACCEL - velocityX * RESISTANCE_X;
 }
 
 void ChimpMobile::jump()
@@ -93,11 +112,18 @@ void ChimpMobile::stopJumping()
         accelerationY = GRAVITY;
 }
 
+void ChimpMobile::sprint() { sprinting = true; }
+void ChimpMobile::stopSprinting() { sprinting = false; }
+
 void ChimpMobile::render(std::vector<ChimpObject>* objects)
 {
-    positionRect.x += round(velocityX); // Rounding might not be necessary
-    if(!running)
+    if(runningRight)
+        accelerateRight();
+    else if(runningLeft)
+        accelerateLeft();
+    else
         velocityX *= STOP_FACTOR;
+    positionRect.x += round(velocityX); // Rounding might not be necessary
     
     if(positionRect.y > SCREEN_HEIGHT - positionRect.h)
     {
