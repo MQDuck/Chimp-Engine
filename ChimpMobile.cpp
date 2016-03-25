@@ -19,20 +19,25 @@
 
 #include "ChimpMobile.h"
 
+ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY)
+    : ChimpMobile(tex, texRect, rend, positionX, positionY, 1, 1) {}
+
 ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX,
-                         const int positionY) : ChimpObject(tex, texRect, rend, positionX, positionY)
+                         const int positionY, const int tileX, const int tileY)
+    : ChimpObject(tex, texRect, rend, positionX, positionY, tileX, tileY)
 {
     //accelerationX = 0;
     accelerationY = 0;
     velocityX = 0;
-    velocityY = 0;
+    velocityY = GRAVITY;
     running = false;
     doubleJumped = false;
+    standing = false;
 }
 
 void ChimpMobile::runRight()
 {
-    cout << "running right" << endl;
+    //cout << "running right" << endl;
     if( approxZero(velocityX) )
         velocityX += RUN_IMPULSE - velocityX * RESISTANCE_X;
     velocityX += RUN_ACCEL - velocityX * RESISTANCE_X;
@@ -41,7 +46,7 @@ void ChimpMobile::runRight()
 
 void ChimpMobile::runLeft()
 {
-    cout << "running left" << endl;
+    //cout << "running left" << endl;
     if( approxZero(velocityX) )
         velocityX -= RUN_IMPULSE - velocityX * RESISTANCE_X;
     velocityX += -RUN_ACCEL - velocityX * RESISTANCE_X;
@@ -68,13 +73,16 @@ void ChimpMobile::jump()
 {
     if(!doubleJumped)
     {
-        if(positionRect.y < SCREEN_HEIGHT - positionRect.h)
+        if(!standing)
         {
             doubleJumped = true;
             velocityY = DOUBLE_JUMP_IMPULSE;
         }
         else
+        {
             velocityY = JUMP_IMPULSE;
+            standing = false;
+        }
         accelerationY = JUMP_ACCEL + GRAVITY;
     }
 }
@@ -85,7 +93,7 @@ void ChimpMobile::stopJumping()
         accelerationY = GRAVITY;
 }
 
-void ChimpMobile::render()
+void ChimpMobile::render(std::vector<ChimpObject>* objects)
 {
     positionRect.x += round(velocityX); // Rounding might not be necessary
     if(!running)
@@ -95,13 +103,36 @@ void ChimpMobile::render()
     {
         accelerationY = 0;
         velocityY = 0;
-        positionRect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
+        positionRect.y = SCREEN_HEIGHT - textureRect.h;
         doubleJumped = false;
+        standing = true;
     }
     else
     {
         if(velocityY > 0)
             accelerationY = GRAVITY;
+        if( !approxZero(SCREEN_HEIGHT - positionRect.y - height) && (accelerationY == GRAVITY || approxZero(velocityY)) )
+        {
+            accelerationY = GRAVITY;
+            standing = false;
+            for(ChimpObject& obj : *objects)
+            {
+                if(   positionRect.y + height > obj.getPosRectY() - APPROX_ZERO
+                   && positionRect.y + height < obj.getPosRectY() + obj.getHeight() + APPROX_ZERO
+                   && (      positionRect.x > obj.getPosRectX()
+                          && positionRect.x < obj.getPosRectX() + obj.getWidth()
+                       ||    positionRect.x + width > obj.getPosRectX()
+                          && positionRect.x + width < obj.getPosRectX() + obj.getWidth()) )
+                {
+                    accelerationY = 0;
+                    velocityY = 0;
+                    positionRect.y = obj.getPosRectY() - positionRect.h;
+                    doubleJumped = false;
+                    standing = true;
+                    break;
+                }
+            }
+        }
         velocityY += accelerationY - velocityY * RESISTANCE_Y;
         positionRect.y += round(velocityY); // Rounding might not be necessary
     }

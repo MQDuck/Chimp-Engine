@@ -37,14 +37,23 @@ protected:
     SDL_Rect textureRect;
     SDL_Renderer* renderer;
     SDL_Rect positionRect;
+    const int width, height;
     
 public:
     ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY);
+    ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY,
+                const int tilesX, const int tilesY);
     
     inline int getX() { return positionRect.x + (positionRect.w >> 1); }
     inline int getY() { return SCREEN_HEIGHT - positionRect.y - positionRect.h; }
+    inline int getWidth() { return width; }
+    inline int getHeight() { return height; }
+    inline int getPosRectX() { return positionRect.x; }
+    inline int getPosRectY() { return positionRect.y; }
+    inline int getPosRectW() { return positionRect.w; }
+    inline int getPosRectH() { return positionRect.h; }
     
-    inline void render() { SDL_RenderCopy(renderer, texture, &textureRect, &positionRect); }
+    void render();
 };
 
 #endif // CHIMPOBJECT_H

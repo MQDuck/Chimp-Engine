@@ -20,12 +20,29 @@
 #include "ChimpObject.h"
 
 ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX,
-                         const int positionY) : texture(tex), textureRect(texRect), renderer(rend)
+                         const int positionY)
+    : ChimpObject(tex, texRect, rend, positionX, positionY, 1, 1) {}
+
+ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX,
+                         const int positionY, const int tilesX, const int tilesY)
+    : texture(tex), textureRect(texRect), renderer(rend), width(textureRect.w*tilesX), height(textureRect.h*tilesY)
 {
     positionRect.w = textureRect.w;
     positionRect.h = textureRect.h;
     positionRect.x = positionX - (positionRect.w >> 1);
-    positionRect.y = SCREEN_HEIGHT - positionY - positionRect.h;
+    positionRect.y = SCREEN_HEIGHT - positionY - height;
+}
+
+void ChimpObject::render()
+{
+    SDL_Rect pos = positionRect;
+    for(int x = 0; x < width; x += textureRect.w)
+        for(int y = 0; y < height; y += textureRect.h)
+        {
+            pos.x = positionRect.x + x;
+            pos.y = positionRect.y + y;
+            SDL_RenderCopy(renderer, texture, &textureRect, &pos);
+        }
 }
 
 

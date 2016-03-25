@@ -20,17 +20,19 @@
 #ifndef CHIMPMOBILE_H
 #define CHIMPMOBILE_H
 
+#include <vector>
 #include "ChimpObject.h"
 
 class ChimpMobile : public ChimpObject
 {
-public:
-    float accelerationY, velocityX, velocityY;
 private:
-    bool running, doubleJumped;
+    float accelerationY, velocityX, velocityY;
+    bool running, doubleJumped, standing;
     
 public:
     ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY);
+    ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY,
+                const int tilX, const int tilY);
 
     void runRight();
     void runLeft();
@@ -40,9 +42,9 @@ public:
     void jump();
     void stopJumping();
 
-    void render();
+    void render(std::vector<ChimpObject>* objects);
 private:
-    inline bool approxZero(const float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
+    inline static bool approxZero(const float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
 };
 
 #endif // CHIMPMOBILE_H

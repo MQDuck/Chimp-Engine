@@ -4,10 +4,11 @@
 static const int
     PLAYER_WIDTH           = 68,
     PLAYER_HEIGHT          = 97,
+    PLATFORM_WIDTH         = 4,
+    PLATFORM_HEIGHT        = 2,
     SCREEN_WIDTH           = 800,
-    SCREEN_HEIGHT          = 600/*,
-    SCREEN_FPS             = 60*/,
-    JOYSTICK_DEAD_ZONE     = 8000;;
+    SCREEN_HEIGHT          = 600,
+    JOYSTICK_DEAD_ZONE     = 8000;
 
 static const float
     RUN_IMPULSE            = 5,
@@ -22,9 +23,6 @@ static const float
 	APPROX_ZERO            = RUN_IMPULSE / 4;
 
 // Derived constants:
-
-//static const int
-//    SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 static const float
     JUMP_ACCEL_NET = JUMP_ACCEL + GRAVITY;

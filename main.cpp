@@ -20,9 +20,9 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <chrono>
+//#include <SDL2/SDL_ttf.h>
 #include <cmath>
+#include <vector>
 #include "SDLUtils.h"
 #include "cleanup.h"
 #include "ChimpConstants.h"
@@ -40,9 +40,10 @@ int main(int argc, char **argv)
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* playerTex;
+    SDL_Texture* platformTex;
     SDL_Joystick* controller;
     
-    if(SDL_Init(SDL_INIT_EVERYTHING & ~SDL_INIT_HAPTIC) != 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
     {
         logSDLError(std::cout, "SDL_Init");
         return 1;
@@ -83,6 +84,12 @@ int main(int argc, char **argv)
         cleanup(window, renderer, playerTex);
         SDL_Quit();
     }
+    platformTex = loadTexture("assets/platform.png", renderer);
+    if(platformTex == nullptr)
+    {
+        cleanup(window, renderer, playerTex, platformTex);
+        SDL_Quit();
+    }
     if(SDL_GameControllerAddMappingsFromFile("gamecontrollerdb") == -1)
         logSDLError(std::cout, "GameControllerAddMappingsFromFile");
     /*for(int i = 0; i < SDL_NumJoysticks(); ++i)
@@ -97,23 +104,24 @@ int main(int argc, char **argv)
             logSDLError(std::cout, "JoystickOpen");
     }
     
-    
-    SDL_GameController *ctrl;
-    int i;
-    
-    SDL_Rect textureRect;
     SDL_Event e;
-    textureRect.x = 0;
-    textureRect.y = 0;
-    textureRect.w = PLAYER_WIDTH;
-    textureRect.h = PLAYER_HEIGHT;
-    ChimpMobile player(playerTex, textureRect, renderer, SCREEN_WIDTH>>1, 0);
     bool quit = false;
     bool keyJumpPressed = false;
-    //int t1, t2;
+    SDL_Rect playerTexRect, platformTexRect;
+    playerTexRect.x = 0;
+    playerTexRect.y = 0;
+    playerTexRect.w = PLAYER_WIDTH;
+    playerTexRect.h = PLAYER_HEIGHT;
+    platformTexRect.x = 0;
+    platformTexRect.y = 0;
+    platformTexRect.w = PLATFORM_WIDTH*5;
+    platformTexRect.h = PLATFORM_HEIGHT*5;
+    ChimpMobile player(playerTex, playerTexRect, renderer, SCREEN_WIDTH>>1, 30, 1, 1);
+    std::vector<ChimpObject> worldObjects;
+    worldObjects.push_back( ChimpObject(platformTex, platformTexRect, renderer, 0, 100, 8, 1) );
+    worldObjects.push_back( ChimpObject(platformTex, platformTexRect, renderer, 0, 0, SCREEN_WIDTH/(PLATFORM_WIDTH*5)+1, 3) );
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    cout << "SDL_CONTROLLER_BUTTON_A = " << SDL_CONTROLLER_BUTTON_A << endl;
     
     while(!quit)
     {
@@ -219,7 +227,9 @@ int main(int argc, char **argv)
         }
         
         SDL_RenderClear(renderer);
-        player.render();
+        for(ChimpObject& obj : worldObjects)
+            obj.render();
+        player.render(&worldObjects);
         SDL_RenderPresent(renderer);
         
         SDL_Delay(1);
