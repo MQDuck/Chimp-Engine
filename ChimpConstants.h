@@ -1,14 +1,13 @@
 #ifndef CHIMPCONSTANTS_H
 #define CHIMPCONSTANTS_H
 
+#include <string>
+
 static const int
-    PLAYER_WIDTH           = 68,
-    PLAYER_HEIGHT          = 97,
-    PLATFORM_WIDTH         = 4,
-    PLATFORM_HEIGHT        = 2,
     SCREEN_WIDTH           = 800,
     SCREEN_HEIGHT          = 600,
-    JOYSTICK_DEAD_ZONE     = 8000;
+    JOYSTICK_DEAD_ZONE     = 8000,
+    APPROX_ZERO_INT        = 9;
 
 static const float
     RUN_IMPULSE            = 5,
@@ -20,7 +19,11 @@ static const float
     STOP_FACTOR            = 0.9,
     RESISTANCE_X           = 0.25,
     RESISTANCE_Y           = 0.1,
-	APPROX_ZERO            = RUN_IMPULSE / 4;
+	APPROX_ZERO_FLOAT      = RUN_IMPULSE / 4;
+
+static const std::string
+    TEXTURE_DELIMITER      = ";",
+    ASSETS_PATH            = "assets/";
 
 // Derived constants:
 

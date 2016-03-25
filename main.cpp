@@ -21,8 +21,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 //#include <SDL2/SDL_ttf.h>
-#include <cmath>
 #include <vector>
+#include <fstream>
+#include <string>
 #include "SDLUtils.h"
 #include "cleanup.h"
 #include "ChimpConstants.h"
@@ -33,14 +34,15 @@ using std::cout;
 using std::endl;
 
 
-inline bool approxZero(const float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
+inline bool approxZero(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }
+bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect> &rects, SDL_Renderer* renderer);
 
 int main(int argc, char **argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
-    SDL_Texture* playerTex;
-    SDL_Texture* platformTex;
+    std::vector<SDL_Texture*> textures;
+    std::vector<SDL_Rect> textureRects;
     SDL_Joystick* controller;
     
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
@@ -78,25 +80,16 @@ int main(int argc, char **argv)
         SDL_Quit();
         return 1;
     }*/
-    playerTex = loadTexture("assets/player.png", renderer);
-    if(playerTex == nullptr)
+    if( !loadChimpTextures(textures, textureRects, renderer) )
     {
-        cleanup(window, renderer, playerTex);
+        for(SDL_Texture* tex : textures)
+            cleanup(tex);
+        cleanup(window, renderer);
         SDL_Quit();
-    }
-    platformTex = loadTexture("assets/platform.png", renderer);
-    if(platformTex == nullptr)
-    {
-        cleanup(window, renderer, playerTex, platformTex);
-        SDL_Quit();
+        return 1;
     }
     if(SDL_GameControllerAddMappingsFromFile("gamecontrollerdb") == -1)
         logSDLError(std::cout, "GameControllerAddMappingsFromFile");
-    /*for(int i = 0; i < SDL_NumJoysticks(); ++i)
-    {
-        SDL_GameController *pad = SDL_GameControllerOpen(i);
-        SDL_Joystick *joy = SDL_GameControllerGetJoystick( pad );
-    }*/
     if(SDL_NumJoysticks() > 0)
     {
         controller = SDL_JoystickOpen(0);
@@ -107,19 +100,11 @@ int main(int argc, char **argv)
     SDL_Event e;
     bool quit = false;
     bool keyJumpPressed = false;
-    SDL_Rect playerTexRect, platformTexRect;
-    playerTexRect.x = 0;
-    playerTexRect.y = 0;
-    playerTexRect.w = PLAYER_WIDTH;
-    playerTexRect.h = PLAYER_HEIGHT;
-    platformTexRect.x = 0;
-    platformTexRect.y = 0;
-    platformTexRect.w = PLATFORM_WIDTH*5;
-    platformTexRect.h = PLATFORM_HEIGHT*5;
-    ChimpMobile player(playerTex, playerTexRect, renderer, SCREEN_WIDTH>>1, 30, 1, 1);
+    ChimpMobile player(textures[0], textureRects[0], renderer, SCREEN_WIDTH>>1, 30, 1, 1);
     std::vector<ChimpObject> worldObjects;
-    worldObjects.push_back( ChimpObject(platformTex, platformTexRect, renderer, 0, 100, 8, 1) );
-    worldObjects.push_back( ChimpObject(platformTex, platformTexRect, renderer, 0, 0, SCREEN_WIDTH/(PLATFORM_WIDTH*5)+1, 3) );
+    worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 100, 8, 1) );
+    worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 0,
+                                        SCREEN_WIDTH / textureRects[1].w + 1, 3) );
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
@@ -237,6 +222,75 @@ int main(int argc, char **argv)
     
     return 0;
 }
+
+bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect> &rects, SDL_Renderer* renderer)
+{
+    std::ifstream data("assets/texture_data");
+    std::string line;
+    int sub1, sub2;
+    
+    if( !data.is_open() )
+    {
+        std::cout << "Couldn't open texture data file.";
+        return false;
+    }
+    std::getline(data, line);
+    sub1 = line.find(";") + 1;
+    sub2 = line.find(";", sub1);
+    int numTextures = std::stoi( line.substr(sub1, sub2-sub1) );
+    
+    for(int i = 0; i < numTextures; ++i)
+    {
+        getline(data, line);
+        sub1 = line.find(TEXTURE_DELIMITER);
+        if(sub1 == std::string::npos)
+        {
+            --i;
+            continue;
+        }
+        ++sub1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        textures.push_back( loadTexture(ASSETS_PATH + line.substr(sub1, sub2-sub1), renderer) );
+        
+        if(textures.back() == nullptr)
+            return false;
+        
+        rects.push_back( SDL_Rect() );
+        
+        sub1 = sub2 + 1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        rects.back().x = std::stoi( line.substr(sub1, sub2-sub1) );
+        
+        sub1 = sub2 + 1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        rects.back().y = std::stoi( line.substr(sub1, sub2-sub1) );
+        
+        sub1 = sub2 + 1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        rects.back().w = std::stoi( line.substr(sub1, sub2-sub1) );
+        
+        sub1 = sub2 + 1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        rects.back().h = std::stoi( line.substr(sub1, sub2-sub1) );
+    }
+    data.close();
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

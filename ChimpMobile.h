@@ -44,7 +44,7 @@ public:
 
     void render(std::vector<ChimpObject>* objects);
 private:
-    inline static bool approxZero(const float f) { return f > -APPROX_ZERO && f < APPROX_ZERO; }
+    inline static bool approxZero(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }
 };
 
 #endif // CHIMPMOBILE_H

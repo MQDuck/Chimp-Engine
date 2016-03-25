@@ -117,12 +117,12 @@ void ChimpMobile::render(std::vector<ChimpObject>* objects)
             standing = false;
             for(ChimpObject& obj : *objects)
             {
-                if(   positionRect.y + height > obj.getPosRectY() - APPROX_ZERO
-                   && positionRect.y + height < obj.getPosRectY() + obj.getHeight() + APPROX_ZERO
-                   && (      positionRect.x > obj.getPosRectX()
-                          && positionRect.x < obj.getPosRectX() + obj.getWidth()
-                       ||    positionRect.x + width > obj.getPosRectX()
-                          && positionRect.x + width < obj.getPosRectX() + obj.getWidth()) )
+                if(   positionRect.y + height > obj.getPosRectY() - APPROX_ZERO_INT
+                   && positionRect.y + height < obj.getPosRectY() + APPROX_ZERO_INT
+                   && (   (    positionRect.x > obj.getPosRectX()
+                           && positionRect.x < obj.getPosRectX() + obj.getWidth() )
+                       || (    positionRect.x + width > obj.getPosRectX()
+                           && positionRect.x + width < obj.getPosRectX() + obj.getWidth()) ))
                 {
                     accelerationY = 0;
                     velocityY = 0;
