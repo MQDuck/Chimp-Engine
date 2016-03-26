@@ -11,11 +11,13 @@ TARGET = ChimpOut
 SOURCES += main.cpp \
     SDLUtils.cpp \
     ChimpObject.cpp \
-    ChimpMobile.cpp
+    ChimpMobile.cpp \
+    ChimpCharacter.cpp
 
 HEADERS += \
     cleanup.h \
     SDLUtils.h \
     ChimpObject.h \
     ChimpConstants.h \
-    ChimpMobile.h
+    ChimpMobile.h \
+    ChimpCharacter.h

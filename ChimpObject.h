@@ -23,6 +23,7 @@
 #include <SDL2/SDL.h>
 //#include <SDL2/SDL_image.h>
 #include <iostream>
+#include <memory>
 #include "SDLUtils.h"
 #include "cleanup.h"
 #include "ChimpConstants.h"
@@ -57,6 +58,10 @@ public:
     bool touchesAtBottom(const ChimpObject& other);
     
     void render();
+    
+    virtual void update(std::vector< std::unique_ptr<ChimpObject> >& objects) {}
+    virtual void runRight() {}
+    virtual void runLeft() {cout << "why?" << endl;}
     
 protected:
     inline static bool approxZeroF(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }

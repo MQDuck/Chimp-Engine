@@ -19,6 +19,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 //#include <SDL2/SDL_ttf.h>
@@ -37,6 +38,10 @@ using std::endl;
 
 bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect> &rects, SDL_Renderer* renderer);
 void addController(int id);
+void pushObject(std::vector<std::unique_ptr<ChimpObject>>& objects, SDL_Texture* texture, SDL_Rect rect,
+                SDL_Renderer* renderer, int x, int y, int tilesX, int tilesY);
+void pushMobile(std::vector<std::unique_ptr<ChimpObject>>& objects, SDL_Texture* texture, SDL_Rect rect,
+                SDL_Renderer* renderer, int x, int y, int tilesX, int tilesY);
 
 int main(int argc, char **argv)
 {
@@ -99,10 +104,12 @@ int main(int argc, char **argv)
     bool quit = false;
     bool keyJumpPressed = false;
     ChimpMobile player(textures[0], textureRects[0], renderer, SCREEN_WIDTH>>1, 30, 1, 1);
-    std::vector<ChimpObject> worldObjects;
-    worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 150, 8, 1) );
-    worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 0,
-                                        SCREEN_WIDTH / textureRects[1].w + 1, 3) );
+    std::vector< std::unique_ptr<ChimpObject> > worldObjects;
+    pushObject(worldObjects, textures[1], textureRects[1], renderer, 0, 150, 8, 1);
+    pushObject(worldObjects, textures[1], textureRects[1], renderer, -SCREEN_WIDTH, 0,
+               SCREEN_WIDTH * 3 / textureRects[1].w + 1, 3);
+    pushMobile(worldObjects, textures[2], textureRects[2], renderer, 100, 30, 1, 1);
+    (*worldObjects.back()).runRight();
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
@@ -198,9 +205,12 @@ int main(int argc, char **argv)
         }
         
         SDL_RenderClear(renderer);
-        for(ChimpObject& obj : worldObjects)
-            obj.render();
-        player.update(&worldObjects);
+        for(std::unique_ptr<ChimpObject>& obj : worldObjects)
+        {
+            (*obj).update(worldObjects);
+            (*obj).render();
+        }
+        player.update(worldObjects);
         player.render();
         SDL_RenderPresent(renderer);
         
@@ -286,6 +296,18 @@ bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect
         }
     }
 }*/
+
+void pushObject(std::vector<std::unique_ptr<ChimpObject>>& objects, SDL_Texture* texture, SDL_Rect rect,
+                SDL_Renderer* renderer, int x, int y, int tilesX, int tilesY)
+{
+    objects.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(texture, rect, renderer, x, y, tilesX, tilesY) ));
+}
+
+void pushMobile(std::vector<std::unique_ptr<ChimpObject>>& objects, SDL_Texture* texture, SDL_Rect rect,
+                SDL_Renderer* renderer, int x, int y, int tilesX, int tilesY)
+{
+    objects.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(texture, rect, renderer, x, y, tilesX, tilesY) ));
+}
 
 
 

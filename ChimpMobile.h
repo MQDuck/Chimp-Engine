@@ -20,15 +20,18 @@
 #ifndef CHIMPMOBILE_H
 #define CHIMPMOBILE_H
 
+#include <memory>
 #include <vector>
 #include "ChimpObject.h"
 
 class ChimpMobile : public ChimpObject
 {
 private:
-    float accelerationY, velocityX, velocityY;
     bool runningRight, runningLeft, doubleJumped, sprinting;
-    int standing;
+    ChimpObject* platform; // pointer to object this mobile is standing on, nullptr if none
+
+public:
+    float accelerationY, velocityX, velocityY;
     
 public:
     ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY);
@@ -47,7 +50,7 @@ public:
     void sprint();
     void stopSprinting();
 
-    void update(std::vector<ChimpObject>* objects);
+    void update(std::vector< std::unique_ptr<ChimpObject> >& objects);
 };
 
 #endif // CHIMPMOBILE_H

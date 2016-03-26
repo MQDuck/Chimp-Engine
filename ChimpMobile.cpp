@@ -34,7 +34,7 @@ ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend
     runningLeft = false;
     doubleJumped = false;
     sprinting = false;
-    standing = -1;
+    platform = nullptr;
 }
 
 void ChimpMobile::runRight()
@@ -65,7 +65,7 @@ void ChimpMobile::stopRunning()
 
 void ChimpMobile::accelerateRight()
 {
-    if(sprinting)
+    if(sprinting && velocityX > -APPROX_ZERO_FLOAT)
         velocityX += RUN_ACCEL*SPRINT_FACTOR - velocityX*RESISTANCE_X;
     else
         velocityX += RUN_ACCEL - velocityX*RESISTANCE_X;
@@ -73,7 +73,7 @@ void ChimpMobile::accelerateRight()
 
 void ChimpMobile::accelerateLeft()
 {
-    if(sprinting)
+    if(sprinting && velocityX < APPROX_ZERO_FLOAT)
         velocityX += -RUN_ACCEL*SPRINT_FACTOR - velocityX*RESISTANCE_X;
     else
         velocityX += -RUN_ACCEL - velocityX * RESISTANCE_X;
@@ -83,7 +83,7 @@ void ChimpMobile::jump()
 {
     if(!doubleJumped)
     {
-        if(standing == -1)
+        if(platform == nullptr)
         {
             doubleJumped = true;
             velocityY = DOUBLE_JUMP_VELOCITY;
@@ -91,7 +91,7 @@ void ChimpMobile::jump()
         else
         {
             velocityY = JUMP_IMPULSE;
-            standing = -1;
+            platform = nullptr;
         }
         accelerationY = JUMP_ACCEL + GRAVITY;
     }
@@ -106,7 +106,7 @@ void ChimpMobile::stopJumping()
 void ChimpMobile::sprint() { sprinting = true; }
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
-void ChimpMobile::update(std::vector<ChimpObject>* objects)
+void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject> >& objects)
 {
     if(runningRight)
         accelerateRight();
@@ -122,7 +122,6 @@ void ChimpMobile::update(std::vector<ChimpObject>* objects)
         velocityY = 0;
         positionRect.y = SCREEN_HEIGHT - textureRect.h;
         doubleJumped = false;
-        standing = 0;
     }
     else
     {
@@ -130,20 +129,20 @@ void ChimpMobile::update(std::vector<ChimpObject>* objects)
             accelerationY = GRAVITY;
         
         // (falling OR moved off previous plaform) AND not at bottom of screen
-        if(   (velocityY > 0 || ( standing != -1 && !touchesAtBottom((*objects)[standing])) )
+        if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
            && !approxZeroF(SCREEN_HEIGHT - positionRect.y - height) )
         {
             accelerationY = GRAVITY;
-            standing = -1;
-            for(ChimpObject& obj : *objects)
+            platform = nullptr;
+            for(std::unique_ptr<ChimpObject>& obj : objects)
             {
-                if( touchesAtBottom(obj) )
+                if( touchesAtBottom(*obj) )
                 {
                     accelerationY = 0;
                     velocityY = 0;
-                    positionRect.y = obj.getPosRectY() - positionRect.h;
+                    positionRect.y = (*obj).getPosRectY() - positionRect.h;
                     doubleJumped = false;
-                    standing = 0;
+                    platform = &*obj;
                     break;
                 }
             }
