@@ -2,6 +2,7 @@
 #define CLEANUP_H
 
 #include <utility>
+#include <vector>
 #include <SDL2/SDL.h>
 
 /*
@@ -10,7 +11,7 @@
  */
 
 template<typename T, typename... Args>
-void cleanup(T *t, Args&&... args)
+void cleanup(T* t, Args&&... args)
 {
 	//Cleanup the first item in the list
 	cleanup(t);
@@ -29,38 +30,59 @@ void cleanup(T *t, Args&&... args)
  */
 
 template<>
-inline void cleanup<SDL_Window>(SDL_Window* win)
+inline void cleanup<SDL_Window>(SDL_Window* window)
 {
-	if (win)
-        SDL_DestroyWindow(win);
+	if (window)
+        SDL_DestroyWindow(window);
 }
 
 template<>
-inline void cleanup<SDL_Renderer>(SDL_Renderer* ren)
+inline void cleanup<SDL_Renderer>(SDL_Renderer* renderer)
 {
-	if (ren)
-        SDL_DestroyRenderer(ren);
+	if (renderer)
+        SDL_DestroyRenderer(renderer);
 }
 
 template<>
-inline void cleanup<SDL_Texture>(SDL_Texture* tex)
+inline void cleanup<SDL_Texture>(SDL_Texture* texture)
 {
-	if (tex)
-        SDL_DestroyTexture(tex);
+	if (texture)
+        SDL_DestroyTexture(texture);
 }
 
 template<>
-inline void cleanup<SDL_Surface>(SDL_Surface* surf)
+inline void cleanup<SDL_Surface>(SDL_Surface* surface)
 {
-	if (surf)
-        SDL_FreeSurface(surf);
+	if (surface)
+        SDL_FreeSurface(surface);
 }
 
 template<>
-inline void cleanup<SDL_Joystick>(SDL_Joystick* joy)
+inline void cleanup<SDL_Joystick>(SDL_Joystick* joystick)
 {
-    if(joy)
-        SDL_JoystickClose(joy);
+    if(joystick)
+        SDL_JoystickClose(joystick);
+}
+
+template<>
+inline void cleanup<SDL_GameController>(SDL_GameController* controller)
+{
+    if(controller)
+        SDL_GameControllerClose(controller);
+}
+
+template<>
+inline void cleanup<std::vector<SDL_Texture*>>(std::vector<SDL_Texture*>* textures)
+{
+    for(SDL_Texture* tex : *textures)
+        cleanup(tex);
+}
+
+template<>
+inline void cleanup<std::vector<SDL_GameController*>>(std::vector<SDL_GameController*>* textures)
+{
+    for(SDL_GameController* tex : *textures)
+        cleanup(tex);
 }
 
 #endif

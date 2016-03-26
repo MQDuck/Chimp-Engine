@@ -53,7 +53,14 @@ public:
     inline int getPosRectW() { return positionRect.w; }
     inline int getPosRectH() { return positionRect.h; }
     
+    bool touches(const ChimpObject& other);
+    bool touchesAtBottom(const ChimpObject& other);
+    
     void render();
+    
+protected:
+    inline static bool approxZeroF(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }
+    inline static bool approxZeroI(const int i) { return i > -APPROX_ZERO_Y && i < APPROX_ZERO_Y; }
 };
 
 #endif // CHIMPOBJECT_H

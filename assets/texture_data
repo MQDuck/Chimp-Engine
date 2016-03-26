@@ -3,3 +3,4 @@ Chimp Out! texture metadata
 ;2;                      number of textures
 ;player.png;0;0;68;97;   texture 0
 ;platform.png;0;0;20;10; texture 1
+;baddie.png;0;0;68;45;   texture 2

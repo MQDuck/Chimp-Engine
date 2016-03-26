@@ -27,7 +27,8 @@ class ChimpMobile : public ChimpObject
 {
 private:
     float accelerationY, velocityX, velocityY;
-    bool runningRight, runningLeft, doubleJumped, standing, sprinting;
+    bool runningRight, runningLeft, doubleJumped, sprinting;
+    int standing;
     
 public:
     ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY);
@@ -46,9 +47,7 @@ public:
     void sprint();
     void stopSprinting();
 
-    void render(std::vector<ChimpObject>* objects);
-private:
-    inline static bool approxZero(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }
+    void update(std::vector<ChimpObject>* objects);
 };
 
 #endif // CHIMPMOBILE_H

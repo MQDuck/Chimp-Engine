@@ -83,9 +83,7 @@ int main(int argc, char **argv)
     }*/
     if( !loadChimpTextures(textures, textureRects, renderer) )
     {
-        for(SDL_Texture* tex : textures)
-            cleanup(tex);
-        cleanup(window, renderer);
+        cleanup(window, renderer, &textures);
         SDL_Quit();
         return 1;
     }
@@ -102,7 +100,7 @@ int main(int argc, char **argv)
     bool keyJumpPressed = false;
     ChimpMobile player(textures[0], textureRects[0], renderer, SCREEN_WIDTH>>1, 30, 1, 1);
     std::vector<ChimpObject> worldObjects;
-    worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 100, 8, 1) );
+    worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 150, 8, 1) );
     worldObjects.push_back( ChimpObject(textures[1], textureRects[1], renderer, 0, 0,
                                         SCREEN_WIDTH / textureRects[1].w + 1, 3) );
     
@@ -202,7 +200,8 @@ int main(int argc, char **argv)
         SDL_RenderClear(renderer);
         for(ChimpObject& obj : worldObjects)
             obj.render();
-        player.render(&worldObjects);
+        player.update(&worldObjects);
+        player.render();
         SDL_RenderPresent(renderer);
         
         SDL_Delay(1);

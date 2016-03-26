@@ -45,6 +45,59 @@ void ChimpObject::render()
         }
 }
 
+bool ChimpObject::touches(const ChimpObject &other)
+{
+    if(positionRect.x          > other.positionRect.x + other.width)
+    {
+        //cout << "returning false" << endl;
+        return false;
+    }
+    if(positionRect.x + width  < other.positionRect.x)
+    {
+        //cout << "returning false" << endl;
+        return false;
+    }
+    if(positionRect.y          > other.positionRect.y + other.height)
+    {
+        //cout << "returning false" << endl;
+        return false;
+    }
+    if(positionRect.y + height < other.positionRect.y)
+    {
+        //cout << "returning false" << endl;
+        return false;
+    }
+    return true;
+}
+
+bool ChimpObject::touchesAtBottom(const ChimpObject &other)
+{
+    if( !approxZeroI(positionRect.y + height - other.positionRect.y) )
+        return false;
+    if(positionRect.x          > other.positionRect.x + other.width)
+    {
+        //cout << "returning false" << endl;
+        return false;
+    }
+    if(positionRect.x + width  < other.positionRect.x)
+    {
+        //cout << "returning false" << endl;
+        return false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
