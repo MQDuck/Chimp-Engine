@@ -19,14 +19,14 @@
 
 #include "ChimpMobile.h"
 
-ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY)
-    : ChimpMobile(tex, texRect, rend, positionX, positionY, 1, 1) {}
+ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend, const int positionX, const int positionY)
+    : ChimpMobile(tex, texRect, collRect, rend, positionX, positionY, 1, 1) {}
 
-ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX,
-                         const int positionY, const int tileX, const int tileY)
-    : ChimpObject(tex, texRect, rend, positionX, positionY, tileX, tileY)
+ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend,
+                         const int positionX, const int positionY, const int tileX, const int tileY)
+    : ChimpObject(tex, texRect, collRect, rend, positionX, positionY, tileX, tileY)
 {
-    accelerationY = 0;
+    accelerationY = GRAVITY;
     velocityX = 0;
     velocityY = GRAVITY;
     runningRight = false;
@@ -113,7 +113,7 @@ void ChimpMobile::jump()
 
 void ChimpMobile::stopJumping()
 {
-    if(velocityY < 0)
+    if(!platform)
         accelerationY = GRAVITY;
 }
 
@@ -147,7 +147,7 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
             {
                 accelerationY = 0;
                 velocityY = 0;
-                positionRect.y = (*obj).getPosRectY() - positionRect.h;
+                positionRect.y = (*obj).getCollisionTop() - height + collisionRect.h;
                 doubleJumped = false;
                 platform = &*obj;
                 break;
@@ -161,28 +161,29 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     if(platform)
     {
         positionRect.x += round( platform->getVelocityX() ); // Rounding might not be necessary
-        positionRect.y = platform->getPosRectY() - height;
+        //positionRect.y = platform->getPosRectY() - height;
+        positionRect.y = platform->getCollisionTop() - height + collisionRect.h;
     }
     
-    if(screenBoundLeft && positionRect.x < 0)
+    if(screenBoundLeft && getCollisionLeft() < 0)
     {
         velocityX = 0;
-        positionRect.x = 0;
+        positionRect.x = -collisionRect.x;
     }
-    else if(screenBoundRight && positionRect.x+width > SCREEN_WIDTH)
+    else if(screenBoundRight && getCollisionRight() > SCREEN_WIDTH)
     {
         velocityX = 0;
-        positionRect.x = SCREEN_WIDTH - width;
+        positionRect.x = SCREEN_WIDTH - width + collisionRect.w;
     }
-    else if(screenBoundTop && positionRect.y < 0)
+    else if(screenBoundTop && getCollisionTop() < 0)
     {
         velocityY = 0;
-        positionRect.y = 0;
+        positionRect.y = -collisionRect.y;
     }
-    else if(screenBoundBottom && positionRect.y+height > SCREEN_HEIGHT)
+    else if(screenBoundBottom && getCollisionBottom() > SCREEN_HEIGHT)
     {
         velocityY = 0;
-        positionRect.y = SCREEN_HEIGHT - height;
+        positionRect.y = SCREEN_HEIGHT - height + collisionRect.h;
     }
 }
 
@@ -195,7 +196,7 @@ void ChimpMobile::setRunImpulse(const float impulse)
 void ChimpMobile::setResistanceY(const float resistance)
 {
     resistance_y = resistance;
-    approx_zero_y = int( ceil(4.0 * GRAVITY / resistance_y / 4.0) ); // i.e. half terminal Y velocity
+    approx_zero_y = int( ceil(GRAVITY / resistance_y * APPROX_ZERO_Y_FACTOR) ); // i.e. half terminal Y velocity
 }
 
 

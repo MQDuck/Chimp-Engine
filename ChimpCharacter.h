@@ -30,10 +30,11 @@ protected:
     int maxHealth, health, friends, enemies;
     
 public:
-    ChimpCharacter(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY,
-                   const int tilX, const int tilY, int maxH, int frnds, int enms);
+    ChimpCharacter(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend,
+                   const int positionX, const int positionY, const int tilX, const int tilY, int maxH, int frnds,
+                   int enms);
     
-    int getHealth() { return health; }
+    int getHealth() const { return health; }
     void setHealth(const int heal) { health = heal; }
     
     void update(std::vector<std::unique_ptr<ChimpObject>>& objects);

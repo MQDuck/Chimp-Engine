@@ -19,20 +19,21 @@
 
 #include "ChimpObject.h"
 
-ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX,
-                         const int positionY)
-    : ChimpObject(tex, texRect, rend, positionX, positionY, 1, 1) {}
+ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend,
+                         const int positionX, const int positionY)
+    : ChimpObject(tex, texRect, collRect, rend, positionX, positionY, 1, 1) {}
 
-ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX,
-                         const int positionY, const int tilesX, const int tilesY)
-    : texture(tex), textureRect(texRect), renderer(rend), width(textureRect.w*tilesX), height(textureRect.h*tilesY)
+ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend,
+                         const int positionX, const int positionY, const int tilesX, const int tilesY)
+    : texture(tex), textureRect(texRect), collisionRect(collRect), renderer(rend), width(textureRect.w*tilesX),
+      height(textureRect.h*tilesY)
 {
     positionRect.w = textureRect.w;
     positionRect.h = textureRect.h;
     positionRect.x = positionX - (positionRect.w >> 1);
     positionRect.y = SCREEN_HEIGHT - positionY - height;
     approx_zero_float = RUN_IMPULSE / 4.0;
-    approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y / 2.0) );
+    approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y * APPROX_ZERO_Y_FACTOR) );
 }
 
 void ChimpObject::render()
@@ -47,35 +48,28 @@ void ChimpObject::render()
         }
 }
 
-bool ChimpObject::touches(const ChimpObject &other)
+bool ChimpObject::touches(const ChimpObject &other) const
 {
-    /*if(positionRect.x          > other.positionRect.x + other.width)
-        return false;
-    if(positionRect.x + width  < other.positionRect.x)
-        return false;
-    if(positionRect.y          > other.positionRect.y + other.height)
-        return false;
-    if(positionRect.y + height < other.positionRect.y)
-        return false;
-    return true;*/
-    return    positionRect.x          <= other.positionRect.x + other.width
+    /*return    positionRect.x          <= other.positionRect.x + other.width
            && positionRect.x + width  >= other.positionRect.x
            && positionRect.y          <= other.positionRect.y + other.height
-           && positionRect.y + height >= other.positionRect.y;
+           && positionRect.y + height >= other.positionRect.y;*/
+    
+    return    getCollisionLeft()   <= other.getCollisionRight()
+           && getCollisionRight()  >= other.getCollisionLeft()
+           && getCollisionTop()    <= other.getCollisionBottom()
+           && getCollisionBottom() >= other.getCollisionTop();
 }
 
-bool ChimpObject::touchesAtBottom(const ChimpObject& other)
+bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
 {
-    /*if( !approxZeroI(positionRect.y + height - other.positionRect.y) )
-        return false;
-    if(positionRect.x          > other.positionRect.x + other.width)
-        return false;
-    if(positionRect.x + width  < other.positionRect.x)
-        return false;*/
-    
-    return    approxZeroI(positionRect.y + height - other.positionRect.y)
+    /*return    approxZeroI(positionRect.y + height - other.positionRect.y)
            && positionRect.x         <= other.positionRect.x + other.width
-           && positionRect.x + width >= other.positionRect.x;
+           && positionRect.x + width >= other.positionRect.x;*/
+    
+    return    approxZeroI( getCollisionBottom() - other.getCollisionTop() )
+           && getCollisionLeft()  <= other.getCollisionRight()
+           && getCollisionRight() >= other.getCollisionLeft();
 }
 
 

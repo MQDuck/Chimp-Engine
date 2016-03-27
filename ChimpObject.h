@@ -37,26 +37,35 @@ protected:
     SDL_Texture* texture;
     SDL_Rect textureRect;
     SDL_Renderer* renderer;
-    SDL_Rect positionRect;
+    SDL_Rect positionRect, collisionRect;
     const int width, height;
     float approx_zero_float, approx_zero_y;
     
 public:
-    ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY);
-    ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY,
-                const int tilesX, const int tilesY);
+    ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend, const int positionX,
+                const int positionY);
+    ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend, const int positionX,
+                const int positionY, const int tilesX, const int tilesY);
     
-    inline int getX() { return positionRect.x + (positionRect.w >> 1); }
-    inline int getY() { return SCREEN_HEIGHT - positionRect.y - positionRect.h; }
-    inline int getWidth() { return width; }
-    inline int getHeight() { return height; }
-    inline int getPosRectX() { return positionRect.x; }
-    inline int getPosRectY() { return positionRect.y; }
-    inline int getPosRectW() { return positionRect.w; }
-    inline int getPosRectH() { return positionRect.h; }
+    inline int getX() const { return positionRect.x + (positionRect.w >> 1); }
+    inline int getY() const { return SCREEN_HEIGHT - positionRect.y - positionRect.h; }
+    inline int getWidth() const { return width; }
+    inline int getHeight() const { return height; }
+    inline int getPosRectX() const { return positionRect.x; }
+    inline int getPosRectY() const { return positionRect.y; }
+    inline int getPosRectW() const { return positionRect.w; }
+    inline int getPosRectH() const { return positionRect.h; }
+    inline int getCollisionLeft() const { return positionRect.x + collisionRect.x; }
+    inline int getCollisionRight() const { return positionRect.x + width - collisionRect.w; }
+    inline int getCollisionTop() const { return positionRect.y + collisionRect.y; }
+    inline int getCollisionBottom() const {return positionRect.y + height - collisionRect.h; }
+    /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
+    inline int getCollisionSizeRight() const { return collisionRect.w; }
+    inline int getCollisionSizeTop() const { return collisionRect.y; }
+    inline int getCollisionSizeBottom() const { return collisionRect.h; }*/
     
-    bool touches(const ChimpObject& other);
-    bool touchesAtBottom(const ChimpObject& other);
+    bool touches(const ChimpObject& other) const;
+    bool touchesAtBottom(const ChimpObject& other) const;
     
     void render();
     
@@ -65,40 +74,40 @@ public:
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"
-    virtual bool isJumper() { return false; }
+    virtual bool isJumper() const { return false; }
     virtual void setJumper(bool b) {}
-    virtual float getAccelerationY() { return 0; }
+    virtual float getAccelerationY() const { return 0; }
     virtual void setAccelerationY(const float accel) {}
-    virtual float getVelocityX() { return 0; }
+    virtual float getVelocityX() const { return 0; }
     virtual void setVelocityX(const float velocity) {}
-    virtual float getVelocityY() { return 0; }
+    virtual float getVelocityY() const { return 0; }
     virtual void setVelocityY(const float velocity) {}
     virtual void update(std::vector<std::unique_ptr<ChimpObject>>& objects) {}
     virtual void runRight() {}
     virtual void runLeft() {}
-    virtual float getRunImpulse() { return 0; }
+    virtual float getRunImpulse() const { return 0; }
     virtual void setRunImpulse(const float impulse) {}
-    virtual float getRunAccel() { return 0; }
+    virtual float getRunAccel() const { return 0; }
     virtual void setRunAccel(const float accel) {}
-    virtual float getJumpImpulse() { return 0; }
+    virtual float getJumpImpulse() const { return 0; }
     virtual void setJumpImpulse(const float impulse) {}
-    virtual float getDoubleJumpFraction() { return 0; }
+    virtual float getDoubleJumpFraction() const { return 0; }
     virtual void setDoubleJumpFraction(const float fraction) {}
-    virtual float getJumpAccel() { return 0; }
+    virtual float getJumpAccel() const { return 0; }
     virtual void setJumpAccel(const float accel) {}
-    virtual float getStopFactor() { return 0; }
+    virtual float getStopFactor() const { return 0; }
     virtual void setStopFactor(const float factor) {}
-    virtual float getSprintFactor() { return 0; }
+    virtual float getSprintFactor() const { return 0; }
     virtual void setSprintFactor(const float factor) {}
-    virtual float getResistanceX() { return 0; }
+    virtual float getResistanceX() const { return 0; }
     virtual void setResistanceX(const float resistance) {}
-    virtual float getResistanceY() { return 0; }
+    virtual float getResistanceY() const { return 0; }
     virtual void setResistanceY(const float resistance) {}
     #pragma GCC diagnostic pop
     
 protected:
-    inline bool approxZeroF(const float f) { return f > -approx_zero_float && f < approx_zero_float; }
-    inline bool approxZeroI(const int i) { return i > -approx_zero_y && i < approx_zero_y; }
+    inline bool approxZeroF(const float f) const { return f > -approx_zero_float && f < approx_zero_float; }
+    inline bool approxZeroI(const int i) const { return i > -approx_zero_y && i < approx_zero_y; }
 };
 
 #endif // CHIMPOBJECT_H
