@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 /*
  * Recurse through the list of arguments to clean up, cleaning up
@@ -69,6 +70,13 @@ inline void cleanup<SDL_GameController>(SDL_GameController* controller)
 {
     if(controller)
         SDL_GameControllerClose(controller);
+}
+
+template<>
+inline void cleanup<TTF_Font>(TTF_Font* font)
+{
+    if(font)
+        TTF_CloseFont(font);
 }
 
 template<>

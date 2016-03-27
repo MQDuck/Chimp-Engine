@@ -39,6 +39,7 @@ protected:
     SDL_Renderer* renderer;
     SDL_Rect positionRect;
     const int width, height;
+    float approx_zero_float, approx_zero_y;
     
 public:
     ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend, const int positionX, const int positionY);
@@ -59,13 +60,60 @@ public:
     
     void render();
     
-    virtual void update(std::vector< std::unique_ptr<ChimpObject> >& objects) {}
+    float getApproxZeroFloat() { return approx_zero_float; }
+    float getApproxZeroY() { return approx_zero_y; }
+    
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
+    virtual bool isJumper() { return false; }
+    virtual void setJumper(bool b) {}
+    virtual float getAccelerationY() { return 0; }
+    virtual void setAccelerationY(const float accel) {}
+    virtual float getVelocityX() { return 0; }
+    virtual void setVelocityX(const float velocity) {}
+    virtual float getVelocityY() { return 0; }
+    virtual void setVelocityY(const float velocity) {}
+    virtual void update(std::vector<std::unique_ptr<ChimpObject>>& objects) {}
     virtual void runRight() {}
-    virtual void runLeft() {cout << "why?" << endl;}
+    virtual void runLeft() {}
+    virtual float getRunImpulse() { return 0; }
+    virtual void setRunImpulse(const float impulse) {}
+    virtual float getRunAccel() { return 0; }
+    virtual void setRunAccel(const float accel) {}
+    virtual float getJumpImpulse() { return 0; }
+    virtual void setJumpImpulse(const float impulse) {}
+    virtual float getDoubleJumpFraction() { return 0; }
+    virtual void setDoubleJumpFraction(const float fraction) {}
+    virtual float getJumpAccel() { return 0; }
+    virtual void setJumpAccel(const float accel) {}
+    virtual float getStopFactor() { return 0; }
+    virtual void setStopFactor(const float factor) {}
+    virtual float getSprintFactor() { return 0; }
+    virtual void setSprintFactor(const float factor) {}
+    virtual float getResistanceX() { return 0; }
+    virtual void setResistanceX(const float resistance) {}
+    virtual float getResistanceY() { return 0; }
+    virtual void setResistanceY(const float resistance) {}
+    #pragma GCC diagnostic pop
     
 protected:
-    inline static bool approxZeroF(const float f) { return f > -APPROX_ZERO_FLOAT && f < APPROX_ZERO_FLOAT; }
-    inline static bool approxZeroI(const int i) { return i > -APPROX_ZERO_Y && i < APPROX_ZERO_Y; }
+    inline bool approxZeroF(const float f) { return f > -approx_zero_float && f < approx_zero_float; }
+    inline bool approxZeroI(const int i) { return i > -approx_zero_y && i < approx_zero_y; }
 };
 
 #endif // CHIMPOBJECT_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -31,6 +31,8 @@ ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend
     positionRect.h = textureRect.h;
     positionRect.x = positionX - (positionRect.w >> 1);
     positionRect.y = SCREEN_HEIGHT - positionY - height;
+    approx_zero_float = RUN_IMPULSE / 4.0;
+    approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y / 2.0) );
 }
 
 void ChimpObject::render()
@@ -47,44 +49,52 @@ void ChimpObject::render()
 
 bool ChimpObject::touches(const ChimpObject &other)
 {
-    if(positionRect.x          > other.positionRect.x + other.width)
-    {
-        //cout << "returning false" << endl;
+    /*if(positionRect.x          > other.positionRect.x + other.width)
         return false;
-    }
     if(positionRect.x + width  < other.positionRect.x)
-    {
-        //cout << "returning false" << endl;
         return false;
-    }
     if(positionRect.y          > other.positionRect.y + other.height)
-    {
-        //cout << "returning false" << endl;
         return false;
-    }
     if(positionRect.y + height < other.positionRect.y)
-    {
-        //cout << "returning false" << endl;
         return false;
-    }
-    return true;
+    return true;*/
+    return    positionRect.x          <= other.positionRect.x + other.width
+           && positionRect.x + width  >= other.positionRect.x
+           && positionRect.y          <= other.positionRect.y + other.height
+           && positionRect.y + height >= other.positionRect.y;
 }
 
-bool ChimpObject::touchesAtBottom(const ChimpObject &other)
+bool ChimpObject::touchesAtBottom(const ChimpObject& other)
 {
-    if( !approxZeroI(positionRect.y + height - other.positionRect.y) )
+    /*if( !approxZeroI(positionRect.y + height - other.positionRect.y) )
         return false;
     if(positionRect.x          > other.positionRect.x + other.width)
-    {
-        //cout << "returning false" << endl;
         return false;
-    }
     if(positionRect.x + width  < other.positionRect.x)
-    {
-        //cout << "returning false" << endl;
-        return false;
-    }
+        return false;*/
+    
+    return    approxZeroI(positionRect.y + height - other.positionRect.y)
+           && positionRect.x         <= other.positionRect.x + other.width
+           && positionRect.x + width >= other.positionRect.x;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

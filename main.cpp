@@ -22,7 +22,7 @@
 #include <memory>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-//#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_gamecontroller.h>
 #include <string>
 #include <vector>
@@ -30,23 +30,27 @@
 #include "ChimpConstants.h"
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
+#include "ChimpCharacter.h"
 #include "SDLUtils.h"
 
 using std::cout;
 using std::endl;
 
 
-bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect> &rects, SDL_Renderer* renderer);
+bool loadChimpTextures(std::vector<SDL_Texture*>& textures, std::vector<SDL_Rect>& rects, SDL_Renderer* renderer);
 void addController(int id);
 void pushObject(std::vector<std::unique_ptr<ChimpObject>>& objects, SDL_Texture* texture, SDL_Rect rect,
                 SDL_Renderer* renderer, int x, int y, int tilesX, int tilesY);
 void pushMobile(std::vector<std::unique_ptr<ChimpObject>>& objects, SDL_Texture* texture, SDL_Rect rect,
                 SDL_Renderer* renderer, int x, int y, int tilesX, int tilesY);
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
+    TTF_Font* font;
+    SDL_Texture* healthTex;
+    //SDL_Texture* currentHealthTex;
     std::vector<SDL_Texture*> textures;
     std::vector<SDL_Rect> textureRects;
     std::vector<SDL_GameController*> controllers;
@@ -79,20 +83,28 @@ int main(int argc, char **argv)
         SDL_Quit();
         return 1;
     }
-    /*if(TTF_Init() != 0)
+    if(TTF_Init() != 0)
     {
         logSDLError(std::cout, "TTF_Init");
         cleanup(window, renderer);
         SDL_Quit();
         return 1;
-    }*/
-    if( !loadChimpTextures(textures, textureRects, renderer) )
+    }
+    font = TTF_OpenFont( (ASSETS_PATH + FONT_FILE).c_str(), FONT_SIZE );
+    if(font == nullptr)
     {
-        cleanup(window, renderer, &textures);
+        logSDLError(std::cout, "TTF_OpenFont");
+        cleanup(window, renderer, font);
         SDL_Quit();
         return 1;
     }
-    if(SDL_GameControllerAddMappingsFromFile("gamecontrollerdb") == -1)
+    if( !loadChimpTextures(textures, textureRects, renderer) )
+    {
+        cleanup(window, renderer, font, &textures);
+        SDL_Quit();
+        return 1;
+    }
+    if(SDL_GameControllerAddMappingsFromFile( CONTROLLER_MAP_FILE.c_str() ) == -1)
         logSDLError(std::cout, "GameControllerAddMappingsFromFile");
     for(int i = 0; i < SDL_NumJoysticks(); ++i)
     {
@@ -103,16 +115,33 @@ int main(int argc, char **argv)
     SDL_Event event;
     bool quit = false;
     bool keyJumpPressed = false;
-    ChimpMobile player(textures[0], textureRects[0], renderer, SCREEN_WIDTH>>1, 30, 1, 1);
+    ChimpCharacter player(textures[0], textureRects[0], renderer, SCREEN_WIDTH>>1, 30, 1, 1, 100, FACTION_PLAYER,
+                          FACTION_BADDIES);
+    player.setScreenBoundLeft(true);
+    player.setScreenBoundRight(true);
     std::vector< std::unique_ptr<ChimpObject> > worldObjects;
-    pushObject(worldObjects, textures[1], textureRects[1], renderer, 0, 150, 8, 1);
-    pushObject(worldObjects, textures[1], textureRects[1], renderer, -SCREEN_WIDTH, 0,
-               SCREEN_WIDTH * 3 / textureRects[1].w + 1, 3);
-    pushMobile(worldObjects, textures[2], textureRects[2], renderer, 100, 30, 1, 1);
+    pushObject(worldObjects, textures[1], textureRects[1], renderer, 0, 140, 8, 1);
+    pushObject(worldObjects, textures[1], textureRects[1], renderer, SCREEN_WIDTH / 10, 0,
+               SCREEN_WIDTH / textureRects[1].w + 1, 3);
+    pushMobile(worldObjects, textures[2], textureRects[2], renderer, 0, 160, 1, 1);
+    (*worldObjects.back()).setRunAccel(RUN_ACCEL / 4.0);
     (*worldObjects.back()).runRight();
+    pushMobile(worldObjects, textures[2], textureRects[2], renderer, SCREEN_WIDTH,160, 1, 1);
+    (*worldObjects.back()).setRunAccel(RUN_ACCEL / 4.0);
+    (*worldObjects.back()).runLeft();
+    (*worldObjects.back()).setJumper(true);
+    (*worldObjects.back()).setJumpImpulse(JUMP_IMPULSE * 0.75);
+    //(*worldObjects.back()).setResistanceY(RESISTANCE_Y);
+    healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    
+    while(!quit)
+    {
+        SDL_PollEvent(&event);
+        if(event.type == SDL_CONTROLLERBUTTONDOWN && event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
+            quit = true;
+    }
+    quit = false;
     while(!quit)
     {
         while( SDL_PollEvent(&event) )
@@ -205,6 +234,7 @@ int main(int argc, char **argv)
         }
         
         SDL_RenderClear(renderer);
+                
         for(std::unique_ptr<ChimpObject>& obj : worldObjects)
         {
             (*obj).update(worldObjects);
@@ -212,6 +242,15 @@ int main(int argc, char **argv)
         }
         player.update(worldObjects);
         player.render();
+        
+        int w, h;
+        SDL_QueryTexture(healthTex, NULL, NULL, &w, &h);
+        std::string healthString = std::to_string( player.getHealth() );
+        SDL_Texture* currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
+        renderTexture(healthTex, renderer, SCREEN_WIDTH*0.4, 10);
+        renderTexture(currentHealthTex, renderer, SCREEN_WIDTH*0.4 + w, 10);
+        SDL_DestroyTexture(currentHealthTex);
+                
         SDL_RenderPresent(renderer);
         
         SDL_Delay(1);

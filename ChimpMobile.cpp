@@ -26,7 +26,6 @@ ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend
                          const int positionY, const int tileX, const int tileY)
     : ChimpObject(tex, texRect, rend, positionX, positionY, tileX, tileY)
 {
-    //accelerationX = 0;
     accelerationY = 0;
     velocityX = 0;
     velocityY = GRAVITY;
@@ -34,14 +33,29 @@ ChimpMobile::ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Renderer* rend
     runningLeft = false;
     doubleJumped = false;
     sprinting = false;
+    jumper = false;
+    screenBoundLeft = false;
+    screenBoundRight = false;
+    screenBoundTop = false;
+    screenBoundBottom = false;
     platform = nullptr;
+    
+    setRunImpulse(RUN_IMPULSE);
+    run_accel = RUN_ACCEL;
+    jump_impulse = JUMP_IMPULSE;
+    double_jump_fraction = DOUBLE_JUMP_FRACTION;
+    jump_accel = JUMP_ACCEL;
+    stop_factor = STOP_FACTOR;
+    sprint_factor = SPRINT_FACTOR;
+    resistance_x = RESISTANCE_X;
+    setResistanceY(RESISTANCE_Y);
 }
 
 void ChimpMobile::runRight()
 {
     //cout << "running right" << endl;
     if( approxZeroF(velocityX) )
-        velocityX += RUN_IMPULSE - velocityX * RESISTANCE_X;
+        velocityX += run_impulse - velocityX * resistance_x;
     runningRight = true;
     runningLeft = false;
 }
@@ -50,7 +64,7 @@ void ChimpMobile::runLeft()
 {
     //cout << "running left" << endl;
     if( approxZeroF(velocityX) )
-        velocityX -= RUN_IMPULSE - velocityX * RESISTANCE_X;
+        velocityX -= run_impulse - velocityX * resistance_x;
     runningLeft = true;
     runningRight = false;
 }
@@ -65,18 +79,18 @@ void ChimpMobile::stopRunning()
 
 void ChimpMobile::accelerateRight()
 {
-    if(sprinting && velocityX > -APPROX_ZERO_FLOAT)
-        velocityX += RUN_ACCEL*SPRINT_FACTOR - velocityX*RESISTANCE_X;
+    if(sprinting && velocityX > -approx_zero_float)
+        velocityX += run_accel*sprint_factor - velocityX*resistance_x;
     else
-        velocityX += RUN_ACCEL - velocityX*RESISTANCE_X;
+        velocityX += run_accel - velocityX*resistance_x;
 }
 
 void ChimpMobile::accelerateLeft()
 {
-    if(sprinting && velocityX < APPROX_ZERO_FLOAT)
-        velocityX += -RUN_ACCEL*SPRINT_FACTOR - velocityX*RESISTANCE_X;
+    if(sprinting && velocityX < approx_zero_float)
+        velocityX += -run_accel*sprint_factor - velocityX*resistance_x;
     else
-        velocityX += -RUN_ACCEL - velocityX * RESISTANCE_X;
+        velocityX += -run_accel - velocityX * resistance_x;
 }
 
 void ChimpMobile::jump()
@@ -86,14 +100,14 @@ void ChimpMobile::jump()
         if(platform == nullptr)
         {
             doubleJumped = true;
-            velocityY = DOUBLE_JUMP_VELOCITY;
+            velocityY = jump_impulse * double_jump_fraction;
         }
         else
         {
-            velocityY = JUMP_IMPULSE;
+            velocityY = jump_impulse;
             platform = nullptr;
         }
-        accelerationY = JUMP_ACCEL + GRAVITY;
+        accelerationY = jump_accel + GRAVITY;
     }
 }
 
@@ -106,50 +120,82 @@ void ChimpMobile::stopJumping()
 void ChimpMobile::sprint() { sprinting = true; }
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
-void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject> >& objects)
+void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
 {
     if(runningRight)
         accelerateRight();
     else if(runningLeft)
         accelerateLeft();
     else
-        velocityX *= STOP_FACTOR;
-    positionRect.x += round(velocityX); // Rounding might not be necessary
+        velocityX *= stop_factor;    
     
-    if(positionRect.y > SCREEN_HEIGHT - positionRect.h)
+    if(jumper && platform)
+        jump();
+    
+    /*if(velocityY > 0)
+        accelerationY = GRAVITY;*/
+    
+    // (falling OR moved off previous plaform) AND not at bottom of screen
+    if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
+       && !approxZeroF(SCREEN_HEIGHT - positionRect.y - height) )
     {
-        accelerationY = 0;
-        velocityY = 0;
-        positionRect.y = SCREEN_HEIGHT - textureRect.h;
-        doubleJumped = false;
-    }
-    else
-    {
-        if(velocityY > 0)
-            accelerationY = GRAVITY;
-        
-        // (falling OR moved off previous plaform) AND not at bottom of screen
-        if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
-           && !approxZeroF(SCREEN_HEIGHT - positionRect.y - height) )
+        accelerationY = GRAVITY;
+        platform = nullptr;
+        for(std::unique_ptr<ChimpObject>& obj : objects)
         {
-            accelerationY = GRAVITY;
-            platform = nullptr;
-            for(std::unique_ptr<ChimpObject>& obj : objects)
+            if( touchesAtBottom(*obj) )
             {
-                if( touchesAtBottom(*obj) )
-                {
-                    accelerationY = 0;
-                    velocityY = 0;
-                    positionRect.y = (*obj).getPosRectY() - positionRect.h;
-                    doubleJumped = false;
-                    platform = &*obj;
-                    break;
-                }
+                accelerationY = 0;
+                velocityY = 0;
+                positionRect.y = (*obj).getPosRectY() - positionRect.h;
+                doubleJumped = false;
+                platform = &*obj;
+                break;
             }
         }
-        velocityY += accelerationY - velocityY * RESISTANCE_Y;
-        positionRect.y += round(velocityY); // Rounding might not be necessary
     }
+    velocityY += accelerationY - velocityY * resistance_y;
+    
+    positionRect.x += round(velocityX); // Rounding might not be necessary    
+    positionRect.y += round(velocityY); // Rounding might not be necessary
+    if(platform)
+    {
+        positionRect.x += round( platform->getVelocityX() ); // Rounding might not be necessary
+        positionRect.y = platform->getPosRectY() - height;
+    }
+    
+    if(screenBoundLeft && positionRect.x < 0)
+    {
+        velocityX = 0;
+        positionRect.x = 0;
+    }
+    else if(screenBoundRight && positionRect.x+width > SCREEN_WIDTH)
+    {
+        velocityX = 0;
+        positionRect.x = SCREEN_WIDTH - width;
+    }
+    else if(screenBoundTop && positionRect.y < 0)
+    {
+        velocityY = 0;
+        positionRect.y = 0;
+    }
+    else if(screenBoundBottom && positionRect.y+height > SCREEN_HEIGHT)
+    {
+        velocityY = 0;
+        positionRect.y = SCREEN_HEIGHT - height;
+    }
+}
+
+void ChimpMobile::setRunImpulse(const float impulse)
+{
+    run_impulse = impulse;
+    approx_zero_float = run_impulse / 4.0;
+}
+
+void ChimpMobile::setResistanceY(const float resistance)
+{
+    resistance_y = resistance;
+    approx_zero_y = int( ceil(4.0 * GRAVITY / resistance_y / 4.0) ); // i.e. half terminal Y velocity
 }
 
 
