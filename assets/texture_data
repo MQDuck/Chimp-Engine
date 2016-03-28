@@ -1,6 +1,20 @@
-Chimp Out! texture metadata
+# Chimp Out! texture metadata
 
-;3;                                 number of textures
-;player.png;  0;0;68;97; 8; 6;12; 4;  texture 0
-;platform.png;0;0;20;10; 0; 0; 0; 0;  texture 1
-;baddie.png;  0;0;68;45;13; 0;13; 0;  texture 2
+# x: texture left x coordinate
+# y: texture top y coordinate
+# w: texture width
+# h: texture height
+# l: distance from x to hitbox left x coordinate
+# r; distance from x+w to texture right x coordinate
+# t: distance from y to texture top y coordinate
+# b: distance from y+h to texture bottom y coordinate
+# first line is the number of textures
+
+#                               x; y;  w;  h; l; r; t; b;
+;6;
+;player.png;                    0; 0; 68; 97; 8; 6;12; 4; texture 0
+;platform.png;                  0; 0; 20; 10; 0; 0; 0; 0; texture 1
+;baddie.png;                    0; 0; 68; 45;13; 0;13; 0; texture 2
+;fire2.jpeg;                    0; 0;512;512; 0; 0; 0; 0; texture 3
+;MiniK_Tileset_For_Tiled.png; 256;72; 32; 56; 0; 0; 0; 0; texture 4
+;treetest.png;                  0; 0;156;134; 0; 0; 0; 0; texture 5

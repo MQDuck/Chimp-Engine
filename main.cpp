@@ -36,6 +36,8 @@
 using std::cout;
 using std::endl;
 
+typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
+
 
 bool loadChimpTextures(std::vector<SDL_Texture*>& textures, std::vector<SDL_Rect>& texRects,
                        std::vector<SDL_Rect>& collRects, SDL_Renderer* renderer);
@@ -121,22 +123,37 @@ int main(int argc, char** argv)
                           FACTION_PLAYER, FACTION_BADDIES);
     player.setScreenBoundLeft(true);
     player.setScreenBoundRight(true);
-    std::vector< std::unique_ptr<ChimpObject> > worldObjects;
+    ObjectVector worldObjects;
+    ObjectVector backgroundObjects;
+    ObjectVector foregroundObjects;
     pushObject(worldObjects, textures[1], textureRects[1], collisionRects[1], renderer, 0, 140, 8, 1);
     pushObject(worldObjects, textures[1], textureRects[1], collisionRects[1], renderer, SCREEN_WIDTH / 10, 0,
                SCREEN_WIDTH / textureRects[1].w + 1, 3);
     pushMobile(worldObjects, textures[2], textureRects[2], collisionRects[2], renderer, -35, 160, 1, 1);
     (*worldObjects.back()).setRunAccel(RUN_ACCEL / 4.0);
     (*worldObjects.back()).runRight();
-    pushMobile(worldObjects, textures[2], textureRects[2], collisionRects[2], renderer, SCREEN_WIDTH,160, 1, 1);
+    pushMobile(worldObjects, textures[2], textureRects[2], collisionRects[2], renderer, SCREEN_WIDTH, 160, 1, 1);
     (*worldObjects.back()).setRunAccel(RUN_ACCEL / 4.0);
     (*worldObjects.back()).runLeft();
     (*worldObjects.back()).setJumper(true);
     (*worldObjects.back()).setJumpImpulse(JUMP_IMPULSE * 0.75);
     //(*worldObjects.back()).setResistanceY(RESISTANCE_Y);
+    pushObject(backgroundObjects, textures[4], textureRects[4], collisionRects[4], renderer, 0, -textureRects[4].h + 25,
+                SCREEN_WIDTH/textureRects[4].w+1, 1);
+    pushObject(foregroundObjects, textures[5], textureRects[5], collisionRects[5], renderer, SCREEN_WIDTH*0.75, 10, 1, 1);
+    
     healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    
+    /*while(!quit)
+    {
+        SDL_PollEvent(&event);
+        if(event.type == SDL_CONTROLLERBUTTONDOWN && event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
+            quit = true;
+    }
+    quit = false;*/
+    
     while(!quit)
     {
         while( SDL_PollEvent(&event) )
@@ -229,14 +246,24 @@ int main(int argc, char** argv)
         }
         
         SDL_RenderClear(renderer);
-                
-        for(std::unique_ptr<ChimpObject>& obj : worldObjects)
+               
+        for(auto& obj : backgroundObjects)
+        {
+            (*obj).update(backgroundObjects);
+            (*obj).render();
+        }
+        for(auto& obj : worldObjects)
         {
             (*obj).update(worldObjects);
             (*obj).render();
         }
         player.update(worldObjects);
         player.render();
+        for(auto& obj : foregroundObjects)
+        {
+            (*obj).update(foregroundObjects);
+            (*obj).render();
+        }
         
         int w1, w2, h, x;
         std::string healthString = std::to_string( player.getHealth() );
@@ -275,9 +302,13 @@ bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect
     while(!numTexturesLoaded)
     {
         std::getline(data, line);
-        sub1 = line.find(";");
+        sub1 = line.find(TEXTURE_DELIMITER);
         if(sub1 == std::string::npos)
             continue;
+        sub2 = line.find(TEXTURE_COMMENT);
+        if(sub2 != std::string::npos && sub2 < sub1)
+            continue;
+        
         ++sub1;
         sub2 = line.find(";", sub1);
         numTextures = std::stoi( line.substr(sub1, sub2-sub1) );
@@ -293,6 +324,10 @@ bool loadChimpTextures(std::vector<SDL_Texture*> &textures, std::vector<SDL_Rect
             --i;
             continue;
         }
+        sub2 = line.find(TEXTURE_COMMENT);
+        if(sub2 != std::string::npos && sub2 < sub1)
+            continue;
+        
         ++sub1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
         textures.push_back( loadTexture(ASSETS_PATH + line.substr(sub1, sub2-sub1), renderer) );

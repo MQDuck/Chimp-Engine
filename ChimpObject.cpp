@@ -55,10 +55,10 @@ bool ChimpObject::touches(const ChimpObject &other) const
            && positionRect.y          <= other.positionRect.y + other.height
            && positionRect.y + height >= other.positionRect.y;*/
     
-    return    getCollisionLeft()   <= other.getCollisionRight()
-           && getCollisionRight()  >= other.getCollisionLeft()
-           && getCollisionTop()    <= other.getCollisionBottom()
-           && getCollisionBottom() >= other.getCollisionTop();
+    return    collisionLeft()   <= other.collisionRight()
+           && collisionRight()  >= other.collisionLeft()
+           && collisionTop()    <= other.collisionBottom()
+           && collisionBottom() >= other.collisionTop();
 }
 
 bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
@@ -67,9 +67,9 @@ bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
            && positionRect.x         <= other.positionRect.x + other.width
            && positionRect.x + width >= other.positionRect.x;*/
     
-    return    approxZeroI( getCollisionBottom() - other.getCollisionTop() )
-           && getCollisionLeft()  <= other.getCollisionRight()
-           && getCollisionRight() >= other.getCollisionLeft();
+    return    approxZeroI( collisionBottom() - other.collisionTop() )
+           && collisionLeft()  <= other.collisionRight()
+           && collisionRight() >= other.collisionLeft();
 }
 
 

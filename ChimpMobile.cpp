@@ -147,7 +147,7 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
             {
                 accelerationY = 0;
                 velocityY = 0;
-                positionRect.y = (*obj).getCollisionTop() - height + collisionRect.h;
+                positionRect.y = (*obj).collisionTop() - height + collisionRect.h;
                 doubleJumped = false;
                 platform = &*obj;
                 break;
@@ -162,25 +162,25 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     {
         positionRect.x += round( platform->getVelocityX() ); // Rounding might not be necessary
         //positionRect.y = platform->getPosRectY() - height;
-        positionRect.y = platform->getCollisionTop() - height + collisionRect.h;
+        positionRect.y = platform->collisionTop() - height + collisionRect.h;
     }
     
-    if(screenBoundLeft && getCollisionLeft() < 0)
+    if(screenBoundLeft && collisionLeft() < 0)
     {
         velocityX = 0;
         positionRect.x = -collisionRect.x;
     }
-    else if(screenBoundRight && getCollisionRight() > SCREEN_WIDTH)
+    else if(screenBoundRight && collisionRight() > SCREEN_WIDTH)
     {
         velocityX = 0;
         positionRect.x = SCREEN_WIDTH - width + collisionRect.w;
     }
-    else if(screenBoundTop && getCollisionTop() < 0)
+    else if(screenBoundTop && collisionTop() < 0)
     {
         velocityY = 0;
         positionRect.y = -collisionRect.y;
     }
-    else if(screenBoundBottom && getCollisionBottom() > SCREEN_HEIGHT)
+    else if(screenBoundBottom && collisionBottom() > SCREEN_HEIGHT)
     {
         velocityY = 0;
         positionRect.y = SCREEN_HEIGHT - height + collisionRect.h;

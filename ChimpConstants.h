@@ -25,6 +25,7 @@ static const float
 
 static /*const*/ std::string
     TEXTURE_DELIMITER      = ";",
+    TEXTURE_COMMENT        = "#",
     ASSETS_PATH            = "assets/",
     TEXTURE_METADATA_FILE  = ASSETS_PATH + "texture_data",
     FONT_FILE              = "LiberationSans-Regular.ttf",

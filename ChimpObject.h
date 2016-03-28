@@ -55,10 +55,10 @@ public:
     inline int getPosRectY() const { return positionRect.y; }
     inline int getPosRectW() const { return positionRect.w; }
     inline int getPosRectH() const { return positionRect.h; }
-    inline int getCollisionLeft() const { return positionRect.x + collisionRect.x; }
-    inline int getCollisionRight() const { return positionRect.x + width - collisionRect.w; }
-    inline int getCollisionTop() const { return positionRect.y + collisionRect.y; }
-    inline int getCollisionBottom() const {return positionRect.y + height - collisionRect.h; }
+    inline int collisionLeft() const { return positionRect.x + collisionRect.x; }
+    inline int collisionRight() const { return positionRect.x + width - collisionRect.w; }
+    inline int collisionTop() const { return positionRect.y + collisionRect.y; }
+    inline int collisionBottom() const {return positionRect.y + height - collisionRect.h; }
     /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
     inline int getCollisionSizeRight() const { return collisionRect.w; }
     inline int getCollisionSizeTop() const { return collisionRect.y; }
