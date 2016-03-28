@@ -5,6 +5,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include "ChimpTile.h"
 
 /*
  * Recurse through the list of arguments to clean up, cleaning up
@@ -80,10 +81,10 @@ inline void cleanup<TTF_Font>(TTF_Font* font)
 }
 
 template<>
-inline void cleanup<std::vector<SDL_Texture*>>(std::vector<SDL_Texture*>* textures)
+inline void cleanup<std::vector<ChimpTile>>(std::vector<ChimpTile>* textures)
 {
-    for(SDL_Texture* tex : *textures)
-        cleanup(tex);
+    for(ChimpTile& tex : *textures)
+        cleanup(tex.texture);
 }
 
 template<>

@@ -1,0 +1,29 @@
+# Chimp Out! tile metadata
+
+# The first line is the number of tiles.
+;10;
+
+# tex:     texture index (see file 'textures')
+# x:       texture left x coordinate
+# y:       texture top y coordinate
+# w:       texture width
+# h:       texture height
+# l:       distance from x to hitbox left x coordinate
+# r;       distance from x+w to hitbox right x coordinate
+# t:       distance from y to hitbox top y coordinate
+# b:       distance from y+h to hitbox bottom y coordinate
+# comment: tile index and description
+
+#tex; x; y;  w;  h; l; r;  t; b; comment
+;0;   0; 0; 68; 97; 8; 6; 12; 4; #0 player
+;1;   0; 0; 20; 10; 0; 0;  0; 0; #1 platform
+;2;   0; 0; 68; 45;13;13;  0; 0; #2 baddie
+;3;   0; 0;512;512; 0; 0;  0; 0; #3 fire
+;4; 256;72; 32; 56; 0; 0;  0; 0; #4 water
+;5;   0; 0;156;134; 0; 0;  0; 0; #5 tree
+
+;6;   0; 0;256;256;90; 0;113; 0; #6 top ground left cliff
+;6; 256; 0;256;256; 0; 0;113; 0; #7 top ground
+;6; 512; 0;256;256; 0;90;113; 0; #8 top ground right cliff
+
+;7;   0; 0;148;168;52;47;  0; 5; #9 monkey idle 1

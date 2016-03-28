@@ -1,0 +1,15 @@
+# Chimp Out! texture metadata
+
+# The first line is the number of texture files.
+;8;
+
+# The rest of the lines contain the name of a texture file.
+# The texture index is listed after each line for convenience.
+;player.png;                  #0
+;platform.png;                #1
+;baddie.png;                  #2
+;fire2.jpeg;                  #3
+;MiniK_Tileset_For_Tiled.png; #4
+;treetest.png;                #5
+;_Spritesheet.png;            #6
+;Monkey/Idle/idle1.png;       #7

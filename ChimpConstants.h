@@ -5,8 +5,8 @@
 #include <SDL2/SDL.h>
 
 static const int
-    SCREEN_WIDTH           = 800,
-    SCREEN_HEIGHT          = 600,
+    SCREEN_WIDTH           = 1200,
+    SCREEN_HEIGHT          = 690,
     JOYSTICK_DEAD_ZONE     = 8000,
     FONT_SIZE              = 24;
                                  
@@ -27,7 +27,8 @@ static /*const*/ std::string
     TEXTURE_DELIMITER      = ";",
     TEXTURE_COMMENT        = "#",
     ASSETS_PATH            = "assets/",
-    TEXTURE_METADATA_FILE  = ASSETS_PATH + "texture_data",
+    TEXTURES_FILE          = ASSETS_PATH + "textures",
+    TILES_FILE             = ASSETS_PATH + "tiles",
     FONT_FILE              = "LiberationSans-Regular.ttf",
     CONTROLLER_MAP_FILE    = "gamecontrollerdb",
     TEXT_HEALTH            = "Health: ";

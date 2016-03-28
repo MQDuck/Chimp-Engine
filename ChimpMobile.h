@@ -23,6 +23,7 @@
 #include <memory>
 #include <vector>
 #include "ChimpObject.h"
+#include "ChimpTile.h"
 
 class ChimpMobile : public ChimpObject
 {
@@ -36,9 +37,9 @@ protected:
           resistance_x, resistance_y;
     
 public:
-    ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend, const int positionX,
+    ChimpMobile(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
                 const int positionY);
-    ChimpMobile(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend, const int positionX,
+    ChimpMobile(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
                 const int positionY, const int tilX, const int tilY);
 
     void runRight();
@@ -52,7 +53,7 @@ public:
     void stopJumping();
     void sprint();
     void stopSprinting();
-    
+        
     bool isJumper() const { return jumper; }
     void setJumper(bool b) { jumper = b; }
     float getAccelerationY() const { return accelerationY; }

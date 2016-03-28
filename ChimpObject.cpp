@@ -19,32 +19,33 @@
 
 #include "ChimpObject.h"
 
-ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend,
+ChimpObject::ChimpObject(const ChimpTile& tex, SDL_Renderer* rend,
                          const int positionX, const int positionY)
-    : ChimpObject(tex, texRect, collRect, rend, positionX, positionY, 1, 1) {}
+    : ChimpObject(tex, rend, positionX, positionY, 1, 1) {}
 
-ChimpObject::ChimpObject(SDL_Texture* tex, SDL_Rect& texRect, SDL_Rect& collRect, SDL_Renderer* rend,
-                         const int positionX, const int positionY, const int tilesX, const int tilesY)
-    : texture(tex), textureRect(texRect), collisionRect(collRect), renderer(rend), width(textureRect.w*tilesX),
-      height(textureRect.h*tilesY)
+ChimpObject::ChimpObject(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
+                         const int positionY, const int tilesX, const int tilesY)
+    : texture(tex), renderer(rend), width(texture.textureRect.w*tilesX),
+      height(texture.textureRect.h*tilesY)
 {
-    positionRect.w = textureRect.w;
-    positionRect.h = textureRect.h;
-    positionRect.x = positionX - (positionRect.w >> 1);
+    positionRect.w = texture.textureRect.w;
+    positionRect.h = texture.textureRect.h;
+    positionRect.x = positionX;
     positionRect.y = SCREEN_HEIGHT - positionY - height;
     approx_zero_float = RUN_IMPULSE / 4.0;
     approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y * APPROX_ZERO_Y_FACTOR) );
+    flip = SDL_FLIP_NONE;
 }
 
 void ChimpObject::render()
 {
     SDL_Rect pos = positionRect;
-    for(int x = 0; x < width; x += textureRect.w)
-        for(int y = 0; y < height; y += textureRect.h)
+    for(int x = 0; x < width; x += texture.textureRect.w)
+        for(int y = 0; y < height; y += texture.textureRect.h)
         {
             pos.x = positionRect.x + x;
             pos.y = positionRect.y + y;
-            SDL_RenderCopy(renderer, texture, &textureRect, &pos);
+            SDL_RenderCopyEx(renderer, texture.texture, &texture.textureRect, &pos, 0, NULL, flip);
         }
 }
 
