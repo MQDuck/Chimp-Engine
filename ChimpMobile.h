@@ -37,9 +37,9 @@ protected:
           resistance_x, resistance_y;
     
 public:
-    ChimpMobile(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
+    ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                 const int positionY);
-    ChimpMobile(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
+    ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                 const int positionY, const int tilX, const int tilY);
 
     void runRight();

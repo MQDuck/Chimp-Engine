@@ -19,12 +19,12 @@
 
 #include "ChimpMobile.h"
 
-ChimpMobile::ChimpMobile(const ChimpTile& tex, SDL_Renderer* rend, const int positionX, const int positionY)
-    : ChimpMobile(tex, rend, positionX, positionY, 1, 1) {}
+ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX, const int positionY)
+    : ChimpMobile(til, rend, positionX, positionY, 1, 1) {}
 
-ChimpMobile::ChimpMobile(const ChimpTile& tex, SDL_Renderer* rend,
+ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend,
                          const int positionX, const int positionY, const int tileX, const int tileY)
-    : ChimpObject(tex, rend, positionX, positionY, tileX, tileY)
+    : ChimpObject(til, rend, positionX, positionY, tileX, tileY)
 {
     accelerationY = GRAVITY;
     velocityX = 0;
@@ -149,7 +149,7 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
             {
                 accelerationY = 0;
                 velocityY = 0;
-                positionRect.y = (*obj).collisionTop() - height + texture.collisionRect.h;
+                positionRect.y = (*obj).collisionTop() - height + tile.collisionRect.h;
                 doubleJumped = false;
                 platform = &*obj;
                 break;
@@ -164,28 +164,28 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     {
         positionRect.x += round( platform->getVelocityX() ); // Rounding might not be necessary
         //positionRect.y = platform->getPosRectY() - height;
-        positionRect.y = platform->collisionTop() - height + texture.collisionRect.h;
+        positionRect.y = platform->collisionTop() - height + tile.collisionRect.h;
     }
     
     if(screenBoundLeft && collisionLeft() < 0)
     {
         velocityX = 0;
-        positionRect.x = -texture.collisionRect.x;
+        positionRect.x = -tile.collisionRect.x;
     }
     else if(screenBoundRight && collisionRight() > SCREEN_WIDTH)
     {
         velocityX = 0;
-        positionRect.x = SCREEN_WIDTH - width + texture.collisionRect.w;
+        positionRect.x = SCREEN_WIDTH - width + tile.collisionRect.w;
     }
     else if(screenBoundTop && collisionTop() < 0)
     {
         velocityY = 0;
-        positionRect.y = -texture.collisionRect.y;
+        positionRect.y = -tile.collisionRect.y;
     }
     else if(screenBoundBottom && collisionBottom() > SCREEN_HEIGHT)
     {
         velocityY = 0;
-        positionRect.y = SCREEN_HEIGHT - height + texture.collisionRect.h;
+        positionRect.y = SCREEN_HEIGHT - height + tile.collisionRect.h;
     }
 }
 

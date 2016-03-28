@@ -19,13 +19,13 @@
 
 #include "ChimpObject.h"
 
-ChimpObject::ChimpObject(const ChimpTile& tex, SDL_Renderer* rend,
+ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend,
                          const int positionX, const int positionY)
-    : ChimpObject(tex, rend, positionX, positionY, 1, 1) {}
+    : ChimpObject(til, rend, positionX, positionY, 1, 1) {}
 
-ChimpObject::ChimpObject(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
+ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                          const int positionY, const int tilesX, const int tilesY)
-    : texture(tex), renderer(rend), width(texture.textureRect.w*tilesX),
+    : texture(til), renderer(rend), width(texture.textureRect.w*tilesX),
       height(texture.textureRect.h*tilesY)
 {
     positionRect.w = texture.textureRect.w;

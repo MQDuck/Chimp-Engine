@@ -4,14 +4,14 @@
 ;10;
 
 # tex:     texture index (see file 'textures')
-# x:       texture left x coordinate
-# y:       texture top y coordinate
+# x:       texture left x-coordinate
+# y:       texture top y-coordinate
 # w:       texture width
 # h:       texture height
-# l:       distance from x to hitbox left x coordinate
-# r;       distance from x+w to hitbox right x coordinate
-# t:       distance from y to hitbox top y coordinate
-# b:       distance from y+h to hitbox bottom y coordinate
+# l:       distance from x to hitbox left x-coordinate
+# r;       distance from x+w to hitbox right x-coordinate
+# t:       distance from y to hitbox top y-coordinate
+# b:       distance from y+h to hitbox bottom y-coordinate
 # comment: tile index and description
 
 #tex; x; y;  w;  h; l; r;  t; b; comment

@@ -30,7 +30,7 @@ protected:
     int maxHealth, health, friends, enemies;
     
 public:
-    ChimpCharacter(const ChimpTile& tex, SDL_Renderer* rend,
+    ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
                    const int positionX, const int positionY, const int tilX, const int tilY, int maxH, int frnds,
                    int enms);
     

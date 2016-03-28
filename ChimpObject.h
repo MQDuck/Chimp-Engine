@@ -37,16 +37,16 @@ class ChimpObject
 protected:
     //SDL_Texture* texture;
     SDL_Rect /*textureRect,*/ positionRect/*, collisionRect*/;
-    ChimpTile texture;
+    ChimpTile tile;
     SDL_Renderer* renderer;
     const int width, height;
     float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
     
 public:
-    ChimpObject(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
+    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                 const int positionY);
-    ChimpObject(const ChimpTile& tex, SDL_Renderer* rend, const int positionX,
+    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                 const int positionY, const int tilesX, const int tilesY);
     
     inline int getX() const { return positionRect.x + (positionRect.w >> 1); }
@@ -57,10 +57,10 @@ public:
     inline int getPosRectY() const { return positionRect.y; }
     inline int getPosRectW() const { return positionRect.w; }
     inline int getPosRectH() const { return positionRect.h; }
-    inline int collisionLeft() const { return positionRect.x + texture.collisionRect.x; }
-    inline int collisionRight() const { return positionRect.x + width - texture.collisionRect.w; }
-    inline int collisionTop() const { return positionRect.y + texture.collisionRect.y; }
-    inline int collisionBottom() const {return positionRect.y + height - texture.collisionRect.h; }
+    inline int collisionLeft() const { return positionRect.x + tile.collisionRect.x; }
+    inline int collisionRight() const { return positionRect.x + width - tile.collisionRect.w; }
+    inline int collisionTop() const { return positionRect.y + tile.collisionRect.y; }
+    inline int collisionBottom() const {return positionRect.y + height - tile.collisionRect.h; }
     /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
     inline int getCollisionSizeRight() const { return collisionRect.w; }
     inline int getCollisionSizeTop() const { return collisionRect.y; }

@@ -19,10 +19,10 @@
 
 #include "ChimpCharacter.h"
 
-ChimpCharacter::ChimpCharacter(const ChimpTile& tex, SDL_Renderer* rend,
+ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
                                const int positionX, const int positionY, const int tilX, const int tilY, int maxH,
                                int frnds, int enms)
-    : ChimpMobile(tex, rend, positionX, positionY, tilX, tilY), maxHealth(maxH), friends(frnds),
+    : ChimpMobile(til, rend, positionX, positionY, tilX, tilY), maxHealth(maxH), friends(frnds),
       enemies(enms)
 {
     health = maxHealth;
