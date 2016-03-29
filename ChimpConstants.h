@@ -21,7 +21,7 @@ static const float
     SPRINT_FACTOR          = 2.0,  // x acceleration scales by this when sprinting
     RESISTANCE_X           = 0.05, // x acceleration is reduced by the product of this and x velocity
     RESISTANCE_Y           = 0.1,  // y acceleration is reduced by the product of this and y velocity
-    APPROX_ZERO_Y_FACTOR   = 0.90;
+    APPROX_ZERO_Y_FACTOR   = 1.0;//0.90;
 
 static /*const*/ std::string
     TEXTURE_DELIMITER      = ";",

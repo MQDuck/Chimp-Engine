@@ -23,18 +23,16 @@ namespace chimp
 {
 
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend,
-                         const int positionX, const int positionY)
-    : ChimpObject(til, rend, positionX, positionY, 1, 1) {}
+                         const int pX, const int pY)
+    : ChimpObject(til, rend, pX, pY, 1, 1) {}
 
-ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
-                         const int positionY, const int tilesX, const int tilesY)
-    : tile(til), renderer(rend), x(positionX), y(positionY), width(tile.textureRect.w*tilesX),
+ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
+                         const int tilesY)
+    : tile(til), renderer(rend), width(tile.textureRect.w*tilesX),
       height(tile.textureRect.h*tilesY)
 {
-    positionRect.w = tile.textureRect.w;
-    positionRect.h = tile.textureRect.h;
-    positionRect.x = positionX;
-    positionRect.y = SCREEN_HEIGHT - positionY - height;
+    posX = pX;
+    posY = SCREEN_HEIGHT - pY - height;
     approx_zero_float = RUN_IMPULSE / 4.0;
     approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y * APPROX_ZERO_Y_FACTOR) );
     flip = SDL_FLIP_NONE;
@@ -42,26 +40,29 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pos
 
 void ChimpObject::render()
 {
-    SDL_Rect pos;
-    pos.x = positionRect.x;
-    pos.y = positionRect.y;
-    pos.w = tile.textureRect.w;
-    pos.h = tile.textureRect.h;
+    SDL_Rect rendRect;
+    // It remains to be seen if not rounding ever makes a perceivable difference. Perhaps while standing on an edge?
+    //pos.x = round(posX);
+    //pos.y = round(posY);
+    rendRect.x = posX;
+    rendRect.y = posY;
+    rendRect.w = tile.textureRect.w;
+    rendRect.h = tile.textureRect.h;
     for(int x = 0; x < width; x += tile.textureRect.w)
         for(int y = 0; y < height; y += tile.textureRect.h)
         {
-            pos.x = positionRect.x + x;
-            pos.y = positionRect.y + y;
-            SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &pos, 0, NULL, flip);
+            rendRect.x = posX + x;
+            rendRect.y = posY + y;
+            SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &rendRect, 0, NULL, flip);
         }
 }
 
 bool ChimpObject::touches(const ChimpObject &other) const
 {
-    /*return    positionRect.x          <= other.positionRect.x + other.width
-           && positionRect.x + width  >= other.positionRect.x
-           && positionRect.y          <= other.positionRect.y + other.height
-           && positionRect.y + height >= other.positionRect.y;*/
+    /*return    x          <= other.x + other.width
+           && x + width  >= other.x
+           && y          <= other.y + other.height
+           && y + height >= other.y;*/
     
     return    collisionLeft()   <= other.collisionRight()
            && collisionRight()  >= other.collisionLeft()

@@ -4,7 +4,7 @@
 ;10;
 
 # tex:     TEXture index (see file 'textures')
-# s:       inverse Scale (texture size is divided by this value)
+# s:       inverse Scale (texture size is integer divided by this value)
 # x:       texture left X-coordinate
 # y:       texture top Y-coordinate
 # w:       texture Width
@@ -16,12 +16,12 @@
 # comment: tile index and description
 
 #tex; s;  x; y;  w;  h; l; r;  t; b; comment
-;0;   1;  0; 0; 68; 97; 8; 6; 12; 0; #0 player
+;0;   1;  0; 0; 68; 97; 8; 6; 12; 2; #0 player
 ;1;   1;  0; 0; 20; 10; 0; 0;  0; 0; #1 platform
-;2;   1;  0; 0; 68; 45;13;13;  0; 0; #2 baddie
+;2;   1;  0; 0; 68; 45;13;13;  1; 1; #2 baddie
 ;3;   1;  0; 0;512;512; 0; 0;  0; 0; #3 fire
 ;4;   1;256;72; 32; 56; 0; 0;  0; 0; #4 water
-;5;   1;  0; 0;156;134; 0; 0;  0; 0; #5 tree
+;5;   1;  0; 0;156;134;27;19; 20; 9; #5 tree
 
 ;6;   2;  0; 0;256;256;90; 0;115; 0; #6 top ground left cliff
 ;6;   2;256; 0;256;256; 0; 0;115; 0; #7 top ground

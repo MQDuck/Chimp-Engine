@@ -37,33 +37,30 @@ namespace chimp
 class ChimpObject
 {
 protected:
-    //SDL_Texture* texture;
-    SDL_Rect /*textureRect,*/ positionRect/*, collisionRect*/;
     ChimpTile tile;
     SDL_Renderer* renderer;
     const int width, height;
-    float x, y, approx_zero_float;
-    int approx_zero_y;
+    float posX, posY, approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
     
 public:
-    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
-                const int positionY);
-    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
-                const int positionY, const int tilesX, const int tilesY);
+    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
+                const int pY);
+    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
+                const int pY, const int tilesX, const int tilesY);
     
-    inline int getX() const { return positionRect.x + (positionRect.w >> 1); }
-    inline int getY() const { return SCREEN_HEIGHT - positionRect.y - positionRect.h; }
+    inline int getX() const { return posX + (tile.textureRect.w >> 1); }
+    inline int getY() const { return SCREEN_HEIGHT - posY - tile.textureRect.h; }
     inline int getWidth() const { return width; }
     inline int getHeight() const { return height; }
-    inline int getPosRectX() const { return positionRect.x; }
-    inline int getPosRectY() const { return positionRect.y; }
-    inline int getPosRectW() const { return positionRect.w; }
-    inline int getPosRectH() const { return positionRect.h; }
-    inline int collisionLeft() const { return positionRect.x + tile.collisionRect.x; }
-    inline int collisionRight() const { return positionRect.x + width - tile.collisionRect.w; }
-    inline int collisionTop() const { return positionRect.y + tile.collisionRect.y; }
-    inline int collisionBottom() const {return positionRect.y + height - tile.collisionRect.h; }
+    inline int getTrueX() const { return posX; }
+    inline int getTrueY() const { return posY; }
+    inline int getTexRectW() const { return tile.textureRect.w; }
+    inline int getTexRectH() const { return tile.textureRect.h; }
+    inline int collisionLeft() const { return posX + tile.collisionRect.x; }
+    inline int collisionRight() const { return posX + width - tile.collisionRect.w; }
+    inline int collisionTop() const { return posY + tile.collisionRect.y; }
+    inline int collisionBottom() const {return posY + height - tile.collisionRect.h; }
     /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
     inline int getCollisionSizeRight() const { return collisionRect.w; }
     inline int getCollisionSizeTop() const { return collisionRect.y; }

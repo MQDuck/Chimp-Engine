@@ -357,7 +357,7 @@ chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
     (*game).pushObj(chimp::MID, tiles[1], 0, 120, 8, 1);
     (*game).pushObj(chimp::MID, tiles[1], SCREEN_WIDTH / 10, 0, SCREEN_WIDTH / tiles[1].textureRect.w + 1, 3);
     (*game).pushMob(chimp::MID, tiles[2], -35, 160, 1, 1);
-    (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 3.5);
+    (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 3.8);
     (*game).getObjBack(chimp::MID).runRight();
     (*game).pushMob(chimp::MID, tiles[2], SCREEN_WIDTH, 160, 1, 1);
     (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 4.0);

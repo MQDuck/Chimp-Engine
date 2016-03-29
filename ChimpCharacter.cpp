@@ -34,7 +34,7 @@ ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
 void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
 {
     ChimpMobile::update(objects);
-    if(positionRect.y > SCREEN_HEIGHT + height)
+    if(posY > SCREEN_HEIGHT + height)
         health = 0;
 }
 

@@ -137,15 +137,18 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     if(jumper && platform)
         jump();
     
+    if( !runningLeft && !runningRight && approxZeroF(velocityX) )
+        velocityX = 0;
+    
     /*if(velocityY > 0)
         accelerationY = GRAVITY;*/
     
     if( platform && collisionBottom() > platform->collisionTop() )
-        positionRect.y -= collisionBottom() - platform->collisionTop();
+        posY -= collisionBottom() - platform->collisionTop();
     
     // (falling OR moved off previous plaform) AND not at bottom of screen
     if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
-       && !approxZeroF(SCREEN_HEIGHT - positionRect.y - height) )
+       && !approxZeroF(SCREEN_HEIGHT - posY - height) )
     {
         accelerationY = GRAVITY;
         platform = nullptr;
@@ -155,7 +158,7 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
             {
                 accelerationY = 0;
                 velocityY = 0;
-                positionRect.y = (*obj).collisionTop() - height + tile.collisionRect.h;
+                posY = (*obj).collisionTop() - height + tile.collisionRect.h;
                 doubleJumped = false;
                 platform = &*obj;
                 break;
@@ -164,34 +167,33 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     }
     velocityY += accelerationY - velocityY * resistance_y;
     
-    positionRect.x += round(velocityX); // Rounding might not be necessary    
-    positionRect.y += round(velocityY); // Rounding might not be necessary
+    posX += velocityX;
+    posY += velocityY;
     if(platform)
     {
-        positionRect.x += round( platform->getVelocityX() ); // Rounding might not be necessary
-        //positionRect.y = platform->getPosRectY() - height;
-        positionRect.y = platform->collisionTop() - height + tile.collisionRect.h;
+        posX += platform->getVelocityX();
+        posY = platform->collisionTop() - height + tile.collisionRect.h;
     }
     
     if(screenBoundLeft && collisionLeft() < 0)
     {
         velocityX = 0;
-        positionRect.x = -tile.collisionRect.x;
+        posX = -tile.collisionRect.x;
     }
     else if(screenBoundRight && collisionRight() > SCREEN_WIDTH)
     {
         velocityX = 0;
-        positionRect.x = SCREEN_WIDTH - width + tile.collisionRect.w;
+        posX = SCREEN_WIDTH - width + tile.collisionRect.w;
     }
     else if(screenBoundTop && collisionTop() < 0)
     {
         velocityY = 0;
-        positionRect.y = -tile.collisionRect.y;
+        posY = -tile.collisionRect.y;
     }
     else if(screenBoundBottom && collisionBottom() > SCREEN_HEIGHT)
     {
         velocityY = 0;
-        positionRect.y = SCREEN_HEIGHT - height + tile.collisionRect.h;
+        posY = SCREEN_HEIGHT - height + tile.collisionRect.h;
     }
 }
 
@@ -204,7 +206,7 @@ void ChimpMobile::setRunImpulse(const float impulse)
 void ChimpMobile::setResistanceY(const float resistance)
 {
     resistance_y = resistance;
-    approx_zero_y = int( ceil(GRAVITY / resistance_y * APPROX_ZERO_Y_FACTOR) ); // i.e. half terminal Y velocity
+    approx_zero_y = GRAVITY / resistance_y * APPROX_ZERO_Y_FACTOR; // i.e. half terminal Y velocity
 }
 
 } // namespace chimp
