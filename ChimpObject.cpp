@@ -25,11 +25,11 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend,
 
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                          const int positionY, const int tilesX, const int tilesY)
-    : texture(til), renderer(rend), width(texture.textureRect.w*tilesX),
-      height(texture.textureRect.h*tilesY)
+    : tile(til), renderer(rend), width(tile.textureRect.w*tilesX),
+      height(tile.textureRect.h*tilesY)
 {
-    positionRect.w = texture.textureRect.w;
-    positionRect.h = texture.textureRect.h;
+    positionRect.w = tile.textureRect.w;
+    positionRect.h = tile.textureRect.h;
     positionRect.x = positionX;
     positionRect.y = SCREEN_HEIGHT - positionY - height;
     approx_zero_float = RUN_IMPULSE / 4.0;
@@ -40,12 +40,12 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pos
 void ChimpObject::render()
 {
     SDL_Rect pos = positionRect;
-    for(int x = 0; x < width; x += texture.textureRect.w)
-        for(int y = 0; y < height; y += texture.textureRect.h)
+    for(int x = 0; x < width; x += tile.textureRect.w)
+        for(int y = 0; y < height; y += tile.textureRect.h)
         {
             pos.x = positionRect.x + x;
             pos.y = positionRect.y + y;
-            SDL_RenderCopyEx(renderer, texture.texture, &texture.textureRect, &pos, 0, NULL, flip);
+            SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &pos, 0, NULL, flip);
         }
 }
 

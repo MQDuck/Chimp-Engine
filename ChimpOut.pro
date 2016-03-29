@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     SDLUtils.cpp \
     ChimpObject.cpp \
     ChimpMobile.cpp \
-    ChimpCharacter.cpp
+    ChimpCharacter.cpp \
+    ChimpGame.cpp
 
 HEADERS += \
     cleanup.h \
@@ -21,4 +22,5 @@ HEADERS += \
     ChimpConstants.h \
     ChimpMobile.h \
     ChimpCharacter.h \
-    ChimpTile.h
+    ChimpTile.h \
+    ChimpGame.h
