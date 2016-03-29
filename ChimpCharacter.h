@@ -20,7 +20,7 @@
 #ifndef CHIMPCHARACTER_H
 #define CHIMPCHARACTER_H
 
-
+#include "ChimpDefines.h"
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
 
@@ -34,11 +34,13 @@ protected:
     
 public:
     ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
-                   const int positionX, const int positionY, const int tilX, const int tilY, int maxH, int frnds,
-                   int enms);
+                   const int positionX, const int positionY, const int tilX, const int tilY, int maxH, Faction frnds,
+                   Faction enms);
     
     int getHealth() const { return health; }
     void setHealth(const int heal) { health = heal; }
+    inline int getFriends() const { return friends; }
+    inline int getEnemies() const { return enemies; }
     
     void update(std::vector<std::unique_ptr<ChimpObject>>& objects);
 };

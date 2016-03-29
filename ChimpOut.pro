@@ -23,4 +23,6 @@ HEADERS += \
     ChimpMobile.h \
     ChimpCharacter.h \
     ChimpTile.h \
-    ChimpGame.h
+    ChimpGame.h \
+    Coordinate.h \
+    ChimpDefines.h

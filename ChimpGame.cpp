@@ -61,6 +61,26 @@ void ChimpGame::pushMob(Layer lay, ChimpTile &til, const int x, const int y, con
     }
 }
 
+void ChimpGame::pushChar(Layer lay, ChimpTile &til, const int x, const int y, const int tilesX, const int tilesY,
+                         const int maxH, const Faction frnds, const Faction emns)
+{
+    switch(lay)
+    {
+    case BACK:
+        background.push_back(std::unique_ptr<ChimpCharacter>(
+                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, frnds, emns) ));
+        break;
+    case MID:
+        middle.push_back(std::unique_ptr<ChimpCharacter>(
+                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, frnds, emns) ));
+        break;
+    case FORE:
+        foreground.push_back(std::unique_ptr<ChimpCharacter>(
+                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, frnds, emns) ));
+        break;
+    }
+}
+
 void ChimpGame::render()
 {
     for(auto& obj : background)

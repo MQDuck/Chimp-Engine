@@ -24,7 +24,7 @@ namespace chimp
 
 ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
                                const int positionX, const int positionY, const int tilX, const int tilY, int maxH,
-                               int frnds, int enms)
+                               Faction frnds, Faction enms)
     : ChimpMobile(til, rend, positionX, positionY, tilX, tilY), maxHealth(maxH), friends(frnds),
       enemies(enms)
 {
@@ -33,8 +33,27 @@ ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
 
 void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
 {
+    for(std::unique_ptr<ChimpObject>& obj : objects)
+    {
+        if(platform == &*obj)
+            continue;
+        if( touches(*obj) && ( friends & (*obj).getEnemies()) )
+        {
+            float x = getCenterX() - (*obj).getCenterX();
+            float x2 = x*x;
+            float y = getCenterY() - (*obj).getCenterY();
+            float y2 = y*y;
+            
+            velocityX = sqrt(DAMAGE_VELOCITY / (x2+y2)) * x;
+            velocityY = sqrt(DAMAGE_VELOCITY / (x2+y2)) * y;
+            
+            health -= DAMAGE;
+        }
+    }
+    
     ChimpMobile::update(objects);
-    if(posY > SCREEN_HEIGHT + height)
+    
+    if(coord.y > SCREEN_HEIGHT + height)
         health = 0;
 }
 

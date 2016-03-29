@@ -27,6 +27,7 @@
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "ChimpTile.h"
+#include "Coordinate.h"
 
 using std::cout;
 using std::endl;
@@ -40,7 +41,8 @@ protected:
     ChimpTile tile;
     SDL_Renderer* renderer;
     const int width, height;
-    float posX, posY, approx_zero_float, approx_zero_y;
+    Coordinate coord, center;
+    float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
     
 public:
@@ -49,25 +51,27 @@ public:
     ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
                 const int pY, const int tilesX, const int tilesY);
     
-    inline int getX() const { return posX + (tile.textureRect.w >> 1); }
-    inline int getY() const { return SCREEN_HEIGHT - posY - tile.textureRect.h; }
+    inline int getX() const { return coord.x; }
+    inline int getY() const { return SCREEN_HEIGHT - coord.y - tile.textureRect.h; }
+    inline int getCenterX() const { return coord.x + center.x; }
+    inline int getCenterY() const { return coord.y + center.y; }
     inline int getWidth() const { return width; }
     inline int getHeight() const { return height; }
-    inline int getTrueX() const { return posX; }
-    inline int getTrueY() const { return posY; }
+    inline int getTrueX() const { return coord.x; }
+    inline int getTrueY() const { return coord.y; }
     inline int getTexRectW() const { return tile.textureRect.w; }
     inline int getTexRectH() const { return tile.textureRect.h; }
-    inline int collisionLeft() const { return posX + tile.collisionRect.x; }
-    inline int collisionRight() const { return posX + width - tile.collisionRect.w; }
-    inline int collisionTop() const { return posY + tile.collisionRect.y; }
-    inline int collisionBottom() const {return posY + height - tile.collisionRect.h; }
+    inline int collisionLeft() const { return coord.x + tile.collisionRect.x; }
+    inline int collisionRight() const { return coord.x + width - tile.collisionRect.w; }
+    inline int collisionTop() const { return coord.y + tile.collisionRect.y; }
+    inline int collisionBottom() const {return coord.y + height - tile.collisionRect.h; }
     /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
     inline int getCollisionSizeRight() const { return collisionRect.w; }
     inline int getCollisionSizeTop() const { return collisionRect.y; }
     inline int getCollisionSizeBottom() const { return collisionRect.h; }*/
     
-    bool touches(const ChimpObject& other) const;
-    bool touchesAtBottom(const ChimpObject& other) const;
+    inline bool touches(const ChimpObject& other) const;
+    inline bool touchesAtBottom(const ChimpObject& other) const;
     
     void render();
     
@@ -105,12 +109,30 @@ public:
     virtual void setResistanceX(const float resistance) {}
     virtual float getResistanceY() const { return 0; }
     virtual void setResistanceY(const float resistance) {}
+    virtual int getFriends() const { return 0; }
+    virtual int getEnemies() const { return 0; }
     #pragma GCC diagnostic pop
     
 protected:
     inline bool approxZeroF(const float f) const { return f > -approx_zero_float && f < approx_zero_float; }
     inline bool approxZeroI(const int i) const { return i > -approx_zero_y && i < approx_zero_y; }
 };
+
+inline bool ChimpObject::touches(const ChimpObject &other) const
+{
+    return    collisionLeft()   <= other.collisionRight()
+           && collisionRight()  >= other.collisionLeft()
+           && collisionTop()    <= other.collisionBottom()
+           && collisionBottom() >= other.collisionTop();
+}
+
+inline bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
+{
+    return    collisionBottom() <= other.collisionTop()
+           && collisionBottom() + approx_zero_y > other.collisionTop()
+           && collisionLeft()  <= other.collisionRight()
+           && collisionRight() >= other.collisionLeft();
+}
 
 } // namespace chimp
 

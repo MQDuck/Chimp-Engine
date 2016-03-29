@@ -31,8 +31,11 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     : tile(til), renderer(rend), width(tile.textureRect.w*tilesX),
       height(tile.textureRect.h*tilesY)
 {
-    posX = pX;
-    posY = SCREEN_HEIGHT - pY - height;
+    coord.x = pX;
+    coord.y = SCREEN_HEIGHT - pY - height;
+    center.x = (tile.collisionRect.x + width - tile.collisionRect.w) / 2.0;
+    center.y = (tile.collisionRect.y + height - tile.collisionRect.h) / 2.0;
+    
     approx_zero_float = RUN_IMPULSE / 4.0;
     approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y * APPROX_ZERO_Y_FACTOR) );
     flip = SDL_FLIP_NONE;
@@ -42,43 +45,19 @@ void ChimpObject::render()
 {
     SDL_Rect rendRect;
     // It remains to be seen if not rounding ever makes a perceivable difference. Perhaps while standing on an edge?
-    //pos.x = round(posX);
-    //pos.y = round(posY);
-    rendRect.x = posX;
-    rendRect.y = posY;
+    rendRect.x = round(coord.x);
+    rendRect.y = round(coord.y);
+    //rendRect.x = coord.x;
+    //rendRect.y = coord.y;
     rendRect.w = tile.textureRect.w;
     rendRect.h = tile.textureRect.h;
     for(int x = 0; x < width; x += tile.textureRect.w)
         for(int y = 0; y < height; y += tile.textureRect.h)
         {
-            rendRect.x = posX + x;
-            rendRect.y = posY + y;
+            rendRect.x = coord.x + x;
+            rendRect.y = coord.y + y;
             SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &rendRect, 0, NULL, flip);
         }
-}
-
-bool ChimpObject::touches(const ChimpObject &other) const
-{
-    /*return    x          <= other.x + other.width
-           && x + width  >= other.x
-           && y          <= other.y + other.height
-           && y + height >= other.y;*/
-    
-    return    collisionLeft()   <= other.collisionRight()
-           && collisionRight()  >= other.collisionLeft()
-           && collisionTop()    <= other.collisionBottom()
-           && collisionBottom() >= other.collisionTop();
-}
-
-bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
-{
-    /*return    approxZeroI( collisionBottom() - other.collisionTop() )
-           && collisionLeft()  <= other.collisionRight()
-           && collisionRight() >= other.collisionLeft();*/
-    return    collisionBottom() <= other.collisionTop()
-           && collisionBottom() + approx_zero_y > other.collisionTop()
-           && collisionLeft()  <= other.collisionRight()
-           && collisionRight() >= other.collisionLeft();
 }
 
 } // namespace chimp

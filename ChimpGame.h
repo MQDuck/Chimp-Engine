@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "ChimpConstants.h"
+#include "ChimpDefines.h"
 #include "ChimpTile.h"
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
@@ -15,9 +16,6 @@ namespace chimp
 {
 
 typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
-
-enum Layer { BACK, MID, FORE };
-enum Faction { FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 };
 
 class ChimpGame
 {
@@ -34,6 +32,8 @@ public:
     ChimpObject& getObjBack(Layer lay);
     void pushObj(Layer lay, ChimpTile& til, const int x, const int y, const int tilesX = 1, const int tilesY = 1);
     void pushMob(Layer lay, ChimpTile& til, const int x, const int y, const int tilesX = 1, const int tilesY = 1);
+    void pushChar(Layer lay, ChimpTile& til, const int x, const int y, const int tilesX = 1, const int tilesY = 1,
+                  const int maxH = 100, const Faction frnds = FACTION_VOID, const Faction emns = FACTION_VOID);
     
     void render();
 };

@@ -47,6 +47,8 @@ void pushObject(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* rend
                  const int tilesX, const int tilesY);
 void pushMobile(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
                 const int tilesX, const int tilesY);
+void pushCharacter(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
+                   const int tilesX, const int tilesY, int maxH, chimp::Faction friends, chimp::Faction enemies);
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
 inline void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
@@ -335,17 +337,27 @@ bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Tex
     }
 }*/
 
-void pushObject(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
+/*void pushObject(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
                  const int tilesX, const int tilesY)
 {
-    objects.push_back(std::unique_ptr<chimp::ChimpObject>( new chimp::ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
+    objects.push_back(std::unique_ptr<chimp::ChimpObject>(
+                          new chimp::ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
 }
 
 void pushMobile(ObjectVector &objects, chimp::ChimpTile &til, SDL_Renderer *renderer, const int x, const int y,
                 const int tilesX, const int tilesY)
 {
-    objects.push_back(std::unique_ptr<chimp::ChimpMobile>( new chimp::ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
+    objects.push_back(std::unique_ptr<chimp::ChimpMobile>(
+                          new chimp::ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
 }
+
+
+void pushCharacter(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
+                   const int tilesX, const int tilesY, int maxH, chimp::Faction friends, chimp::Faction enemies)
+{
+    objects.push_back(std::unique_ptr<chimp::ChimpCharacter>(
+                          new chimp::ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, friends, enemies) ));
+}*/
 
 chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
@@ -356,10 +368,11 @@ chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
     (*game).getPlayer().setScreenBoundRight(true);
     (*game).pushObj(chimp::MID, tiles[1], 0, 120, 8, 1);
     (*game).pushObj(chimp::MID, tiles[1], SCREEN_WIDTH / 10, 0, SCREEN_WIDTH / tiles[1].textureRect.w + 1, 3);
-    (*game).pushMob(chimp::MID, tiles[2], -35, 160, 1, 1);
+    (*game).pushChar(chimp::MID, tiles[2], -35, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
     (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 3.8);
     (*game).getObjBack(chimp::MID).runRight();
-    (*game).pushMob(chimp::MID, tiles[2], SCREEN_WIDTH, 160, 1, 1);
+    (*game).pushChar(chimp::MID, tiles[2], SCREEN_WIDTH, 160, 1, 1, 100, chimp::FACTION_BADDIES,
+                          chimp::FACTION_PLAYER);
     (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 4.0);
     (*game).getObjBack(chimp::MID).runLeft();
     (*game).getObjBack(chimp::MID).setJumper(true);
@@ -472,7 +485,8 @@ inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* fo
     
     SDL_QueryTexture(healthTex, NULL, NULL, &w1, &h);
     SDL_QueryTexture(currentHealthTex, NULL, NULL, &w2, &h);
-    x = (SCREEN_WIDTH - w1 - w2)>>1;
+    //x = (SCREEN_WIDTH - w1 - w2)>>1;
+    x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);
     SDL_DestroyTexture(currentHealthTex);

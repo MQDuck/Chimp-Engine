@@ -144,11 +144,11 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
         accelerationY = GRAVITY;*/
     
     if( platform && collisionBottom() > platform->collisionTop() )
-        posY -= collisionBottom() - platform->collisionTop();
+        coord.y -= collisionBottom() - platform->collisionTop();
     
     // (falling OR moved off previous plaform) AND not at bottom of screen
     if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
-       && !approxZeroF(SCREEN_HEIGHT - posY - height) )
+       && !approxZeroF(SCREEN_HEIGHT - coord.y - height) )
     {
         accelerationY = GRAVITY;
         platform = nullptr;
@@ -158,7 +158,7 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
             {
                 accelerationY = 0;
                 velocityY = 0;
-                posY = (*obj).collisionTop() - height + tile.collisionRect.h;
+                coord.y = (*obj).collisionTop() - height + tile.collisionRect.h;
                 doubleJumped = false;
                 platform = &*obj;
                 break;
@@ -167,33 +167,33 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     }
     velocityY += accelerationY - velocityY * resistance_y;
     
-    posX += velocityX;
-    posY += velocityY;
+    coord.x += velocityX;
+    coord.y += velocityY;
     if(platform)
     {
-        posX += platform->getVelocityX();
-        posY = platform->collisionTop() - height + tile.collisionRect.h;
+        coord.x += platform->getVelocityX();
+        coord.y = platform->collisionTop() - height + tile.collisionRect.h;
     }
     
     if(screenBoundLeft && collisionLeft() < 0)
     {
         velocityX = 0;
-        posX = -tile.collisionRect.x;
+        coord.x = -tile.collisionRect.x;
     }
     else if(screenBoundRight && collisionRight() > SCREEN_WIDTH)
     {
         velocityX = 0;
-        posX = SCREEN_WIDTH - width + tile.collisionRect.w;
+        coord.x = SCREEN_WIDTH - width + tile.collisionRect.w;
     }
     else if(screenBoundTop && collisionTop() < 0)
     {
         velocityY = 0;
-        posY = -tile.collisionRect.y;
+        coord.y = -tile.collisionRect.y;
     }
     else if(screenBoundBottom && collisionBottom() > SCREEN_HEIGHT)
     {
         velocityY = 0;
-        posY = SCREEN_HEIGHT - height + tile.collisionRect.h;
+        coord.y = SCREEN_HEIGHT - height + tile.collisionRect.h;
     }
 }
 
