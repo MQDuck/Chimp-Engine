@@ -24,6 +24,9 @@
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
 
+namespace chimp
+{
+
 class ChimpCharacter : public ChimpMobile
 {
 protected:
@@ -39,5 +42,7 @@ public:
     
     void update(std::vector<std::unique_ptr<ChimpObject>>& objects);
 };
+
+} // namespace chimp
 
 #endif // CHIMPCHARACTER_H

@@ -81,9 +81,9 @@ inline void cleanup<TTF_Font>(TTF_Font* font)
 }
 
 template<>
-inline void cleanup<std::vector<ChimpTile>>(std::vector<ChimpTile>* textures)
+inline void cleanup<std::vector<chimp::ChimpTile>>(std::vector<chimp::ChimpTile>* textures)
 {
-    for(ChimpTile& tex : *textures)
+    for(chimp::ChimpTile& tex : *textures)
         cleanup(tex.texture);
 }
 

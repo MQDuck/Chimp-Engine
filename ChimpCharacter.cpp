@@ -19,6 +19,9 @@
 
 #include "ChimpCharacter.h"
 
+namespace chimp
+{
+
 ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
                                const int positionX, const int positionY, const int tilX, const int tilY, int maxH,
                                int frnds, int enms)
@@ -34,6 +37,8 @@ void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     if(positionRect.y > SCREEN_HEIGHT + height)
         health = 0;
 }
+
+} // namespace chimp
 
 
 

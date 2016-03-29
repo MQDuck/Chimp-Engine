@@ -19,6 +19,9 @@
 
 #include "ChimpObject.h"
 
+namespace chimp
+{
+
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend,
                          const int positionX, const int positionY)
     : ChimpObject(til, rend, positionX, positionY, 1, 1) {}
@@ -72,6 +75,8 @@ bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
            && collisionLeft()  <= other.collisionRight()
            && collisionRight() >= other.collisionLeft();
 }
+
+} // namespace chimp
 
 
 

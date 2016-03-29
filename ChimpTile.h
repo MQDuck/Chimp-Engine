@@ -3,6 +3,8 @@
 
 #include<SDL2/SDL.h>
 
+namespace chimp
+{
 
 struct ChimpTile
 {
@@ -13,5 +15,7 @@ struct ChimpTile
         : texture(tex), textureRect(texRect), collisionRect(colRect) {}
     ChimpTile() {}
 };
+
+} // namespace chimp
 
 #endif // CHIMPTILE_H

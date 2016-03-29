@@ -38,25 +38,26 @@
 using std::cout;
 using std::endl;
 
-typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
+typedef std::vector<std::unique_ptr<chimp::ChimpObject>> ObjectVector;
 
-bool loadChimpTextures(std::vector<ChimpTile>& tiles, std::vector<SDL_Texture*>& textures, SDL_Renderer* renderer);
+bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Texture*>& textures,
+                       SDL_Renderer* renderer);
 void addController(int id);
-void pushObject(ObjectVector& objects, ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
+void pushObject(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
                  const int tilesX, const int tilesY);
-void pushMobile(ObjectVector& objects, ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
+void pushMobile(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
                 const int tilesX, const int tilesY);
 
-void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-void axisMotion(SDL_Event& event, chimp::ChimpGame* game);
+inline void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
+inline void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
+inline void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
+inline void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
+inline void axisMotion(SDL_Event& event, chimp::ChimpGame* game);
 
-void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
+inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
 
-chimp::ChimpGame* generateWorld1(std::vector<ChimpTile> &tiles, SDL_Renderer* renderer);
-chimp::ChimpGame* generateWorld2(std::vector<ChimpTile> &tiles, SDL_Renderer* renderer);
+chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
+chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
 
 int main(int argc, char** argv)
 {
@@ -65,7 +66,7 @@ int main(int argc, char** argv)
     TTF_Font* font;
     std::vector<SDL_GameController*> controllers;
     std::vector<SDL_Texture*> textures;
-    std::vector<ChimpTile> tiles;
+    std::vector<chimp::ChimpTile> tiles;
     
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
     {
@@ -182,7 +183,8 @@ int main(int argc, char** argv)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
-bool loadChimpTextures(std::vector<ChimpTile>& tiles, std::vector<SDL_Texture*>& textures, SDL_Renderer* renderer)
+bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Texture*>& textures,
+                       SDL_Renderer* renderer)
 {
     std::string line;
     int sub1, sub2;
@@ -270,7 +272,7 @@ bool loadChimpTextures(std::vector<ChimpTile>& tiles, std::vector<SDL_Texture*>&
             continue;
         }
         
-        tiles.push_back( ChimpTile() );
+        tiles.push_back( chimp::ChimpTile() );
         
         ++sub1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
@@ -327,22 +329,22 @@ bool loadChimpTextures(std::vector<ChimpTile>& tiles, std::vector<SDL_Texture*>&
     }
 }*/
 
-void pushObject(ObjectVector& objects, ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
+void pushObject(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
                  const int tilesX, const int tilesY)
 {
-    objects.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
+    objects.push_back(std::unique_ptr<chimp::ChimpObject>( new chimp::ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
 }
 
-void pushMobile(ObjectVector &objects, ChimpTile &til, SDL_Renderer *renderer, const int x, const int y,
+void pushMobile(ObjectVector &objects, chimp::ChimpTile &til, SDL_Renderer *renderer, const int x, const int y,
                 const int tilesX, const int tilesY)
 {
-    objects.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
+    objects.push_back(std::unique_ptr<chimp::ChimpMobile>( new chimp::ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
 }
 
-chimp::ChimpGame* generateWorld1(std::vector<ChimpTile> &tiles, SDL_Renderer* renderer)
+chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
-    chimp::ChimpGame* game = new chimp::ChimpGame( renderer, ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1, 400, 1, 1, 100,
-                      FACTION_PLAYER, FACTION_BADDIES) );
+    chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1,
+                                                   400, 1, 1, 100, FACTION_PLAYER, FACTION_BADDIES) );
     
     (*game).getPlayer().setScreenBoundLeft(true);
     (*game).getPlayer().setScreenBoundRight(true);
@@ -363,10 +365,10 @@ chimp::ChimpGame* generateWorld1(std::vector<ChimpTile> &tiles, SDL_Renderer* re
 }
 
 
-chimp::ChimpGame* generateWorld2(std::vector<ChimpTile> &tiles, SDL_Renderer* renderer)
+chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
-    chimp::ChimpGame* game = new chimp::ChimpGame( renderer, ChimpCharacter(tiles[9], renderer, SCREEN_WIDTH>>1, 400, 1, 1, 100,
-                      FACTION_PLAYER, FACTION_BADDIES) );
+    chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[9], renderer, SCREEN_WIDTH>>1,
+                                                   400, 1, 1, 100, FACTION_PLAYER, FACTION_BADDIES) );
     
     (*game).getPlayer().setScreenBoundLeft(true);
     (*game).getPlayer().setScreenBoundRight(true);
@@ -376,7 +378,7 @@ chimp::ChimpGame* generateWorld2(std::vector<ChimpTile> &tiles, SDL_Renderer* re
     return game;
 }
 
-void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
 {
     switch(event.key.keysym.sym)
     {
@@ -400,7 +402,7 @@ void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
     }
 }
 
-void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
 {
     switch(event.key.keysym.sym)
     {
@@ -421,7 +423,7 @@ void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
     }
 }
 
-void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
 {
     if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A && !keyJumpPressed)
     {
@@ -432,7 +434,7 @@ void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
         (*game).getPlayer().sprint();
 }
 
-void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
 {
     if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
     {
@@ -443,7 +445,7 @@ void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
         (*game).getPlayer().stopSprinting();
 }
 
-void axisMotion(SDL_Event& event, chimp::ChimpGame* game)
+inline void axisMotion(SDL_Event& event, chimp::ChimpGame* game)
 {
     if(event.caxis.axis == 0)
     {
@@ -456,7 +458,7 @@ void axisMotion(SDL_Event& event, chimp::ChimpGame* game)
     }
 }
 
-void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
+inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
 {
     int w1, w2, h, x;
     std::string healthString = std::to_string( (*game).getPlayer().getHealth() );

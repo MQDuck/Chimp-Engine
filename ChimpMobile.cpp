@@ -19,6 +19,9 @@
 
 #include "ChimpMobile.h"
 
+namespace chimp
+{
+
 ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX, const int positionY)
     : ChimpMobile(til, rend, positionX, positionY, 1, 1) {}
 
@@ -200,6 +203,8 @@ void ChimpMobile::setResistanceY(const float resistance)
     resistance_y = resistance;
     approx_zero_y = int( ceil(GRAVITY / resistance_y * APPROX_ZERO_Y_FACTOR) ); // i.e. half terminal Y velocity
 }
+
+} // namespace chimp
 
 
 
