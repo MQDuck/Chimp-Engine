@@ -36,9 +36,4 @@ static /*const*/ std::string
 static const SDL_Color
     FONT_COLOR             = {0, 0, 0, 255};
 
-// Factions::
-static const int
-    FACTION_PLAYER         = 1<<0,
-    FACTION_BADDIES        = 1<<1;
-
 #endif // CHIMPCONSTANTS_H

@@ -140,6 +140,9 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     /*if(velocityY > 0)
         accelerationY = GRAVITY;*/
     
+    if( platform && collisionBottom() > platform->collisionTop() )
+        positionRect.y -= collisionBottom() - platform->collisionTop();
+    
     // (falling OR moved off previous plaform) AND not at bottom of screen
     if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
        && !approxZeroF(SCREEN_HEIGHT - positionRect.y - height) )

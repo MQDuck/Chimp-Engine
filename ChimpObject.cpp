@@ -28,7 +28,7 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend,
 
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
                          const int positionY, const int tilesX, const int tilesY)
-    : tile(til), renderer(rend), width(tile.textureRect.w*tilesX),
+    : tile(til), renderer(rend), x(positionX), y(positionY), width(tile.textureRect.w*tilesX),
       height(tile.textureRect.h*tilesY)
 {
     positionRect.w = tile.textureRect.w;
@@ -42,7 +42,11 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pos
 
 void ChimpObject::render()
 {
-    SDL_Rect pos = positionRect;
+    SDL_Rect pos;
+    pos.x = positionRect.x;
+    pos.y = positionRect.y;
+    pos.w = tile.textureRect.w;
+    pos.h = tile.textureRect.h;
     for(int x = 0; x < width; x += tile.textureRect.w)
         for(int y = 0; y < height; y += tile.textureRect.h)
         {
@@ -67,11 +71,11 @@ bool ChimpObject::touches(const ChimpObject &other) const
 
 bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
 {
-    /*return    approxZeroI(positionRect.y + height - other.positionRect.y)
-           && positionRect.x         <= other.positionRect.x + other.width
-           && positionRect.x + width >= other.positionRect.x;*/
-    
-    return    approxZeroI( collisionBottom() - other.collisionTop() )
+    /*return    approxZeroI( collisionBottom() - other.collisionTop() )
+           && collisionLeft()  <= other.collisionRight()
+           && collisionRight() >= other.collisionLeft();*/
+    return    collisionBottom() <= other.collisionTop()
+           && collisionBottom() + approx_zero_y > other.collisionTop()
            && collisionLeft()  <= other.collisionRight()
            && collisionRight() >= other.collisionLeft();
 }

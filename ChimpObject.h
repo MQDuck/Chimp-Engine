@@ -21,7 +21,6 @@
 #define CHIMPOBJECT_H
 
 #include <SDL2/SDL.h>
-//#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <memory>
 #include "SDLUtils.h"
@@ -43,7 +42,8 @@ protected:
     ChimpTile tile;
     SDL_Renderer* renderer;
     const int width, height;
-    float approx_zero_float, approx_zero_y;
+    float x, y, approx_zero_float;
+    int approx_zero_y;
     SDL_RendererFlip flip;
     
 public:
