@@ -35,6 +35,8 @@ using std::endl;
 namespace chimp
 {
 
+enum Faction { FACTION_VOID = 0, FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 };
+
 class ChimpObject
 {
 protected:

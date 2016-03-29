@@ -15,6 +15,8 @@
 namespace chimp
 {
 
+enum Layer { BACK, MID, FORE };
+
 typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
 
 class ChimpGame
