@@ -40,10 +40,8 @@ protected:
           resistance_x, resistance_y;
     
 public:
-    ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
-                const int positionY);
-    ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX,
-                const int positionY, const int tilX, const int tilY);
+    ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX = 1,
+                const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
 
     void runRight();
     void runLeft();

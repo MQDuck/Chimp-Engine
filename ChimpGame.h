@@ -4,7 +4,6 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "ChimpConstants.h"
-#include "ChimpDefines.h"
 #include "ChimpTile.h"
 #include "ChimpObject.h"
 #include "ChimpMobile.h"

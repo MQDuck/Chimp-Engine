@@ -21,14 +21,9 @@
 
 namespace chimp
 {
-
-ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend,
-                         const int pX, const int pY)
-    : ChimpObject(til, rend, pX, pY, 1, 1) {}
-
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
-                         const int tilesY)
-    : tile(til), renderer(rend), width(tile.textureRect.w*tilesX),
+                         const int tilesY, Faction frnds, Faction enms)
+    : tile(til), renderer(rend), friends(frnds), enemies(enms), width(tile.textureRect.w*tilesX),
       height(tile.textureRect.h*tilesY)
 {
     coord.x = pX;

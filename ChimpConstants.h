@@ -22,7 +22,7 @@ static const float
     RESISTANCE_X           = 0.05, // x acceleration is reduced by the product of this and x velocity
     RESISTANCE_Y           = 0.1,  // y acceleration is reduced by the product of this and y velocity
     APPROX_ZERO_Y_FACTOR   = 1.0,//0.90;
-    DAMAGE_VELOCITY        = 200.0,
+    DAMAGE_VELOCITY        = 15.0,
     DAMAGE                 = 10.0;
 
 static /*const*/ std::string

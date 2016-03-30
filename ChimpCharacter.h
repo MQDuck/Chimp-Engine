@@ -20,7 +20,6 @@
 #ifndef CHIMPCHARACTER_H
 #define CHIMPCHARACTER_H
 
-#include "ChimpDefines.h"
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
 
@@ -30,12 +29,18 @@ namespace chimp
 class ChimpCharacter : public ChimpMobile
 {
 protected:
-    int maxHealth, health, friends, enemies;
+    int maxHealth, health;
+    bool vulnerable;
     
 public:
-    ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
-                   const int positionX, const int positionY, const int tilX, const int tilY, int maxH, Faction frnds,
-                   Faction enms);
+    ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX = 1,
+                   const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID,
+                   const int maxH = 100);
+    
+    void makeInvulnerable() { vulnerable = false; }
+    void makeVulnerable() { vulnerable = true; }
+    //unsigned int makeVulnerable(unsigned int interval, void* param) { vulnerable = true; }
+    static Uint32 vulnerableTimer(Uint32 interval, void* param) { ((ChimpCharacter*)param)->makeVulnerable(); }
     
     int getHealth() const { return health; }
     void setHealth(const int heal) { health = heal; }
@@ -43,6 +48,7 @@ public:
     inline int getEnemies() const { return enemies; }
     
     void update(std::vector<std::unique_ptr<ChimpObject>>& objects);
+    void render();
 };
 
 } // namespace chimp

@@ -46,12 +46,12 @@ protected:
     Coordinate coord, center;
     float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
+    Faction friends, enemies;
     
 public:
     ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
-                const int pY);
-    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
-                const int pY, const int tilesX, const int tilesY);
+                const int pY, const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
+                Faction enms = FACTION_VOID);
     
     inline int getX() const { return coord.x; }
     inline int getY() const { return SCREEN_HEIGHT - coord.y - tile.textureRect.h; }
@@ -75,7 +75,7 @@ public:
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    void render();
+    virtual void render();
     
     float getApproxZeroFloat() { return approx_zero_float; }
     float getApproxZeroY() { return approx_zero_y; }

@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     std::vector<SDL_Texture*> textures;
     std::vector<chimp::ChimpTile> tiles;
     
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER) < 0)
     {
         logSDLError(std::cout, "SDL_Init");
         return 1;
@@ -131,6 +131,7 @@ int main(int argc, char** argv)
     bool keyJumpPressed = false;
     chimp::ChimpGame* game = generateWorld1(tiles, renderer);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
+    int health = -1;
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
@@ -362,7 +363,7 @@ void pushCharacter(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* r
 chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
     chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1,
-                                                   400, 1, 1, 100, chimp::FACTION_PLAYER, chimp::FACTION_BADDIES) );
+                                                   400, 1, 1, chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100) );
     
     (*game).getPlayer().setScreenBoundLeft(true);
     (*game).getPlayer().setScreenBoundRight(true);
@@ -387,7 +388,7 @@ chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
 chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
     chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[9], renderer, SCREEN_WIDTH>>1,
-                                                   400, 1, 1, 100, chimp::FACTION_PLAYER, chimp::FACTION_BADDIES) );
+                                                   400, 1, 1, chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100) );
     
     (*game).getPlayer().setScreenBoundLeft(true);
     (*game).getPlayer().setScreenBoundRight(true);
@@ -479,17 +480,23 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame* game)
 
 inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
 {
-    int w1, w2, h, x;
-    std::string healthString = std::to_string( (*game).getPlayer().getHealth() );
-    SDL_Texture* currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
+    static int oldHealth, w1, w2, h, x;
+    static SDL_Texture* currentHealthTex;
     
-    SDL_QueryTexture(healthTex, NULL, NULL, &w1, &h);
-    SDL_QueryTexture(currentHealthTex, NULL, NULL, &w2, &h);
+    if(oldHealth != game->getPlayer().getHealth() || !currentHealthTex)
+    {
+        SDL_DestroyTexture(currentHealthTex);
+        oldHealth = game->getPlayer().getHealth();
+        std::string healthString = std::to_string(oldHealth);
+        currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
+        SDL_QueryTexture(healthTex, NULL, NULL, &w1, &h);
+        SDL_QueryTexture(currentHealthTex, NULL, NULL, &w2, &h);
+    }
+    
     //x = (SCREEN_WIDTH - w1 - w2)>>1;
     x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);
-    SDL_DestroyTexture(currentHealthTex);
 }
 
 

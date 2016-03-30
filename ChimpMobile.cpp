@@ -22,12 +22,9 @@
 namespace chimp
 {
 
-ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int positionX, const int positionY)
-    : ChimpMobile(til, rend, positionX, positionY, 1, 1) {}
-
-ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend,
-                         const int positionX, const int positionY, const int tileX, const int tileY)
-    : ChimpObject(til, rend, positionX, positionY, tileX, tileY)
+ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
+                         const int tilesY, Faction frnds, Faction enms)
+    : ChimpObject(til, rend, pX, pY, tilesX, tilesY, frnds, enms)
 {
     accelerationY = GRAVITY;
     velocityX = 0;

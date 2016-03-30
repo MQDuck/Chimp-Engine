@@ -68,15 +68,15 @@ void ChimpGame::pushChar(Layer lay, ChimpTile &til, const int x, const int y, co
     {
     case BACK:
         background.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, frnds, emns) ));
+                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
         break;
     case MID:
         middle.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, frnds, emns) ));
+                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
         break;
     case FORE:
         foreground.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, frnds, emns) ));
+                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
         break;
     }
 }

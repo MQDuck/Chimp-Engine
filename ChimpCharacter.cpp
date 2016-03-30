@@ -17,44 +17,59 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cmath>
 #include "ChimpCharacter.h"
 
 namespace chimp
 {
 
-ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend,
-                               const int positionX, const int positionY, const int tilX, const int tilY, int maxH,
-                               Faction frnds, Faction enms)
-    : ChimpMobile(til, rend, positionX, positionY, tilX, tilY), maxHealth(maxH), friends(frnds),
-      enemies(enms)
+ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX, \
+                               const int tilesY, Faction frnds, Faction enms, const int maxH)
+    : ChimpMobile(til, rend, pX, pY, tilesX, tilesY, frnds, enms), maxHealth(maxH)
 {
     health = maxHealth;
+    vulnerable = true;
 }
 
 void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
 {
-    for(std::unique_ptr<ChimpObject>& obj : objects)
-    {
-        if(platform == &*obj)
-            continue;
-        if( touches(*obj) && ( friends & (*obj).getEnemies()) )
+    if(vulnerable)
+        for(std::unique_ptr<ChimpObject>& obj : objects)
         {
-            float x = getCenterX() - (*obj).getCenterX();
-            float x2 = x*x;
-            float y = getCenterY() - (*obj).getCenterY();
-            float y2 = y*y;
-            
-            velocityX = sqrt(DAMAGE_VELOCITY / (x2+y2)) * x;
-            velocityY = sqrt(DAMAGE_VELOCITY / (x2+y2)) * y;
-            
-            health -= DAMAGE;
+            if(platform == &*obj)
+                continue;
+            if( touches(*obj) && ( friends & (*obj).getEnemies()) )
+            {
+                float x = getCenterX() - (*obj).getCenterX();
+                float y = getCenterY() - (*obj).getCenterY();
+                float invMag = 1.0 / std::sqrt(x*x + y*y);
+                
+                velocityX = DAMAGE_VELOCITY * x * invMag;
+                velocityY = DAMAGE_VELOCITY * y * invMag;
+                
+                health -= DAMAGE;
+                
+                makeInvulnerable();
+                SDL_AddTimer(500, vulnerableTimer, this);
+            }
         }
-    }
     
     ChimpMobile::update(objects);
     
     if(coord.y > SCREEN_HEIGHT + height)
         health = 0;
+}
+
+void ChimpCharacter::render()
+{
+    if(!vulnerable)
+    {
+        SDL_SetTextureColorMod(tile.texture, 255, 0, 0);
+        ChimpMobile::render();
+        SDL_SetTextureColorMod(tile.texture, 255, 255, 255);
+    }
+    else
+        ChimpMobile::render();
 }
 
 } // namespace chimp
