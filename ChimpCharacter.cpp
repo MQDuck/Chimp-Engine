@@ -36,7 +36,8 @@ void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
     if(vulnerable)
         for(std::unique_ptr<ChimpObject>& obj : objects)
         {
-            if(platform == &*obj)
+            //if(platform == &*obj)
+            if( !(*obj).getDamageTop() && touchesAtBottom(*obj) || platform == &*obj)
                 continue;
             if( touches(*obj) && ( friends & (*obj).getEnemies()) )
             {

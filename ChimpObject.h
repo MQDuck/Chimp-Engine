@@ -27,7 +27,8 @@
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "ChimpTile.h"
-#include "Coordinate.h"
+#include "ChimpStructs.h"
+#include "ChimpStructs.h"
 
 using std::cout;
 using std::endl;
@@ -38,15 +39,18 @@ namespace chimp
 enum Faction { FACTION_VOID = 0, FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 };
 
 class ChimpObject
-{
+{    
 protected:
     ChimpTile tile;
     SDL_Renderer* renderer;
-    const int width, height;
     Coordinate coord, center;
     float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
     Faction friends, enemies;
+    Box<bool> damageBox;
+    
+public:
+    const int width, height;
     
 public:
     ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
@@ -63,14 +67,22 @@ public:
     inline int getTrueY() const { return coord.y; }
     inline int getTexRectW() const { return tile.textureRect.w; }
     inline int getTexRectH() const { return tile.textureRect.h; }
-    inline int collisionLeft() const { return coord.x + tile.collisionRect.x; }
-    inline int collisionRight() const { return coord.x + width - tile.collisionRect.w; }
-    inline int collisionTop() const { return coord.y + tile.collisionRect.y; }
-    inline int collisionBottom() const {return coord.y + height - tile.collisionRect.h; }
+    inline int collisionLeft() const { return coord.x + tile.collisionBox.l; }
+    inline int collisionRight() const { return coord.x + width - tile.collisionBox.r; }
+    inline int collisionTop() const { return coord.y + tile.collisionBox.t; }
+    inline int collisionBottom() const {return coord.y + height - tile.collisionBox.b; }
     /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
     inline int getCollisionSizeRight() const { return collisionRect.w; }
     inline int getCollisionSizeTop() const { return collisionRect.y; }
     inline int getCollisionSizeBottom() const { return collisionRect.h; }*/
+    inline bool getDamageLeft() const { return damageBox.l; }
+    inline void setDamageLeft(const bool bl) { damageBox.l = bl; }
+    inline bool getDamageRight() const { return damageBox.r; }
+    inline void setDamageRight(const bool bl) { damageBox.r = bl; }
+    inline bool getDamageTop() const { return damageBox.t; }
+    inline void setDamageTop(const bool bl) { damageBox.t = bl; }
+    inline bool getDamageBottom() const { return damageBox.b; }
+    inline void setDamageBottom(const bool bl) { damageBox.b = bl; }
     
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
@@ -130,7 +142,7 @@ inline bool ChimpObject::touches(const ChimpObject &other) const
 
 inline bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
 {
-    return    collisionBottom() <= other.collisionTop()
+    return    collisionBottom() - approx_zero_y <= other.collisionTop()
            && collisionBottom() + approx_zero_y > other.collisionTop()
            && collisionLeft()  <= other.collisionRight()
            && collisionRight() >= other.collisionLeft();

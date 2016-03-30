@@ -129,7 +129,7 @@ int main(int argc, char** argv)
     SDL_Event event;
     bool quit = false;
     bool keyJumpPressed = false;
-    chimp::ChimpGame* game = generateWorld1(tiles, renderer);
+    chimp::ChimpGame* game = generateWorld2(tiles, renderer);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     int health = -1;
     
@@ -285,39 +285,43 @@ bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Tex
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        const int scale = std::stoi( line.substr(sub1, sub2-sub1) );
+        tiles.back().textureRect.x = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().textureRect.x = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().textureRect.y = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().textureRect.y = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().textureRect.w = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().textureRect.w = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().textureRect.h = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().textureRect.h = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().drawRect.w = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().collisionRect.x = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().drawRect.h = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().collisionRect.w = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().collisionBox.l = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().collisionRect.y = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().collisionBox.r = std::stoi( line.substr(sub1, sub2-sub1) );
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().collisionRect.h = std::stoi( line.substr(sub1, sub2-sub1) ) / scale;
+        tiles.back().collisionBox.t = std::stoi( line.substr(sub1, sub2-sub1) );
+        
+        sub1 = sub2 + 1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        tiles.back().collisionBox.b = std::stoi( line.substr(sub1, sub2-sub1) );
     }
     tileData.close();
     
@@ -367,13 +371,16 @@ chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
     
     (*game).getPlayer().setScreenBoundLeft(true);
     (*game).getPlayer().setScreenBoundRight(true);
+    
+    (*game).pushObj(chimp::BACK, tiles[10], 0, 0, 2, 1);
     (*game).pushObj(chimp::MID, tiles[1], 0, 120, 8, 1);
     (*game).pushObj(chimp::MID, tiles[1], SCREEN_WIDTH / 10, 0, SCREEN_WIDTH / tiles[1].textureRect.w + 1, 3);
     (*game).pushChar(chimp::MID, tiles[2], -35, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
+    (*game).getObjBack(chimp::MID).setDamageTop(false);
     (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 3.8);
     (*game).getObjBack(chimp::MID).runRight();
-    (*game).pushChar(chimp::MID, tiles[2], SCREEN_WIDTH, 160, 1, 1, 100, chimp::FACTION_BADDIES,
-                          chimp::FACTION_PLAYER);
+    (*game).pushChar(chimp::MID, tiles[2], SCREEN_WIDTH, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
+    (*game).getObjBack(chimp::MID).setDamageTop(false);
     (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 4.0);
     (*game).getObjBack(chimp::MID).runLeft();
     (*game).getObjBack(chimp::MID).setJumper(true);
@@ -384,7 +391,6 @@ chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
     return game;
 }
 
-
 chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
     chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[9], renderer, SCREEN_WIDTH>>1,
@@ -392,8 +398,8 @@ chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
     
     (*game).getPlayer().setScreenBoundLeft(true);
     (*game).getPlayer().setScreenBoundRight(true);
-    (*game).pushObj(chimp::MID, tiles[7], 0, 9, 3, 1);
-    (*game).pushObj(chimp::MID, tiles[8], tiles[7].textureRect.w*3, 9, 1, 1);
+    (*game).pushObj(chimp::MID, tiles[7], 0, 0, 3, 1);
+    (*game).pushObj(chimp::MID, tiles[8], (*game).getObjBack(chimp::MID).width, 0, 1, 1);
     
     return game;
 }

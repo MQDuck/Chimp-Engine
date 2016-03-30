@@ -24,4 +24,4 @@ HEADERS += \
     ChimpCharacter.h \
     ChimpTile.h \
     ChimpGame.h \
-    Coordinate.h
+    ChimpStructs.h

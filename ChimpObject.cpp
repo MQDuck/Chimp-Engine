@@ -23,13 +23,17 @@ namespace chimp
 {
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
-    : tile(til), renderer(rend), friends(frnds), enemies(enms), width(tile.textureRect.w*tilesX),
-      height(tile.textureRect.h*tilesY)
+    : tile(til), renderer(rend), friends(frnds), enemies(enms), width(tile.drawRect.w*tilesX),
+      height(tile.drawRect.h*tilesY)
 {
     coord.x = pX;
     coord.y = SCREEN_HEIGHT - pY - height;
-    center.x = (tile.collisionRect.x + width - tile.collisionRect.w) / 2.0;
-    center.y = (tile.collisionRect.y + height - tile.collisionRect.h) / 2.0;
+    center.x = (tile.collisionBox.l + width - tile.collisionBox.r) / 2.0;
+    center.y = (tile.collisionBox.r + height - tile.collisionBox.b) / 2.0;
+    damageBox.l = true;
+    damageBox.r = true;
+    damageBox.t = true;
+    damageBox.b = true;
     
     approx_zero_float = RUN_IMPULSE / 4.0;
     approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y * APPROX_ZERO_Y_FACTOR) );
@@ -38,20 +42,13 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
 
 void ChimpObject::render()
 {
-    SDL_Rect rendRect;
     // It remains to be seen if not rounding ever makes a perceivable difference. Perhaps while standing on an edge?
-    rendRect.x = round(coord.x);
-    rendRect.y = round(coord.y);
-    //rendRect.x = coord.x;
-    //rendRect.y = coord.y;
-    rendRect.w = tile.textureRect.w;
-    rendRect.h = tile.textureRect.h;
-    for(int x = 0; x < width; x += tile.textureRect.w)
-        for(int y = 0; y < height; y += tile.textureRect.h)
+    for(int x = 0; x < width; x += tile.drawRect.w)
+        for(int y = 0; y < height; y += tile.drawRect.h)
         {
-            rendRect.x = coord.x + x;
-            rendRect.y = coord.y + y;
-            SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &rendRect, 0, NULL, flip);
+            tile.drawRect.x = round(coord.x + x);
+            tile.drawRect.y = round(coord.y + y);
+            SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &tile.drawRect, 0, NULL, flip);
         }
 }
 

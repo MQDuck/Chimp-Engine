@@ -1,7 +1,7 @@
 # Chimp Out! texture metadata
 
 # The first line is the number of texture files.
-;8;
+;9;
 
 # The rest of the lines contain the name of a texture file.
 # The texture index is listed after each line for convenience.
@@ -13,3 +13,4 @@
 ;treetest.png;                #5
 ;_Spritesheet.png;            #6
 ;Monkey/Idle/idle1.png;       #7
+;Background.png;              #8
