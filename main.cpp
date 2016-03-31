@@ -60,8 +60,9 @@ inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* fo
 chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
 chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
 
-int main(int argc, char** argv)
-{
+//int main(int argc, char** argv)
+int main()
+{    
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
@@ -130,7 +131,6 @@ int main(int argc, char** argv)
     bool keyJumpPressed = false;
     chimp::ChimpGame* game = generateWorld2(tiles, renderer);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
-    int health = -1;
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     

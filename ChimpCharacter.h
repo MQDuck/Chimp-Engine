@@ -40,7 +40,15 @@ public:
     void makeInvulnerable() { vulnerable = false; }
     void makeVulnerable() { vulnerable = true; }
     //unsigned int makeVulnerable(unsigned int interval, void* param) { vulnerable = true; }
-    static Uint32 vulnerableTimer(Uint32 interval, void* param) { ((ChimpCharacter*)param)->makeVulnerable(); }
+    
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
+    static Uint32 vulnerableTimer(Uint32 interval, void* character)
+    {
+        ((ChimpCharacter*)character)->makeVulnerable();
+        return 0;
+    }
+    #pragma GCC diagnostic pop
     
     int getHealth() const { return health; }
     void setHealth(const int heal) { health = heal; }

@@ -41,6 +41,8 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     active = false;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void ChimpObject::update(ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
     if     (  active && (   coord.x+width < screen.l - INACTIVE_ZONE
@@ -54,6 +56,7 @@ void ChimpObject::update(ObjectVector& objects, const IntBox& screen, const IntB
                          || coord.y <= screen.b + ACTIVE_ZONE) )
         activate();
 }
+#pragma GCC diagnostic pop
 
 void ChimpObject::render(const IntBox& screen)
 {

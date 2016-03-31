@@ -1,3 +1,22 @@
+/*
+    Copyright 2016 Jeffrey Thomas Piercy
+  
+    This file is part of Chimp Out!.
+
+    Chimp Out! is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Chimp Out! is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "ChimpGame.h"
 
 namespace chimp
@@ -19,10 +38,11 @@ ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
     {
     case BACK:
         return *background[in];
-    case MID:
-        return *middle[in];
     case FORE:
         return *foreground[in];
+    case MID:
+    default:
+        return *middle[in];
     }
 }
 
@@ -32,10 +52,11 @@ ChimpObject& ChimpGame::getObjBack(Layer lay)
     {
     case BACK:
         return *background.back();
-    case MID:
-        return *middle.back();
     case FORE:
         return *foreground.back();
+    case MID:
+    default:
+        return *middle.back();
     }
 }
 
@@ -50,6 +71,8 @@ bool ChimpGame::setWorldBox(const int l, const int r, const int t, const int b)
     worldBox.r = r;
     worldBox.t = t;
     worldBox.t = b;
+    
+    return true;
 }
 
 void ChimpGame::pushObj(Layer lay, ChimpTile &til, const int x, const int y, const int tilesX, const int tilesY)

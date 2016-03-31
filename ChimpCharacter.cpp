@@ -37,7 +37,7 @@ void ChimpCharacter::update(ObjectVector& objects, const IntBox& screen, const I
         for(std::unique_ptr<ChimpObject>& obj : objects)
         {
             //if(platform == &*obj)
-            if( !(*obj).getDamageTop() && touchesAtBottom(*obj) || platform == &*obj)
+            if( !(*obj).getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
                 continue;
             if( touches(*obj) && ( friends & (*obj).getEnemies()) )
             {
