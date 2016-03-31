@@ -47,8 +47,8 @@ public:
     inline int getFriends() const { return friends; }
     inline int getEnemies() const { return enemies; }
     
-    void update(std::vector<std::unique_ptr<ChimpObject>>& objects);
-    void render();
+    void update(ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    void render(const IntBox& screen);
 };
 
 } // namespace chimp

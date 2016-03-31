@@ -31,9 +31,9 @@ ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend, const i
     vulnerable = true;
 }
 
-void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
-{
-    if(vulnerable)
+void ChimpCharacter::update(ObjectVector& objects, const IntBox& screen, const IntBox& world)
+{    
+    if(active && vulnerable)
         for(std::unique_ptr<ChimpObject>& obj : objects)
         {
             //if(platform == &*obj)
@@ -55,22 +55,22 @@ void ChimpCharacter::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
             }
         }
     
-    ChimpMobile::update(objects);
+    ChimpMobile::update(objects, screen, world);
     
     if(coord.y > SCREEN_HEIGHT + height)
         health = 0;
 }
 
-void ChimpCharacter::render()
+void ChimpCharacter::render(const IntBox& screen)
 {
     if(!vulnerable)
     {
         SDL_SetTextureColorMod(tile.texture, 255, 0, 0);
-        ChimpMobile::render();
+        ChimpMobile::render(screen);
         SDL_SetTextureColorMod(tile.texture, 255, 255, 255);
     }
     else
-        ChimpMobile::render();
+        ChimpMobile::render(screen);
 }
 
 } // namespace chimp

@@ -7,6 +7,10 @@
 static const int
     SCREEN_WIDTH           = 1200,
     SCREEN_HEIGHT          = 690,
+    ACTIVE_ZONE            = 500,
+    INACTIVE_ZONE          = 1500,
+    FOLLOW_ZONE_X          = 350,
+    FOLLOW_ZONE_Y          = SCREEN_HEIGHT / 4,
     JOYSTICK_DEAD_ZONE     = 8000,
     FONT_SIZE              = 24;
                                  

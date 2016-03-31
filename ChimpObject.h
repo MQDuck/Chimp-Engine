@@ -36,6 +36,9 @@ using std::endl;
 namespace chimp
 {
 
+class ChimpObject;
+
+typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
 enum Faction { FACTION_VOID = 0, FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 };
 
 class ChimpObject
@@ -48,9 +51,10 @@ protected:
     SDL_RendererFlip flip;
     Faction friends, enemies;
     Box<bool> damageBox;
+    bool active;
     
-public:
-    const int width, height;
+public: // make private/protected
+    int width, height;
     
 public:
     ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
@@ -83,14 +87,20 @@ public:
     inline void setDamageTop(const bool bl) { damageBox.t = bl; }
     inline bool getDamageBottom() const { return damageBox.b; }
     inline void setDamageBottom(const bool bl) { damageBox.b = bl; }
+    inline bool isActive() const { return active; }
+    inline void activate() { active = true; }
+    inline void deactivate() { active = false; }
     
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    virtual void render();
+    virtual void update(ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    virtual void render(const IntBox& screen);
     
     float getApproxZeroFloat() { return approx_zero_float; }
     float getApproxZeroY() { return approx_zero_y; }
+    
+    //ChimpObject& operator=(const ChimpObject& rhs);
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -102,7 +112,6 @@ public:
     virtual void setVelocityX(const float velocity) {}
     virtual float getVelocityY() const { return 0; }
     virtual void setVelocityY(const float velocity) {}
-    virtual void update(std::vector<std::unique_ptr<ChimpObject>>& objects) {}
     virtual void runRight() {}
     virtual void runLeft() {}
     virtual float getRunImpulse() const { return 0; }

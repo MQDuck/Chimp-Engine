@@ -34,10 +34,10 @@ ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     doubleJumped = false;
     sprinting = false;
     jumper = false;
-    screenBoundLeft = false;
-    screenBoundRight = false;
-    screenBoundTop = false;
-    screenBoundBottom = false;
+    boundLeft = false;
+    boundRight = false;
+    boundTop = false;
+    boundBottom = false;
     platform = nullptr;
     
     setRunImpulse(RUN_IMPULSE);
@@ -122,8 +122,12 @@ void ChimpMobile::stopJumping()
 void ChimpMobile::sprint() { sprinting = true; }
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
-void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
+void ChimpMobile::update(ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
+    ChimpObject::update(objects, screen, world);
+    if(!active)
+        return;
+    
     if(runningRight)
         accelerateRight();
     else if(runningLeft)
@@ -172,25 +176,25 @@ void ChimpMobile::update(std::vector<std::unique_ptr<ChimpObject>>& objects)
         coord.y = platform->collisionTop() - height + tile.collisionBox.b;
     }
     
-    if(screenBoundLeft && collisionLeft() < 0)
+    if(boundLeft && collisionLeft() < world.l)
     {
         velocityX = 0;
-        coord.x = -tile.collisionBox.l;
+        coord.x = world.l - tile.collisionBox.l;
     }
-    else if(screenBoundRight && collisionRight() > SCREEN_WIDTH)
+    else if(boundRight && collisionRight() > world.r)
     {
         velocityX = 0;
-        coord.x = SCREEN_WIDTH - width + tile.collisionBox.r;
+        coord.x = world.r - width + tile.collisionBox.r;
     }
-    else if(screenBoundTop && collisionTop() < 0)
+    else if(boundTop && collisionTop() < world.t)
     {
         velocityY = 0;
-        coord.y = -tile.collisionBox.r;
+        coord.y = world.t - tile.collisionBox.r;
     }
-    else if(screenBoundBottom && collisionBottom() > SCREEN_HEIGHT)
+    else if(boundBottom && collisionBottom() > world.b)
     {
         velocityY = 0;
-        coord.y = SCREEN_HEIGHT - height + tile.collisionBox.b;
+        coord.y = world.b - height + tile.collisionBox.b;
     }
 }
 

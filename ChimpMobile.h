@@ -31,8 +31,7 @@ namespace chimp
 class ChimpMobile : public ChimpObject
 {
 protected:
-    bool runningRight, runningLeft, doubleJumped, sprinting, jumper, screenBoundLeft, screenBoundRight, screenBoundTop,
-         screenBoundBottom;
+    bool runningRight, runningLeft, doubleJumped, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom;
     ChimpObject* platform; // pointer to object this mobile is standing on, nullptr if none
 
     float accelerationY, velocityX, velocityY;
@@ -81,16 +80,18 @@ public:
     void setResistanceX(const float resistance) { resistance_x = resistance; }
     float getResistanceY() const { return resistance_y; }
     void setResistanceY(const float resistance);
-    bool getScreenBoundLeft() const { return screenBoundLeft; }
-    void setScreenBoundLeft(bool b) { screenBoundLeft = b; }
-    bool getScreenBoundRight() const { return screenBoundRight; }
-    void setScreenBoundRight(bool b) { screenBoundRight = b; }
-    bool getScreenBoundTop() const { return screenBoundTop; }
-    void setScreenBoundTop(bool b) { screenBoundTop = b; }
-    bool getScreenBoundBottom() const { return screenBoundBottom; }
-    void setScreenBoundBottom(bool b) { screenBoundBottom = b; }
+    bool getBoundLeft() const { return boundLeft; }
+    void setBoundLeft(bool b) { boundLeft = b; }
+    bool getBoundRight() const { return boundRight; }
+    void setBoundRight(bool b) { boundRight = b; }
+    bool getBoundTop() const { return boundTop; }
+    void setBoundTop(bool b) { boundTop = b; }
+    bool getBoundBottom() const { return boundBottom; }
+    void setBoundBottom(bool b) { boundBottom = b; }
 
-    virtual void update(std::vector<std::unique_ptr<ChimpObject>>& objects);
+    virtual void update(ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    
+    //ChimpMobile& operator=(const ChimpMobile& rhs);
 };
 
 } // namespace chimp

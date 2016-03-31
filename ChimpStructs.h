@@ -1,6 +1,8 @@
 #ifndef CHIMPSTRUCTS_H
 #define CHIMPSTRUCTS_H
 
+#include <vector>
+
 namespace chimp
 {
 
@@ -21,7 +23,14 @@ struct Box
         t /= scl;
         b /= scl;
     }
+    
+    inline T getL() const { return l; }
+    inline T getR() const { return r; }
+    inline T getT() const { return t; }
+    inline T getB() const { return b; }
 };
+
+typedef Box<int> IntBox;
 
 } // namespace chimp
 
