@@ -22,7 +22,7 @@
 namespace chimp
 {
 
-ChimpGame::ChimpGame(SDL_Renderer* rend, const ChimpCharacter& plyr) : renderer(rend), player(plyr)
+ChimpGame::ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr) : renderer(rend), player(plyr)
 {
     screen.l = 0;
     screen.r = SCREEN_WIDTH;
@@ -108,19 +108,21 @@ void ChimpGame::pushMob(Layer lay, ChimpTile &til, const int x, const int y, con
 void ChimpGame::pushChar(Layer lay, ChimpTile &til, const int x, const int y, const int tilesX, const int tilesY,
                          const int maxH, const Faction frnds, const Faction emns)
 {
+    TileVec tiles;
+    tiles.push_back(til);
     switch(lay)
     {
     case BACK:
         background.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
+                                 new ChimpCharacter(tiles, tiles, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
         break;
     case MID:
         middle.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
+                                 new ChimpCharacter(tiles, tiles, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
         break;
     case FORE:
         foreground.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(til, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
+                                 new ChimpCharacter(tiles, tiles, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
         break;
     }
 }
@@ -134,18 +136,18 @@ void ChimpGame::update()
         (*obj).update(background, mScreen, mWorld);
     for(auto& obj : middle)
         (*obj).update(middle, mScreen, mWorld);
-    player.update(middle, mScreen, mWorld);
+    player->update(middle, mScreen, mWorld);
     for(auto& obj : foreground)
         (*obj).update(foreground, mScreen, mWorld);
     
-    if(player.getX() + player.getWidth() > screen.r - FOLLOW_ZONE_X && screen.r < worldBox.r)
-        translateScreenX(player.getX() + player.getWidth() + FOLLOW_ZONE_X - screen.r);
-    else if(player.getX() - screen.l < FOLLOW_ZONE_X && screen.l > worldBox.l)
-        translateScreenX(player.getX() - FOLLOW_ZONE_X - screen.l);
-    if(player.getY() - screen.t < FOLLOW_ZONE_Y && screen.t > worldBox.t)
-        translateScreenY(player.getY() - FOLLOW_ZONE_Y - screen.t);
-    else if(player.getY() + player.getHeight() > screen.b - FOLLOW_ZONE_Y && screen.b < worldBox.b)
-        translateScreenY(player.getY() + player.getHeight() + FOLLOW_ZONE_Y - screen.b);
+    if(player->getX() + player->getWidth() > screen.r - FOLLOW_ZONE_X && screen.r < worldBox.r)
+        translateScreenX(player->getX() + player->getWidth() + FOLLOW_ZONE_X - screen.r);
+    else if(player->getX() - screen.l < FOLLOW_ZONE_X && screen.l > worldBox.l)
+        translateScreenX(player->getX() - FOLLOW_ZONE_X - screen.l);
+    if(player->getY() - screen.t < FOLLOW_ZONE_Y && screen.t > worldBox.t)
+        translateScreenY(player->getY() - FOLLOW_ZONE_Y - screen.t);
+    else if(player->getY() + player->getHeight() > screen.b - FOLLOW_ZONE_Y && screen.b < worldBox.b)
+        translateScreenY(player->getY() + player->getHeight() + FOLLOW_ZONE_Y - screen.b);
 }
 
 void ChimpGame::render()
@@ -156,7 +158,7 @@ void ChimpGame::render()
         (*obj).render( *mScreen );
     for(auto& obj : middle)
         (*obj).render(*mScreen);
-    player.render(*mScreen);
+    player->render(*mScreen);
     for(auto& obj : foreground)
         (*obj).render(*mScreen);
 }

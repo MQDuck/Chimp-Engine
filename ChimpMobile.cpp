@@ -101,7 +101,7 @@ void ChimpMobile::jump()
     {
         if(platform == nullptr)
         {
-            doubleJumped = true;
+            //doubleJumped = true;
             velocityY = jump_impulse * double_jump_fraction;
         }
         else

@@ -49,16 +49,17 @@ void pushMobile(chimp::ObjectVector& objects, chimp::ChimpTile& til, SDL_Rendere
 void pushCharacter(chimp::ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
                    const int tilesX, const int tilesY, int maxH, chimp::Faction friends, chimp::Faction enemies);
 
-inline void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-inline void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-inline void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-inline void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed);
-inline void axisMotion(SDL_Event& event, chimp::ChimpGame* game);
+inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
+inline void keyUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
+inline void buttonDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
+inline void buttonUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
+inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 
-inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
+inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
 
-chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
-chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
+//chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
+//chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
+void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer, chimp::ChimpGame& game);
 
 //int main(int argc, char** argv)
 int main()
@@ -129,7 +130,8 @@ int main()
     SDL_Event event;
     bool quit = false;
     bool keyJumpPressed = false;
-    chimp::ChimpGame* game = generateWorld2(tiles, renderer);
+    chimp::ChimpGame game(renderer);
+    generateWorld2(tiles, renderer, game);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -170,15 +172,14 @@ int main()
         }
         
         SDL_RenderClear(renderer);
-        (*game).update();
-        (*game).render();
+        game.update();
+        game.render();
         drawHUD(game, renderer, font, healthTex);
         SDL_RenderPresent(renderer);
         
         SDL_Delay(1);
     }
     
-    delete game;
     cleanup(window, renderer, font, &tiles);
     
     return 0;
@@ -364,13 +365,14 @@ void pushCharacter(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* r
                           new chimp::ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, friends, enemies) ));
 }*/
 
-chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
+/*chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
-    chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1,
-                                                   400, 1, 1, chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100) );
+    chimp::ChimpCharacter* player = new chimp::ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1, 400, 1, 1,
+                                                              chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
+    chimp::ChimpGame* game = new chimp::ChimpGame(renderer, player);
     
-    (*game).getPlayer().setBoundLeft(true);
-    (*game).getPlayer().setBoundRight(true);
+    (*game).getPlayer()->setBoundLeft(true);
+    (*game).getPlayer()->setBoundRight(true);
     
     (*game).pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, 0, 5, 1);
     (*game).pushObj(chimp::MID, tiles[1], 0, 120, 8, 1);
@@ -389,122 +391,135 @@ chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Rende
     (*game).pushObj(chimp::FORE, tiles[5], SCREEN_WIDTH*0.75, 10, 1, 1);
     
     return game;
-}
+}*/
 
-chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
+void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer, chimp::ChimpGame& game)
 {
-    chimp::ChimpGame* game = new chimp::ChimpGame( renderer, chimp::ChimpCharacter(tiles[14], renderer, SCREEN_WIDTH>>1,
-                                                   400, 1, 1, chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100) );
+    chimp::TileVec playtiles, jumptiles;
+    playtiles.push_back(tiles[14]);
+    playtiles.push_back(tiles[15]);
+    playtiles.push_back(tiles[16]);
+    playtiles.push_back(tiles[17]);
+    playtiles.push_back(tiles[18]);
+    playtiles.push_back(tiles[19]);
+    playtiles.push_back(tiles[20]);
+    jumptiles.push_back(tiles[21]);
+    jumptiles.push_back(tiles[22]);
+    jumptiles.push_back(tiles[23]);
+    jumptiles.push_back(tiles[24]);
+    jumptiles.push_back(tiles[25]);
+    jumptiles.push_back(tiles[26]);
+    jumptiles.push_back(tiles[27]);
+    game.getPlayer() = new chimp::ChimpCharacter(playtiles, jumptiles, renderer, SCREEN_WIDTH>>1, 400, 1, 1,
+            chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
     
-    (*game).setWorldBox(-SCREEN_WIDTH>>1, SCREEN_WIDTH<<1, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
-    (*game).pushObj(chimp::BACK, tiles[12], -SCREEN_WIDTH>>1, 0, 5, 1);
-    //(*game).pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);
-    (*game).getPlayer().setBoundLeft(true);
-    (*game).getPlayer().setBoundRight(true);
-    (*game).pushObj(chimp::MID, tiles[7], -SCREEN_WIDTH>>1, 0, 8, 1);
-    (*game).pushObj(chimp::MID, tiles[8], (*game).getObjBack(chimp::MID).collisionRight(), 0, 1, 1);
-    (*game).pushObj(chimp::MID, tiles[10], (SCREEN_WIDTH<<1) - tiles[10].textureRect.w*2, tiles[7].textureRect.h*1.5, 2, 1);
-    (*game).pushObj(chimp::MID, tiles[9], (SCREEN_WIDTH<<1) - tiles[10].textureRect.w*2 - tiles[9].textureRect.w,
+    game.setWorldBox(-SCREEN_WIDTH>>1, SCREEN_WIDTH<<1, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
+    game.pushObj(chimp::BACK, tiles[12], -SCREEN_WIDTH>>1, 0, 5, 1);
+    //game.pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);
+    game.getPlayer()->setBoundLeft(true);
+    game.getPlayer()->setBoundRight(true);
+    game.pushObj(chimp::MID, tiles[7], -SCREEN_WIDTH>>1, 0, 8, 1);
+    game.pushObj(chimp::MID, tiles[8], game.getObjBack(chimp::MID).collisionRight(), 0, 1, 1);
+    game.pushObj(chimp::MID, tiles[10], (SCREEN_WIDTH<<1) - tiles[10].textureRect.w*2, tiles[7].textureRect.h*1.5, 2, 1);
+    game.pushObj(chimp::MID, tiles[9], (SCREEN_WIDTH<<1) - tiles[10].textureRect.w*2 - tiles[9].textureRect.w,
                     tiles[7].textureRect.h*1.5, 1, 1);
     
-    (*game).pushChar(chimp::MID, tiles[2], -SCREEN_WIDTH>>1, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
-    (*game).getObjBack(chimp::MID).setDamageTop(false);
-    (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
-    (*game).getObjBack(chimp::MID).runRight();
-    (*game).getObjBack(chimp::MID).setJumper(true);
-    
-    return game;
+    game.pushChar(chimp::MID, tiles[2], -SCREEN_WIDTH>>1, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
+    game.getObjBack(chimp::MID).setDamageTop(false);
+    game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
+    game.getObjBack(chimp::MID).runRight();
+    game.getObjBack(chimp::MID).setJumper(true);
 }
 
-inline void keyDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
 {
     switch(event.key.keysym.sym)
     {
     case SDLK_RIGHT:
-        (*game).getPlayer().runRight();
+        game.getPlayer()->runRight();
         break;
     case SDLK_LEFT:
-        (*game).getPlayer().runLeft();
+        game.getPlayer()->runLeft();
         break;
     case SDLK_UP:
     case SDLK_SPACE:
         if(!keyJumpPressed)
         {
-            (*game).getPlayer().jump();
+            game.getPlayer()->jump();
             keyJumpPressed = true;
         }
         break;
     case SDLK_x:
-        (*game).getPlayer().sprint();
+        game.getPlayer()->sprint();
         break;
     }
 }
 
-inline void keyUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void keyUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
 {
     switch(event.key.keysym.sym)
     {
     case SDLK_RIGHT:
-        (*game).getPlayer().stopRunningRight();
+        game.getPlayer()->stopRunningRight();
         break;
     case SDLK_LEFT:
-        (*game).getPlayer().stopRunningLeft();
+        game.getPlayer()->stopRunningLeft();
         break;
     case SDLK_UP:
     case SDLK_SPACE:
-        (*game).getPlayer().stopJumping();
+        game.getPlayer()->stopJumping();
         keyJumpPressed = false;
         break;
     case SDLK_x:
-        (*game).getPlayer().stopSprinting();
+        game.getPlayer()->stopSprinting();
         break;
     }
 }
 
-inline void buttonDown(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void buttonDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
 {
     if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A && !keyJumpPressed)
     {
-        (*game).getPlayer().jump();
+        game.getPlayer()->jump();
         keyJumpPressed = true;
     }
     else if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
-        (*game).getPlayer().sprint();
+        game.getPlayer()->sprint();
 }
 
-inline void buttonUp(SDL_Event& event, chimp::ChimpGame* game, bool& keyJumpPressed)
+inline void buttonUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
 {
     if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
     {
-        (*game).getPlayer().stopJumping();
+        game.getPlayer()->stopJumping();
         keyJumpPressed = false;
     }
     else if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
-        (*game).getPlayer().stopSprinting();
+        game.getPlayer()->stopSprinting();
 }
 
-inline void axisMotion(SDL_Event& event, chimp::ChimpGame* game)
+inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game)
 {
     if(event.caxis.axis == 0)
     {
         if(event.caxis.value > JOYSTICK_DEAD_ZONE)
-            (*game).getPlayer().runRight();
+            game.getPlayer()->runRight();
         else if(event.caxis.value < -JOYSTICK_DEAD_ZONE)
-            (*game).getPlayer().runLeft();
+            game.getPlayer()->runLeft();
         else
-            (*game).getPlayer().stopRunning();
+            game.getPlayer()->stopRunning();
     }
 }
 
-inline void drawHUD(chimp::ChimpGame* game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
+inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
 {
     static int oldHealth, w1, w2, h, x;
     static SDL_Texture* currentHealthTex;
     
-    if(oldHealth != game->getPlayer().getHealth() || !currentHealthTex)
+    if(oldHealth != game.getPlayer()->getHealth() || !currentHealthTex)
     {
         SDL_DestroyTexture(currentHealthTex);
-        oldHealth = game->getPlayer().getHealth();
+        oldHealth = game.getPlayer()->getHealth();
         std::string healthString = std::to_string(oldHealth);
         currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
         SDL_QueryTexture(healthTex, NULL, NULL, &w1, &h);

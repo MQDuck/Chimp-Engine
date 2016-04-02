@@ -23,12 +23,45 @@
 namespace chimp
 {
 
-ChimpCharacter::ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX, \
-                               const int tilesY, Faction frnds, Faction enms, const int maxH)
-    : ChimpMobile(til, rend, pX, pY, tilesX, tilesY, frnds, enms), maxHealth(maxH)
+ChimpCharacter::ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, SDL_Renderer* rend, const int pX,
+                               const int pY, const int tilesX, const int tilesY, Faction frnds, Faction enms,
+                               const int maxH)
+    : ChimpMobile(tilRn[0], rend, pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
+      maxHealth(maxH)
 {
     health = maxHealth;
     vulnerable = true;
+}
+
+void ChimpCharacter::runRight()
+{
+    if(!runningRight)
+    {
+        moveStart.x = coord.x;
+        tileIndex = 0;
+    }
+    ChimpMobile::runRight();
+}
+
+void ChimpCharacter::runLeft()
+{
+    if(!runningLeft)
+    {
+        moveStart.x = coord.x;
+        tileIndex = 0;
+    }
+    ChimpMobile::runLeft();
+}
+
+void ChimpCharacter::jump()
+{
+    if(platform)
+    {
+        tile = tilesJump[0];
+        moveStart.x = coord.x;
+        tileIndex = 0;
+    }
+    ChimpMobile::jump();
 }
 
 void ChimpCharacter::update(ObjectVector& objects, const IntBox& screen, const IntBox& world)
@@ -63,6 +96,31 @@ void ChimpCharacter::update(ObjectVector& objects, const IntBox& screen, const I
 
 void ChimpCharacter::render(const IntBox& screen)
 {
+    if(!platform)
+    {
+        /*size_t in = std::abs((int)(coord.y-moveStart.y) / 100) % tilesJump.size();
+        if(tileIndex != in)
+        {
+            tile = tilesJump[in];
+            tileIndex = in;
+        }*/
+        if( (int)(coord.y-moveStart.y) / 100 )
+        {
+            tileIndex = (tileIndex+1) % tilesJump.size();
+            tile = tilesJump[tileIndex];
+            moveStart.y = coord.y;
+        }
+    }
+    else if(runningLeft || runningRight)
+    {
+        size_t in = std::abs((int)(coord.x-moveStart.x) / 50) % tilesRun.size();
+        if(tileIndex != in)
+        {
+            tile = tilesRun[in];
+            tileIndex = in;
+        }
+    }
+    
     if(!vulnerable)
     {
         SDL_SetTextureColorMod(tile.texture, 255, 0, 0);

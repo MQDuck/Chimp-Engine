@@ -27,23 +27,29 @@
 namespace chimp
 {
 
-typedef std::vector<SDL_Texture*> TextureVec;
+typedef std::vector<ChimpTile> TileVec;
 
 class ChimpCharacter : public ChimpMobile
 {
 protected:
     int maxHealth, health;
+    size_t tileIndex;
     bool vulnerable;
-    TextureVec texRun;
+    TileVec tilesRun, tilesJump;
+    Coordinate moveStart;
     
 public:
-    ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX = 1,
-                   const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID,
-                   const int maxH = 100);
+    ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, SDL_Renderer* rend, const int pX, const int pY,
+                   const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
+                   Faction enms = FACTION_VOID, const int maxH = 100);
     
     void makeInvulnerable() { vulnerable = false; }
     void makeVulnerable() { vulnerable = true; }
     //unsigned int makeVulnerable(unsigned int interval, void* param) { vulnerable = true; }
+    
+    void runRight();
+    void runLeft();
+    void jump();
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"

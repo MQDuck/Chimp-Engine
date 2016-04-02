@@ -39,14 +39,15 @@ class ChimpGame
 {
 private:
     SDL_Renderer* renderer;
-    ChimpCharacter player;
+    ChimpCharacter* player;
     ObjectVector background, middle, foreground;
     IntBox screen, worldBox;
     
 public:
-    ChimpGame(SDL_Renderer* rend, const ChimpCharacter& plyr);
+    ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr = nullptr);
+    ~ChimpGame() { if(player) delete player; }
     
-    ChimpCharacter& getPlayer() { return player; }
+    ChimpCharacter*& getPlayer() { return player; }
     ChimpObject& getObj(Layer lay, size_t in);
     ChimpObject& getObjBack(Layer lay);
     bool setWorldBox(const int l, const int r, const int t, const int b);
