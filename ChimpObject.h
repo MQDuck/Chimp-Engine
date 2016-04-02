@@ -62,7 +62,7 @@ public:
                 Faction enms = FACTION_VOID);
     
     inline int getX() const { return coord.x; }
-    inline int getY() const { return SCREEN_HEIGHT - coord.y - tile.textureRect.h; }
+    inline int getY() const { return coord.y; }
     inline int getCenterX() const { return coord.x + center.x; }
     inline int getCenterY() const { return coord.y + center.y; }
     inline int getWidth() const { return width; }

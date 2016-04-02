@@ -1,7 +1,7 @@
 # Chimp Out! tile metadata
 
 # The first line is the number of tiles.
-;14;
+;15;
 
 # tex:     TEXture index (see file 'textures')
 # x:       texture left X-coordinate
@@ -31,6 +31,8 @@
 ;6; 256;768; 256; 256; 256; 256;   0;   0; 115;   0; #10 mid island
 ;6; 512;768; 256; 256; 256; 256;   0;  90; 115;   0; #11 right island
 
-;7;   0;  0; 148; 168; 148; 168;  52;  47;   0;   5; #12 monkey idle 1
-;8;   0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #13 background
+;7;   0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #12 background
+;8;   0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #13 background2
+
+;9;   0;  0; 256; 256; 256; 256;  86;  62;   50;   40; #14 monkey idle 1
 

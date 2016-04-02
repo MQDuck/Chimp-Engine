@@ -20,17 +20,21 @@
 #ifndef CHIMPCHARACTER_H
 #define CHIMPCHARACTER_H
 
+#include <vector>
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
 
 namespace chimp
 {
 
+typedef std::vector<SDL_Texture*> TextureVec;
+
 class ChimpCharacter : public ChimpMobile
 {
 protected:
     int maxHealth, health;
     bool vulnerable;
+    TextureVec texRun;
     
 public:
     ChimpCharacter(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX = 1,

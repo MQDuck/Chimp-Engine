@@ -70,7 +70,7 @@ bool ChimpGame::setWorldBox(const int l, const int r, const int t, const int b)
     worldBox.l = l;
     worldBox.r = r;
     worldBox.t = t;
-    worldBox.t = b;
+    worldBox.b = b;
     
     return true;
 }

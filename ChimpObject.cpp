@@ -17,6 +17,7 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cmath>
 #include "ChimpObject.h"
 
 namespace chimp
@@ -64,8 +65,8 @@ void ChimpObject::render(const IntBox& screen)
     for(int x = 0; x < width; x += tile.drawRect.w)
         for(int y = 0; y < height; y += tile.drawRect.h)
         {
-            tile.drawRect.x = round(coord.x + x - screen.l);
-            tile.drawRect.y = round(coord.y + y + screen.t); // ???? It should be MINUS screen.t!
+            tile.drawRect.x = std::round(coord.x + x - screen.l);
+            tile.drawRect.y = std::round(coord.y + y - screen.t);
             SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &tile.drawRect, 0, NULL, flip);
         }
 }

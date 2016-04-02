@@ -20,8 +20,6 @@
 #ifndef CHIMPSTRUCTS_H
 #define CHIMPSTRUCTS_H
 
-#include <vector>
-
 namespace chimp
 {
 
