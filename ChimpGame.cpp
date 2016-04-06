@@ -75,7 +75,8 @@ bool ChimpGame::setWorldBox(const int l, const int r, const int t, const int b)
     return true;
 }
 
-void ChimpGame::pushObj(Layer lay, ChimpTile &til, const int x, const int y, const int tilesX, const int tilesY)
+void ChimpGame::pushObj(const Layer lay, const ChimpTile &til, const int x, const int y, const int tilesX,
+                        const int tilesY)
 {
     switch(lay)
     {
@@ -90,7 +91,8 @@ void ChimpGame::pushObj(Layer lay, ChimpTile &til, const int x, const int y, con
     }
 }
 
-void ChimpGame::pushMob(Layer lay, ChimpTile &til, const int x, const int y, const int tilesX, const int tilesY)
+void ChimpGame::pushMob(const Layer lay, const ChimpTile &til, const int x, const int y, const int tilesX,
+                        const int tilesY)
 {
     switch(lay)
     {
@@ -105,26 +107,32 @@ void ChimpGame::pushMob(Layer lay, ChimpTile &til, const int x, const int y, con
     }
 }
 
-void ChimpGame::pushChar(Layer lay, ChimpTile &til, const int x, const int y, const int tilesX, const int tilesY,
-                         const int maxH, const Faction frnds, const Faction emns)
+void ChimpGame::pushChar(const Layer lay, const TileVec &tilRn, const TileVec &tilJmp, TileVec &tilIdl, const int x,
+                         const int y, const int tilesX, const int tilesY, const int maxH, const Faction frnds,
+                         const Faction enms)
 {
-    TileVec tiles;
-    tiles.push_back(til);
     switch(lay)
     {
     case BACK:
         background.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(tiles, tiles, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
+            new ChimpCharacter(tilRn, tilJmp, tilIdl, renderer, x, y, tilesX, tilesY, frnds, enms, maxH) ));
         break;
     case MID:
         middle.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(tiles, tiles, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
+            new ChimpCharacter(tilRn, tilJmp, tilIdl, renderer, x, y, tilesX, tilesY, frnds, enms, maxH) ));
         break;
     case FORE:
         foreground.push_back(std::unique_ptr<ChimpCharacter>(
-                                 new ChimpCharacter(tiles, tiles, renderer, x, y, tilesX, tilesY, frnds, emns, maxH) ));
+            new ChimpCharacter(tilRn, tilJmp, tilIdl, renderer, x, y, tilesX, tilesY, frnds, enms, maxH) ));
         break;
     }
+}
+
+void ChimpGame::pushChar(const Layer lay, const ChimpTile &til, const int x, const int y, const int tilesX,
+                         const int tilesY, const int maxH, const Faction frnds, const Faction enms)
+{
+    TileVec tVec = {til};
+    pushChar(lay, tVec, tVec, tVec, x, y, tilesX, tilesY, maxH, frnds, enms);
 }
 
 void ChimpGame::update()

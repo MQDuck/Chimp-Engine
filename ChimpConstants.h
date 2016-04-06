@@ -12,7 +12,13 @@ static const int
     FOLLOW_ZONE_X          = 350,
     FOLLOW_ZONE_Y          = SCREEN_HEIGHT / 4,
     JOYSTICK_DEAD_ZONE     = 8000,
-    FONT_SIZE              = 24;
+    FONT_SIZE              = 24,
+    INVULNERABLE_TIME      = 750,
+    PIXELS_PER_FRAME_X     = 50,   // for run animation
+    PIXELS_PER_FRAME_Y     = 30;   // for jump animation    
+
+static const Uint32
+    TIME_PER_FRAME         = 600;  // for idle animation
                                  
 static const float
     RUN_IMPULSE            = 2.5,  // magnitude of x impulse given when mobile begins running with x velocity near zero

@@ -56,10 +56,16 @@ public:
     int getWorldTop() const { return worldBox.t; }
     int getWorldBottom() const { return worldBox.b; }
     
-    void pushObj(Layer lay, ChimpTile& til, const int x, const int y, const int tilesX = 1, const int tilesY = 1);
-    void pushMob(Layer lay, ChimpTile& til, const int x, const int y, const int tilesX = 1, const int tilesY = 1);
-    void pushChar(Layer lay, ChimpTile& til, const int x, const int y, const int tilesX = 1, const int tilesY = 1,
-                  const int maxH = 100, const Faction frnds = FACTION_VOID, const Faction emns = FACTION_VOID);
+    void pushObj(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+                 const int tilesY = 1);
+    void pushMob(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+                 const int tilesY = 1);
+    void pushChar(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+                  const int tilesY = 1, const int maxH = 100, const Faction frnds = FACTION_VOID,
+                  const Faction enms = FACTION_VOID);
+    void pushChar(const Layer lay, const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, const int x,
+                  const int y, const int tilesX = 1, const int tilesY = 1, const int maxH = 100,
+                  const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID);
     
     inline void translateScreenX(const int x);
     inline void translateScreenY(const int y);

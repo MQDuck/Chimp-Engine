@@ -58,7 +58,6 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
 
 //chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
-//chimp::ChimpGame* generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
 void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer, chimp::ChimpGame& game);
 
 //int main(int argc, char** argv)
@@ -115,7 +114,7 @@ int main()
     }
     if( !loadChimpTextures(tiles, textures, renderer) )
     {
-        cleanup(window, renderer, font, &tiles);
+        cleanup(window, renderer, font, &textures);
         SDL_Quit();
         return 1;
     }
@@ -180,7 +179,7 @@ int main()
         SDL_Delay(1);
     }
     
-    cleanup(window, renderer, font, &tiles);
+    cleanup(window, renderer, font, &textures);
     
     return 0;
 }
@@ -343,28 +342,6 @@ bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Tex
     }
 }*/
 
-/*void pushObject(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
-                 const int tilesX, const int tilesY)
-{
-    objects.push_back(std::unique_ptr<chimp::ChimpObject>(
-                          new chimp::ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
-}
-
-void pushMobile(ObjectVector &objects, chimp::ChimpTile &til, SDL_Renderer *renderer, const int x, const int y,
-                const int tilesX, const int tilesY)
-{
-    objects.push_back(std::unique_ptr<chimp::ChimpMobile>(
-                          new chimp::ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
-}
-
-
-void pushCharacter(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
-                   const int tilesX, const int tilesY, int maxH, chimp::Faction friends, chimp::Faction enemies)
-{
-    objects.push_back(std::unique_ptr<chimp::ChimpCharacter>(
-                          new chimp::ChimpCharacter(til, renderer, x, y, tilesX, tilesY, maxH, friends, enemies) ));
-}*/
-
 /*chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
 {
     chimp::ChimpCharacter* player = new chimp::ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1, 400, 1, 1,
@@ -395,22 +372,10 @@ void pushCharacter(ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* r
 
 void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer, chimp::ChimpGame& game)
 {
-    chimp::TileVec playtiles, jumptiles;
-    playtiles.push_back(tiles[14]);
-    playtiles.push_back(tiles[15]);
-    playtiles.push_back(tiles[16]);
-    playtiles.push_back(tiles[17]);
-    playtiles.push_back(tiles[18]);
-    playtiles.push_back(tiles[19]);
-    playtiles.push_back(tiles[20]);
-    jumptiles.push_back(tiles[21]);
-    jumptiles.push_back(tiles[22]);
-    jumptiles.push_back(tiles[23]);
-    jumptiles.push_back(tiles[24]);
-    jumptiles.push_back(tiles[25]);
-    jumptiles.push_back(tiles[26]);
-    jumptiles.push_back(tiles[27]);
-    game.getPlayer() = new chimp::ChimpCharacter(playtiles, jumptiles, renderer, SCREEN_WIDTH>>1, 400, 1, 1,
+    chimp::TileVec runtiles = { tiles[14], tiles[15], tiles[16], tiles[17], tiles[18], tiles[19], tiles[20] };
+    chimp::TileVec jumptiles = { tiles[21], tiles[22], tiles[23], tiles[24], tiles[25], tiles[26], tiles[27] };
+    chimp::TileVec idletiles{ tiles[28], tiles[28], tiles[29] };
+    game.getPlayer() = new chimp::ChimpCharacter(runtiles, jumptiles, idletiles, renderer, SCREEN_WIDTH>>1, 400, 1, 1,
             chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
     
     game.setWorldBox(-SCREEN_WIDTH>>1, SCREEN_WIDTH<<1, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);

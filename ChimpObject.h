@@ -60,6 +60,7 @@ public:
     ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
                 const int pY, const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
                 Faction enms = FACTION_VOID);
+    virtual ~ChimpObject() {}
     
     inline int getX() const { return coord.x; }
     inline int getY() const { return coord.y; }
@@ -94,7 +95,7 @@ public:
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    virtual void update(ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
     virtual void render(const IntBox& screen);
     
     float getApproxZeroFloat() { return approx_zero_float; }

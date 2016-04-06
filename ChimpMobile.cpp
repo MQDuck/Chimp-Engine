@@ -101,7 +101,7 @@ void ChimpMobile::jump()
     {
         if(platform == nullptr)
         {
-            //doubleJumped = true;
+            doubleJumped = true;
             velocityY = jump_impulse * double_jump_fraction;
         }
         else
@@ -122,7 +122,7 @@ void ChimpMobile::stopJumping()
 void ChimpMobile::sprint() { sprinting = true; }
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
-void ChimpMobile::update(ObjectVector& objects, const IntBox& screen, const IntBox& world)
+void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
     ChimpObject::update(objects, screen, world);
     if(!active)
@@ -148,12 +148,11 @@ void ChimpMobile::update(ObjectVector& objects, const IntBox& screen, const IntB
         coord.y -= collisionBottom() - platform->collisionTop();
     
     // (falling OR moved off previous plaform) AND not at bottom of screen
-    if(   (velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
-       && !approxZeroF(SCREEN_HEIGHT - coord.y - height) )
+    if( velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
     {
         accelerationY = GRAVITY;
         platform = nullptr;
-        for(std::unique_ptr<ChimpObject>& obj : objects)
+        for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
             if( touchesAtBottom(*obj) )
             {

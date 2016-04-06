@@ -32,20 +32,21 @@ typedef std::vector<ChimpTile> TileVec;
 class ChimpCharacter : public ChimpMobile
 {
 protected:
-    int maxHealth, health;
+    Uint32 idleTime; // 0 means not idleing
     size_t tileIndex;
     bool vulnerable;
-    TileVec tilesRun, tilesJump;
+    TileVec tilesRun, tilesJump, tilesIdle;
     Coordinate moveStart;
+    int maxHealth, health;
     
 public:
-    ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, SDL_Renderer* rend, const int pX, const int pY,
-                   const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
+    ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, SDL_Renderer* rend, const int pX,
+                   const int pY, const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
                    Faction enms = FACTION_VOID, const int maxH = 100);
+    ~ChimpCharacter() {}
     
     void makeInvulnerable() { vulnerable = false; }
     void makeVulnerable() { vulnerable = true; }
-    //unsigned int makeVulnerable(unsigned int interval, void* param) { vulnerable = true; }
     
     void runRight();
     void runLeft();
@@ -65,7 +66,7 @@ public:
     inline int getFriends() const { return friends; }
     inline int getEnemies() const { return enemies; }
     
-    void update(ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
     void render(const IntBox& screen);
 };
 

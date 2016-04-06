@@ -41,6 +41,7 @@ protected:
 public:
     ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX = 1,
                 const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
+    virtual ~ChimpMobile() {}
 
     virtual void runRight();
     virtual void runLeft();
@@ -89,7 +90,7 @@ public:
     bool getBoundBottom() const { return boundBottom; }
     void setBoundBottom(bool b) { boundBottom = b; }
 
-    virtual void update(ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
     
     //ChimpMobile& operator=(const ChimpMobile& rhs);
 };

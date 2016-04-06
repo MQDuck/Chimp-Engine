@@ -23,21 +23,24 @@
 namespace chimp
 {
 
-ChimpCharacter::ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, SDL_Renderer* rend, const int pX,
-                               const int pY, const int tilesX, const int tilesY, Faction frnds, Faction enms,
-                               const int maxH)
-    : ChimpMobile(tilRn[0], rend, pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
-      maxHealth(maxH)
+ChimpCharacter::ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, SDL_Renderer* rend,
+                               const int pX,const int pY, const int tilesX, const int tilesY, Faction frnds,
+                               Faction enms, const int maxH)
+    : ChimpMobile(tilIdl[0], rend, pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
+      tilesIdle(tilIdl), maxHealth(maxH)
 {
     health = maxHealth;
     vulnerable = true;
+    idleTime = 0;
 }
 
 void ChimpCharacter::runRight()
 {
+    idleTime = 0;
     if(!runningRight)
     {
         moveStart.x = coord.x;
+        tile = tilesRun[0];
         tileIndex = 0;
     }
     ChimpMobile::runRight();
@@ -45,9 +48,11 @@ void ChimpCharacter::runRight()
 
 void ChimpCharacter::runLeft()
 {
+    idleTime = 0;
     if(!runningLeft)
     {
         moveStart.x = coord.x;
+        tile = tilesRun[0];
         tileIndex = 0;
     }
     ChimpMobile::runLeft();
@@ -55,21 +60,21 @@ void ChimpCharacter::runLeft()
 
 void ChimpCharacter::jump()
 {
+    idleTime = 0;
     if(platform)
     {
-        tile = tilesJump[0];
         moveStart.x = coord.x;
+        tile = tilesJump[0];
         tileIndex = 0;
     }
     ChimpMobile::jump();
 }
 
-void ChimpCharacter::update(ObjectVector& objects, const IntBox& screen, const IntBox& world)
+void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {    
     if(active && vulnerable)
-        for(std::unique_ptr<ChimpObject>& obj : objects)
+        for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
-            //if(platform == &*obj)
             if( !(*obj).getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
                 continue;
             if( touches(*obj) && ( friends & (*obj).getEnemies()) )
@@ -84,7 +89,7 @@ void ChimpCharacter::update(ObjectVector& objects, const IntBox& screen, const I
                 health -= DAMAGE;
                 
                 makeInvulnerable();
-                SDL_AddTimer(500, vulnerableTimer, this);
+                SDL_AddTimer(INVULNERABLE_TIME, vulnerableTimer, this);
             }
         }
     
@@ -98,13 +103,7 @@ void ChimpCharacter::render(const IntBox& screen)
 {
     if(!platform)
     {
-        /*size_t in = std::abs((int)(coord.y-moveStart.y) / 100) % tilesJump.size();
-        if(tileIndex != in)
-        {
-            tile = tilesJump[in];
-            tileIndex = in;
-        }*/
-        if( (int)(coord.y-moveStart.y) / 100 )
+        if(int(coord.y-moveStart.y) / PIXELS_PER_FRAME_Y)
         {
             tileIndex = (tileIndex+1) % tilesJump.size();
             tile = tilesJump[tileIndex];
@@ -113,11 +112,27 @@ void ChimpCharacter::render(const IntBox& screen)
     }
     else if(runningLeft || runningRight)
     {
-        size_t in = std::abs((int)(coord.x-moveStart.x) / 50) % tilesRun.size();
+        size_t in = std::abs((int)(coord.x-moveStart.x) / PIXELS_PER_FRAME_X) % tilesRun.size();
         if(tileIndex != in)
         {
             tile = tilesRun[in];
             tileIndex = in;
+        }
+    }
+    else
+    {
+        Uint32 time = SDL_GetTicks();
+        if(idleTime == 0)
+        {
+            tileIndex = 0;
+            tile = tilesIdle[tileIndex];
+            idleTime = time;
+        }
+        else if( (time - idleTime) / TIME_PER_FRAME )
+        {
+            tileIndex = (tileIndex+1) % tilesIdle.size();
+            tile = tilesIdle[tileIndex];
+            idleTime = time;
         }
     }
     
