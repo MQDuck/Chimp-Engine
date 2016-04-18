@@ -7,13 +7,13 @@
 static const int
     SCREEN_WIDTH           = 1200,
     SCREEN_HEIGHT          = 690,
-    ACTIVE_ZONE            = 500,
-    INACTIVE_ZONE          = 1500,
-    FOLLOW_ZONE_X          = 350,
-    FOLLOW_ZONE_Y          = SCREEN_HEIGHT / 4,
+    ACTIVE_ZONE            = 750,   // Mobiles activate when this far from the screen.
+    INACTIVE_ZONE          = 1500,  // Mobiles deactivate when this far from the screen
+    FOLLOW_ZONE_X          = 350,   // maximum horizontal distance from player to screen edge
+    FOLLOW_ZONE_Y          = SCREEN_HEIGHT / 4, // maximum vertical distance from player to screen edge
     JOYSTICK_DEAD_ZONE     = 8000,
     FONT_SIZE              = 24,
-    INVULNERABLE_TIME      = 750,
+    INVULNERABLE_TIME      = 750,  // Character invulnerable time after being damaged in miliseconds
     PIXELS_PER_FRAME_X     = 50,   // for run animation
     PIXELS_PER_FRAME_Y     = 30;   // for jump animation    
 

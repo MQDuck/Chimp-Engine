@@ -50,11 +50,11 @@ protected:
     float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
     Faction friends, enemies;
-    Box<bool> damageBox;
     bool active;
     
 public: // make private/protected
     int width, height;
+    Box<bool> damageBox;
     
 public:
     ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,

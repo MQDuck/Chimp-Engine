@@ -374,12 +374,12 @@ void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer
 {
     chimp::TileVec runtiles = { tiles[14], tiles[15], tiles[16], tiles[17], tiles[18], tiles[19], tiles[20] };
     chimp::TileVec jumptiles = { tiles[21], tiles[22], tiles[23], tiles[24], tiles[25], tiles[26], tiles[27] };
-    chimp::TileVec idletiles{ tiles[28], tiles[28], tiles[29] };
+    chimp::TileVec idletiles = { tiles[28], tiles[28], tiles[29] };
     game.getPlayer() = new chimp::ChimpCharacter(runtiles, jumptiles, idletiles, renderer, SCREEN_WIDTH>>1, 400, 1, 1,
             chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
     
-    game.setWorldBox(-SCREEN_WIDTH>>1, SCREEN_WIDTH<<1, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
-    game.pushObj(chimp::BACK, tiles[12], -SCREEN_WIDTH>>1, 0, 5, 1);
+    game.setWorldBox(-SCREEN_WIDTH/2, SCREEN_WIDTH*2, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
+    game.pushObj(chimp::BACK, tiles[12], -SCREEN_WIDTH/2, 0, 5, 1);
     //game.pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);
     game.getPlayer()->setBoundLeft(true);
     game.getPlayer()->setBoundRight(true);

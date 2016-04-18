@@ -124,7 +124,17 @@ void ChimpMobile::stopSprinting() { sprinting = false; }
 
 void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
-    ChimpObject::update(objects, screen, world);
+    if     (  active && (   coord.x+width < screen.l - INACTIVE_ZONE
+                         || coord.x > screen.r + INACTIVE_ZONE
+                         || coord.y > screen.b + INACTIVE_ZONE
+                         || coord.y+height < screen.t - INACTIVE_ZONE) )
+        deactivate();
+    else if( !active && (   coord.x <= screen.r + ACTIVE_ZONE
+                         && coord.y+height >= screen.t - ACTIVE_ZONE
+                         && coord.x+width >= screen.l - ACTIVE_ZONE
+                         && coord.y <= screen.b + ACTIVE_ZONE) )
+        activate();
+    
     if(!active)
         return;
     
@@ -154,7 +164,10 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
         platform = nullptr;
         for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
-            if( touchesAtBottom(*obj) )
+            if(     (*obj).isActive()
+                &&  platform != &*obj 
+                && ( !(friends & (*obj).getEnemies()) || !(*obj).getDamageTop() )
+                && touchesAtBottom(*obj) )
             {
                 accelerationY = 0;
                 velocityY = 0;
