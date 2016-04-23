@@ -21,14 +21,14 @@
 
 namespace chimp
 {
-
 ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
     : ChimpObject(til, rend, pX, pY, tilesX, tilesY, frnds, enms)
 {
     accelerationY = GRAVITY;
     velocityX = 0;
-    velocityY = GRAVITY;
+    //velocityY = accelerationY;
+    velocityY = 0;
     runningRight = false;
     runningLeft = false;
     doubleJumped = false;
@@ -124,16 +124,7 @@ void ChimpMobile::stopSprinting() { sprinting = false; }
 
 void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
-    if     (  active && (   coord.x+width < screen.l - INACTIVE_ZONE
-                         || coord.x > screen.r + INACTIVE_ZONE
-                         || coord.y > screen.b + INACTIVE_ZONE
-                         || coord.y+height < screen.t - INACTIVE_ZONE) )
-        deactivate();
-    else if( !active && (   coord.x <= screen.r + ACTIVE_ZONE
-                         && coord.y+height >= screen.t - ACTIVE_ZONE
-                         && coord.x+width >= screen.l - ACTIVE_ZONE
-                         && coord.y <= screen.b + ACTIVE_ZONE) )
-        activate();
+    ChimpObject::update(objects, screen, world);
     
     if(!active)
         return;
@@ -157,7 +148,6 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
     if( platform && collisionBottom() > platform->collisionTop() )
         coord.y -= collisionBottom() - platform->collisionTop();
     
-    // (falling OR moved off previous plaform) AND not at bottom of screen
     if( velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
     {
         accelerationY = GRAVITY;
