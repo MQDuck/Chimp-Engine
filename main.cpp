@@ -394,8 +394,6 @@ void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer
     game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
     game.getObjBack(chimp::MID).runRight();
     game.getObjBack(chimp::MID).setJumper(true);
-    
-    game.initialize();
 }
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
@@ -493,6 +491,7 @@ inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* fo
         SDL_QueryTexture(currentHealthTex, NULL, NULL, &w2, &h);
     }
     
+    //x = (SCREEN_WIDTH - w1 - w2)>>1;
     x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);

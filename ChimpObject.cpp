@@ -14,7 +14,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <cmath>
@@ -57,17 +57,12 @@ void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, cons
     else
     {
         if(   coord.x <= screen.r + ACTIVE_ZONE
-           && coord.y+height >= screen.t - ACTIVE_ZONE
+           && coord.y+height >= screen.t- ACTIVE_ZONE
            && coord.x+width >= screen.l - ACTIVE_ZONE
            && coord.y <= screen.b + ACTIVE_ZONE)
             activate();
     }
 }
-
-void ChimpObject::initialize(const IntBox &screen)
-{
-}
-
 #pragma GCC diagnostic pop
 
 void ChimpObject::render(const IntBox& screen)

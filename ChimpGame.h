@@ -70,7 +70,6 @@ public:
     inline void translateScreenX(const int x);
     inline void translateScreenY(const int y);
     
-    void initialize();
     void update();
     void render();
 };

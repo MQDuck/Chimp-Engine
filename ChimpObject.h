@@ -46,7 +46,7 @@ class ChimpObject
 protected:
     ChimpTile tile;
     SDL_Renderer* renderer;
-    Coordinate coord, coordInitial, center;
+    Coordinate coord, center;
     float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
     Faction friends, enemies;
@@ -95,7 +95,6 @@ public:
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    void initialize(const IntBox& screen);
     virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
     virtual void render(const IntBox& screen);
     
