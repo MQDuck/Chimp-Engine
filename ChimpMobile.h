@@ -33,6 +33,7 @@ class ChimpMobile : public ChimpObject
 protected:
     bool runningRight, runningLeft, doubleJumped, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom;
     ChimpObject* platform; // pointer to object this mobile is standing on, nullptr if none
+    Coordinate coordInitial;
 
     float accelerationY, velocityX, velocityY;
     float run_impulse, run_accel, jump_impulse, double_jump_fraction, jump_accel, stop_factor, sprint_factor,
@@ -48,6 +49,8 @@ public:
     virtual void stopRunningRight();
     virtual void stopRunningLeft();
     virtual void stopRunning();
+    virtual void activate();
+    virtual void deactivate();
     void accelerateRight();
     void accelerateLeft();
     virtual void jump();

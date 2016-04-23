@@ -62,6 +62,8 @@ public:
                 Faction enms = FACTION_VOID);
     virtual ~ChimpObject() {}
     
+    void initialize(const IntBox& screen);
+    
     inline int getX() const { return coord.x; }
     inline int getY() const { return coord.y; }
     inline int getCenterX() const { return coord.x + center.x; }
@@ -89,8 +91,9 @@ public:
     inline bool getDamageBottom() const { return damageBox.b; }
     inline void setDamageBottom(const bool bl) { damageBox.b = bl; }
     inline bool isActive() const { return active; }
-    inline void activate() { active = true; }
-    inline void deactivate() { active = false; }
+    inline bool onScreen(const IntBox& screen) const;
+    virtual void activate() { active = true; }
+    virtual void deactivate() { active = false; }
     
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;

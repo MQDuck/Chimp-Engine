@@ -394,6 +394,8 @@ void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer
     game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
     game.getObjBack(chimp::MID).runRight();
     game.getObjBack(chimp::MID).setJumper(true);
+    
+    game.initialize();
 }
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)

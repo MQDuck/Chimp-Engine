@@ -42,6 +42,12 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     active = false;
 }
 
+void ChimpObject::initialize(const IntBox& screen)
+{
+    if( onScreen(screen) )
+        activate();
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
@@ -57,9 +63,10 @@ void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, cons
     else
     {
         if(   coord.x <= screen.r + ACTIVE_ZONE
-           && coord.y+height >= screen.t- ACTIVE_ZONE
+           && coord.y+height >= screen.t - ACTIVE_ZONE
            && coord.x+width >= screen.l - ACTIVE_ZONE
-           && coord.y <= screen.b + ACTIVE_ZONE)
+           && coord.y <= screen.b + ACTIVE_ZONE
+           && !onScreen(screen) )
             activate();
     }
 }
@@ -77,6 +84,11 @@ void ChimpObject::render(const IntBox& screen)
             tile.drawRect.y = std::round(coord.y + y - screen.t);
             SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &tile.drawRect, 0, NULL, flip);
         }
+}
+
+bool ChimpObject::onScreen(const IntBox& screen) const
+{
+    return coord.x <= screen.r && coord.y+height >= screen.t && coord.x+width >= screen.l && coord.y <= screen.b;
 }
 
 /*ChimpObject& ChimpObject::operator=(const ChimpObject& rhs)

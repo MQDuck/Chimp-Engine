@@ -25,6 +25,8 @@ ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX,
                          const int tilesY, Faction frnds, Faction enms)
     : ChimpObject(til, rend, pX, pY, tilesX, tilesY, frnds, enms)
 {
+    coordInitial.x = pX;
+    coordInitial.y = pY;
     accelerationY = GRAVITY;
     velocityX = 0;
     //velocityY = accelerationY;
@@ -53,7 +55,6 @@ ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX,
 
 void ChimpMobile::runRight()
 {
-    //cout << "running right" << endl;
     if( approxZeroF(velocityX) )
         velocityX += run_impulse - velocityX * resistance_x;
     runningRight = true;
@@ -63,7 +64,6 @@ void ChimpMobile::runRight()
 
 void ChimpMobile::runLeft()
 {
-    //cout << "running left" << endl;
     if( approxZeroF(velocityX) )
         velocityX -= run_impulse - velocityX * resistance_x;
     runningLeft = true;
@@ -122,6 +122,16 @@ void ChimpMobile::stopJumping()
 void ChimpMobile::sprint() { sprinting = true; }
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
+void ChimpMobile::activate()
+{
+    ChimpObject::activate();
+}
+
+void ChimpMobile::deactivate()
+{
+    ChimpObject::deactivate();
+}
+
 void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
     ChimpObject::update(objects, screen, world);
@@ -154,10 +164,10 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
         platform = nullptr;
         for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
-            if(     (*obj).isActive() // will probably cause problems for non-player characters on non-mobile objects. figure out best fix later.
-                &&  platform != &*obj 
-                && ( !(friends & (*obj).getEnemies()) || !(*obj).getDamageTop() )
-                && touchesAtBottom(*obj) )
+            if(   (*obj).isActive()
+               && platform != &*obj 
+               && ( !(friends & (*obj).getEnemies()) || !(*obj).getDamageTop() )
+               && touchesAtBottom(*obj) )
             {
                 accelerationY = 0;
                 velocityY = 0;
