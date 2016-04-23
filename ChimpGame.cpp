@@ -135,6 +135,16 @@ void ChimpGame::pushChar(const Layer lay, const ChimpTile &til, const int x, con
     pushChar(lay, tVec, tVec, tVec, x, y, tilesX, tilesY, maxH, frnds, enms);
 }
 
+void ChimpGame::initialize()
+{
+    for(auto& obj : background)
+        (*obj).initialize(screen);
+    for(auto& obj : middle)
+        (*obj).initialize(screen);
+    for(auto& obj : foreground)
+        (*obj).initialize(screen);
+}
+
 void ChimpGame::update()
 {
     IntBox mScreen = screen;
