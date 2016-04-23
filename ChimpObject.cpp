@@ -46,21 +46,32 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
-    if     (  active && (   coord.x+width < screen.l
-                         || coord.x > screen.r
-                         || coord.y > screen.b
-                         || coord.y+height < screen.t) )
-        deactivate();
-    else if( !active && (   coord.x <= screen.r
-                         && coord.y+height >= screen.t
-                         && coord.x+width >= screen.l
-                         && coord.y <= screen.b) )
-        activate();
+    if(active)
+    {
+        if(   coord.x+width < screen.l
+           || coord.x > screen.r
+           || coord.y > screen.b
+           || coord.y+height < screen.t)
+        {
+            deactivate();
+            std::cout << "deactivating" << std::endl;
+        }
+    }
+    else
+    {
+        if(   coord.x <= screen.r
+           && coord.y+height >= screen.t
+           && coord.x+width >= screen.l
+           && coord.y <= screen.b)
+            activate();
+    }
 }
 #pragma GCC diagnostic pop
 
 void ChimpObject::render(const IntBox& screen)
 {
+    if(!active)
+        return;
     // It remains to be seen if not rounding ever makes a perceivable difference. Perhaps while standing on an edge?
     for(int x = 0; x < width; x += tile.drawRect.w)
         for(int y = 0; y < height; y += tile.drawRect.h)

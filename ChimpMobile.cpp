@@ -164,7 +164,7 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
         platform = nullptr;
         for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
-            if(     (*obj).isActive()
+            if(     (*obj).isActive() // will probably cause problems for non-player characters on non-mobile objects. figure out best fix later.
                 &&  platform != &*obj 
                 && ( !(friends & (*obj).getEnemies()) || !(*obj).getDamageTop() )
                 && touchesAtBottom(*obj) )
