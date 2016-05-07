@@ -24,12 +24,13 @@ namespace chimp
 
 ChimpGame::ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr) : renderer(rend), player(plyr)
 {
-    screen.l = 0;
-    screen.r = SCREEN_WIDTH;
-    screen.t = 0;
-    screen.b = SCREEN_HEIGHT;
-    
-    worldBox = screen;
+    midWindow.l = 0;
+    midWindow.r = SCREEN_WIDTH;
+    midWindow.t = 0;
+    midWindow.b = SCREEN_HEIGHT;
+    backWindow = midWindow;
+    foreWindow = midWindow;
+    worldBox = midWindow;
 }
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
@@ -138,49 +139,47 @@ void ChimpGame::pushChar(const Layer lay, const ChimpTile &til, const int x, con
 void ChimpGame::initialize()
 {
     for(auto& obj : background)
-        (*obj).initialize(screen);
+        obj->initialize(midWindow);
     for(auto& obj : middle)
-        (*obj).initialize(screen);
+        obj->initialize(midWindow);
     for(auto& obj : foreground)
-        (*obj).initialize(screen);
+        obj->initialize(midWindow);
     
-    player->initialize(screen);
+    player->initialize(midWindow);
 }
 
 void ChimpGame::update()
 {
-    IntBox mScreen = screen;
+    IntBox mScreen = midWindow;
     IntBox mWorld = worldBox;
     
     for(auto& obj : background)
-        (*obj).update(background, mScreen, mWorld);
+        obj->update(background, mScreen, mWorld);
     for(auto& obj : middle)
-        (*obj).update(middle, mScreen, mWorld);
+        obj->update(middle, mScreen, mWorld);
     player->update(middle, mScreen, mWorld);
     for(auto& obj : foreground)
-        (*obj).update(foreground, mScreen, mWorld);
+        obj->update(foreground, mScreen, mWorld);
     
-    if(player->getX() + player->getWidth() > screen.r - FOLLOW_ZONE_X && screen.r < worldBox.r)
-        translateScreenX(player->getX() + player->getWidth() + FOLLOW_ZONE_X - screen.r);
-    else if(player->getX() - screen.l < FOLLOW_ZONE_X && screen.l > worldBox.l)
-        translateScreenX(player->getX() - FOLLOW_ZONE_X - screen.l);
-    if(player->getY() - screen.t < FOLLOW_ZONE_Y && screen.t > worldBox.t)
-        translateScreenY(player->getY() - FOLLOW_ZONE_Y - screen.t);
-    else if(player->getY() + player->getHeight() > screen.b - FOLLOW_ZONE_Y && screen.b < worldBox.b)
-        translateScreenY(player->getY() + player->getHeight() + FOLLOW_ZONE_Y - screen.b);
+    if(player->getX() + player->getWidth() > midWindow.r - FOLLOW_ZONE_X && midWindow.r < worldBox.r)
+        translateScreenX(player->getX() + player->getWidth() + FOLLOW_ZONE_X - midWindow.r);
+    else if(player->getX() - midWindow.l < FOLLOW_ZONE_X && midWindow.l > worldBox.l)
+        translateScreenX(player->getX() - FOLLOW_ZONE_X - midWindow.l);
+    if(player->getY() - midWindow.t < FOLLOW_ZONE_Y && midWindow.t > worldBox.t)
+        translateScreenY(player->getY() - FOLLOW_ZONE_Y - midWindow.t);
+    else if(player->getY() + player->getHeight() > midWindow.b - FOLLOW_ZONE_Y && midWindow.b < worldBox.b)
+        translateScreenY(player->getY() + player->getHeight() + FOLLOW_ZONE_Y - midWindow.b);
 }
 
 void ChimpGame::render()
 {
-    const IntBox* mScreen = &screen;
-    
     for(auto& obj : background)
-        (*obj).render( *mScreen );
+        obj->render(backWindow);
     for(auto& obj : middle)
-        (*obj).render(*mScreen);
-    player->render(*mScreen);
+        obj->render(midWindow);
+    player->render(midWindow);
     for(auto& obj : foreground)
-        (*obj).render(*mScreen);
+        obj->render(foreWindow);
 }
 
 

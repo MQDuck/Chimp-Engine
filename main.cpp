@@ -383,6 +383,7 @@ void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer
     //game.pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);
     game.getPlayer()->setBoundLeft(true);
     game.getPlayer()->setBoundRight(true);
+    game.getPlayer()->setRespawn(false);
     game.pushObj(chimp::MID, tiles[7], -SCREEN_WIDTH>>1, 0, 8, 1);
     game.pushObj(chimp::MID, tiles[8], game.getObjBack(chimp::MID).collisionRight(), 0, 1, 1);
     game.pushObj(chimp::MID, tiles[10], (SCREEN_WIDTH<<1) - tiles[10].textureRect.w*2, tiles[7].textureRect.h*1.5, 2, 1);
@@ -394,6 +395,8 @@ void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer
     game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
     game.getObjBack(chimp::MID).runRight();
     game.getObjBack(chimp::MID).setJumper(true);
+    
+    game.pushObj(chimp::FORE, tiles[30], 0, 0, 1, 1);
     
     game.initialize();
 }

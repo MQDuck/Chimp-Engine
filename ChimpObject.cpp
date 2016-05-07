@@ -22,6 +22,18 @@
 
 namespace chimp
 {
+
+/**
+ * @brief ChimpObject::ChimpObject()
+ * @param til Object's ChimpTile
+ * @param rend SDL renderer that should be drawn to
+ * @param pX Object's initial x-position
+ * @param pY Object's initial y-position
+ * @param tilesX How many times the ChimpTile should be tiled to the right.
+ * @param tilesY How many times the ChimpTile should be tiled down.
+ * @param frnds Factions to which the Object belongs.
+ * @param enms Factions which the Object can deal damage to.
+ */
 ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
     : tile(til), renderer(rend), friends(frnds), enemies(enms), width(tile.drawRect.w*tilesX),
@@ -42,6 +54,14 @@ ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     active = false;
 }
 
+/**
+ * @brief ChimpObject::initialize()
+ * 
+ * Should be run once for each object after it's added to the game. For Objects added at the start of the game, this
+ * should be called only after all Objects are added.
+ * 
+ * @param screen Current window for this Object's game layer.
+ */
 void ChimpObject::initialize(const IntBox& screen)
 {
     if( onScreen(screen) )
@@ -50,6 +70,15 @@ void ChimpObject::initialize(const IntBox& screen)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+/**
+ * @brief ChimpObject::update()
+ * 
+ * This method should be called once every frame. Objects 
+ * 
+ * @param objects Vector for the game layer in which this Object resides.
+ * @param screen Current window for this Object's game layer.
+ * @param world Game world boundaries object.
+ */
 void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
     if(active)
@@ -72,6 +101,13 @@ void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, cons
 }
 #pragma GCC diagnostic pop
 
+/**
+ * @brief ChimpObject::render()
+ * 
+ * Draws this Object to the screen.
+ * 
+ * @param screen Current window for this Object's game layer.
+ */
 void ChimpObject::render(const IntBox& screen)
 {
     if(!active)
@@ -86,6 +122,12 @@ void ChimpObject::render(const IntBox& screen)
         }
 }
 
+/**
+ * @brief ChimpObject::onScreen()
+ * 
+ * @param screen Current window for this Object's game layer.
+ * @return true if this Object is at least partially inside the passed screen boundaries
+ */
 bool ChimpObject::onScreen(const IntBox& screen) const
 {
     return coord.x <= screen.r && coord.y+height >= screen.t && coord.x+width >= screen.l && coord.y <= screen.b;

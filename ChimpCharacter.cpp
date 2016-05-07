@@ -23,6 +23,20 @@
 namespace chimp
 {
 
+/**
+ * @brief ChimpCharacter::ChimpCharacter()
+ * @param tilRn Character's run ChimpTiles
+ * @param tilJmp Character's jump ChimpTiles
+ * @param tilIdl Character's idle ChimpTiles
+ * @param rend SDL renderer that should be drawn to
+ * @param pX Object's initial x-position
+ * @param pY Object's initial y-position
+ * @param tilesX How many times the ChimpTile should be tiled to the right.
+ * @param tilesY How many times the ChimpTile should be tiled down.
+ * @param frnds Factions to which the Object belongs.
+ * @param enms Factions which the Object can deal damage to.
+ * @param maxH Charcter's maximum health
+ */
 ChimpCharacter::ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, SDL_Renderer* rend,
                                const int pX,const int pY, const int tilesX, const int tilesY, Faction frnds,
                                Faction enms, const int maxH)
@@ -34,6 +48,11 @@ ChimpCharacter::ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, Tile
     idleTime = 0;
 }
 
+/**
+ * @brief ChimpCharacter::runRight()
+ * 
+ * Called when a Character begins running right.
+ */
 void ChimpCharacter::runRight()
 {
     idleTime = 0;
@@ -46,6 +65,11 @@ void ChimpCharacter::runRight()
     ChimpMobile::runRight();
 }
 
+/**
+ * @brief ChimpCharacter::runLeft()
+ * 
+ * Called when a Character begins running left.
+ */
 void ChimpCharacter::runLeft()
 {
     idleTime = 0;
@@ -58,6 +82,11 @@ void ChimpCharacter::runLeft()
     ChimpMobile::runLeft();
 }
 
+/**
+ * @brief ChimpCharacter::jump()
+ * 
+ * Called when a Character tries to jump.
+ */
 void ChimpCharacter::jump()
 {
     idleTime = 0;
@@ -70,17 +99,26 @@ void ChimpCharacter::jump()
     ChimpMobile::jump();
 }
 
+/**
+ * @brief ChimpCharacter::update
+ * 
+ * Calls ChimpMobile::update(). This method is where Characters take damage and/or die.
+ * 
+ * @param objects Vector for the game layer in which this Character resides.
+ * @param screen Current window for this Character's game layer.
+ * @param world Game world boundaries object.
+ */
 void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {    
     if(active && vulnerable)
         for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
-            if( !(*obj).getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
+            if( !obj->getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
                 continue;
-            if( touches(*obj) && ( friends & (*obj).getEnemies()) )
+            if( touches(*obj) && ( friends & obj->getEnemies()) )
             {
-                float x = getCenterX() - (*obj).getCenterX();
-                float y = getCenterY() - (*obj).getCenterY();
+                float x = getCenterX() - obj->getCenterX();
+                float y = getCenterY() - obj->getCenterY();
                 float invMag = 1.0 / std::sqrt(x*x + y*y);
                 
                 velocityX = DAMAGE_VELOCITY * x * invMag;
@@ -99,6 +137,13 @@ void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, c
         health = 0;
 }
 
+/**
+ * @brief ChimpCharacter::render()
+ * 
+ * Calls ChimpMobile::update(). Animates this Character by cycling through the appropriate ChimpTile vector.
+ * 
+ * @param screen Current window for this Character's game layer.
+ */
 void ChimpCharacter::render(const IntBox& screen)
 {
     if(!platform)

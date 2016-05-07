@@ -31,9 +31,11 @@ static const float
     SPRINT_FACTOR          = 2.0,  // x acceleration scales by this when sprinting
     RESISTANCE_X           = 0.05, // x acceleration is reduced by the product of this and x velocity
     RESISTANCE_Y           = 0.1,  // y acceleration is reduced by the product of this and y velocity
-    APPROX_ZERO_Y_FACTOR   = 1.0,//0.90;
-    DAMAGE_VELOCITY        = 15.0,
-    DAMAGE                 = 10.0;
+    APPROX_ZERO_Y_FACTOR   = 1.0,//0.90,
+    DAMAGE_VELOCITY        = 20.0, // when a character takes damage from an object, it gains velocity equal to this radially from object's center
+    DAMAGE                 = 10.0, // enemy damage
+    SCROLL_BACK_FACTOR     = 0.1,  // background window location as a multiple of middle window position
+    SCROLL_FORE_FACTOR     = 1.25; // foreground window location as a multiple of middle window position
 
 static /*const*/ std::string
     TEXTURE_DELIMITER      = ";",
@@ -46,6 +48,6 @@ static /*const*/ std::string
     TEXT_HEALTH            = "Health: ";
 
 static const SDL_Color
-    FONT_COLOR             = {0, 0, 0, 255};
+    FONT_COLOR             = {0, 0, 0, 255}; // HUD font color
 
 #endif // CHIMPCONSTANTS_H

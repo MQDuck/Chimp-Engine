@@ -90,8 +90,11 @@ public:
     inline void setDamageTop(const bool bl) { damageBox.t = bl; }
     inline bool getDamageBottom() const { return damageBox.b; }
     inline void setDamageBottom(const bool bl) { damageBox.b = bl; }
+    virtual ChimpTile& getChimpTile() { return tile; }
+    
     inline bool isActive() const { return active; }
     inline bool onScreen(const IntBox& screen) const;
+    
     virtual void activate() { active = true; }
     virtual void deactivate() { active = false; }
     

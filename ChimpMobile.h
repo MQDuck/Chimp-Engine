@@ -31,7 +31,8 @@ namespace chimp
 class ChimpMobile : public ChimpObject
 {
 protected:
-    bool runningRight, runningLeft, doubleJumped, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom;
+    bool runningRight, runningLeft, doubleJumped, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom,
+         respawn;
     ChimpObject* platform; // pointer to object this mobile is standing on, nullptr if none
     Coordinate coordInitial;
 
@@ -49,7 +50,7 @@ public:
     virtual void stopRunningRight();
     virtual void stopRunningLeft();
     virtual void stopRunning();
-    virtual void activate();
+    //virtual void activate();
     virtual void deactivate();
     void accelerateRight();
     void accelerateLeft();
@@ -84,14 +85,16 @@ public:
     void setResistanceX(const float resistance) { resistance_x = resistance; }
     float getResistanceY() const { return resistance_y; }
     void setResistanceY(const float resistance);
-    bool getBoundLeft() const { return boundLeft; }
-    void setBoundLeft(bool b) { boundLeft = b; }
-    bool getBoundRight() const { return boundRight; }
-    void setBoundRight(bool b) { boundRight = b; }
-    bool getBoundTop() const { return boundTop; }
-    void setBoundTop(bool b) { boundTop = b; }
-    bool getBoundBottom() const { return boundBottom; }
-    void setBoundBottom(bool b) { boundBottom = b; }
+    inline bool getBoundLeft() const { return boundLeft; }
+    inline void setBoundLeft(bool b) { boundLeft = b; }
+    inline bool getBoundRight() const { return boundRight; }
+    inline void setBoundRight(bool b) { boundRight = b; }
+    inline bool getBoundTop() const { return boundTop; }
+    inline void setBoundTop(bool b) { boundTop = b; }
+    inline bool getBoundBottom() const { return boundBottom; }
+    inline void setBoundBottom(bool b) { boundBottom = b; }
+    inline bool getRespawn() const { return respawn; }
+    inline void setRespawn(const bool pd) { respawn = pd; }
 
     virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
     

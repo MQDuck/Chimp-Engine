@@ -21,6 +21,18 @@
 
 namespace chimp
 {
+
+/**
+ * @brief ChimpMobile::ChimpMobile()
+ * @param til Mobile's ChimpTile
+ * @param rend SDL renderer that should be drawn to
+ * @param pX Object's initial x-position
+ * @param pY Object's initial y-position
+ * @param tilesX How many times the ChimpTile should be tiled to the right.
+ * @param tilesY How many times the ChimpTile should be tiled down.
+ * @param frnds Factions to which the Object belongs.
+ * @param enms Factions which the Object can deal damage to.
+ */
 ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
     : ChimpObject(til, rend, pX, pY, tilesX, tilesY, frnds, enms)
@@ -41,6 +53,7 @@ ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     boundTop = false;
     boundBottom = false;
     platform = nullptr;
+    respawn = true;
     
     setRunImpulse(RUN_IMPULSE);
     run_accel = RUN_ACCEL;
@@ -53,6 +66,11 @@ ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX,
     setResistanceY(RESISTANCE_Y);
 }
 
+/**
+ * @brief ChimpMobile::runRight()
+ * 
+ * Called when a Mobile begins moving right.
+ */
 void ChimpMobile::runRight()
 {
     if( approxZeroF(velocityX) )
@@ -62,6 +80,11 @@ void ChimpMobile::runRight()
     flip = SDL_FLIP_NONE;
 }
 
+/**
+ * @brief ChimpMobile::runLeft()
+ * 
+ * Called when a Mobile begins moving right.
+ */
 void ChimpMobile::runLeft()
 {
     if( approxZeroF(velocityX) )
@@ -79,6 +102,11 @@ void ChimpMobile::stopRunning()
     runningLeft = false;
 }
 
+/**
+ * @brief ChimpMobile::accelerateRight()
+ * 
+ * Called by update() while the Mobile is running right.
+ */
 void ChimpMobile::accelerateRight()
 {
     if(sprinting && velocityX > -approx_zero_float)
@@ -87,6 +115,11 @@ void ChimpMobile::accelerateRight()
         velocityX += run_accel - velocityX*resistance_x;
 }
 
+/**
+ * @brief ChimpMobile::accelerateLeft()
+ * 
+ * Called by update() while the Mobile is running left.
+ */
 void ChimpMobile::accelerateLeft()
 {
     if(sprinting && velocityX < approx_zero_float)
@@ -95,6 +128,12 @@ void ChimpMobile::accelerateLeft()
         velocityX += -run_accel - velocityX * resistance_x;
 }
 
+/**
+ * @brief ChimpMobile::jump()
+ * 
+ * Called when a Mobile tries to jump. Mobiles can double jump. If the mobile is not standing on a platform and has
+ * already double jumped, this method does nothing.
+ */
 void ChimpMobile::jump()
 {
     if(!doubleJumped)
@@ -113,25 +152,58 @@ void ChimpMobile::jump()
     }
 }
 
+/**
+ * @brief ChimpMobile::stopJumping
+ * 
+ * Called automatically when a jumpbing Mobile's velocity reaches zero. Designed to also be called when the player lets
+ * go of the jump button while their Character is jumping.
+ */
 void ChimpMobile::stopJumping()
 {
     if(!platform)
         accelerationY = GRAVITY;
 }
 
+/**
+ * @brief ChimpMobile::sprint()
+ * 
+ * Designed to be called when the player holds the run button.
+ */
 void ChimpMobile::sprint() { sprinting = true; }
+
+/**
+ * @brief ChimpMobile::stopSprinting()
+ * 
+ * Designed to be called when the player releases the run button.
+ */
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
-void ChimpMobile::activate()
+/*void ChimpMobile::activate()
 {
     ChimpObject::activate();
-}
+}*/
 
+/**
+ * @brief ChimpMobile::deactivate()
+ * 
+ * calls ChimpObject::deactivate(). This Mobile is returned to their initial position.
+ */
 void ChimpMobile::deactivate()
 {
     ChimpObject::deactivate();
+    if(respawn)
+        coord = coordInitial;
 }
 
+/**
+ * @brief ChimpMobile::update()
+ * 
+ * Calls ChimpObject::update(). Updates Mobile's position and platform.
+ * 
+ * @param objects Vector for the game layer in which this Mobile resides.
+ * @param screen Current window for this Mobile's game layer.
+ * @param world Game world boundaries object.
+ */
 void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
 {
     ChimpObject::update(objects, screen, world);
@@ -164,14 +236,14 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
         platform = nullptr;
         for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
-            if(   (*obj).isActive()
+            if(   obj->isActive()
                && platform != &*obj 
-               && ( !(friends & (*obj).getEnemies()) || !(*obj).getDamageTop() )
+               && ( !(friends & obj->getEnemies()) || !obj->getDamageTop() )
                && touchesAtBottom(*obj) )
             {
                 accelerationY = 0;
                 velocityY = 0;
-                coord.y = (*obj).collisionTop() - height + tile.collisionBox.b;
+                coord.y = obj->collisionTop() - height + tile.collisionBox.b;
                 doubleJumped = false;
                 platform = &*obj;
                 break;
@@ -210,12 +282,26 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
     }
 }
 
+/**
+ * @brief ChimpMobile::setRunImpulse()
+ * 
+ * Sets ChimpMobile::run_impulse and uses it to set approx_zero_float.
+ * 
+ * @param impulse Value for run_impulse.
+ */
 void ChimpMobile::setRunImpulse(const float impulse)
 {
     run_impulse = impulse;
     approx_zero_float = run_impulse / 4.0;
 }
 
+/**
+ * @brief ChimpMobile::setResistanceY
+ * 
+ * Sets resistance_y and uses it to set approx_zero_y.
+ * 
+ * @param resistance Value for resistance_y
+ */
 void ChimpMobile::setResistanceY(const float resistance)
 {
     resistance_y = resistance;

@@ -41,7 +41,7 @@ private:
     SDL_Renderer* renderer;
     ChimpCharacter* player;
     ObjectVector background, middle, foreground;
-    IntBox screen, worldBox;
+    IntBox midWindow, backWindow, foreWindow, worldBox;
     
 public:
     ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr = nullptr);
@@ -77,36 +77,46 @@ public:
 
 inline void ChimpGame::translateScreenX(const int x)
 {
-    screen.l += x;
-    screen.r += x;
+    midWindow.l += x;
+    midWindow.r += x;
     
-    if(screen.l < worldBox.l)
+    if(midWindow.l < worldBox.l)
     {
-        screen.r += worldBox.l - screen.l;
-        screen.l = worldBox.l;
+        midWindow.r += worldBox.l - midWindow.l;
+        midWindow.l = worldBox.l;
     }
-    else if(screen.r > worldBox.r)
+    else if(midWindow.r > worldBox.r)
     {
-        screen.l += worldBox.r - screen.r;
-        screen.r = worldBox.r;
+        midWindow.l += worldBox.r - midWindow.r;
+        midWindow.r = worldBox.r;
     }
+    
+    backWindow.l = midWindow.l * SCROLL_BACK_FACTOR;
+    backWindow.r = midWindow.r * SCROLL_BACK_FACTOR;
+    foreWindow.l = midWindow.l * SCROLL_FORE_FACTOR;
+    foreWindow.r = midWindow.r * SCROLL_FORE_FACTOR;
 }
 
 inline void ChimpGame::translateScreenY(const int y)
 {
-    screen.t += y;
-    screen.b += y;
+    midWindow.t += y;
+    midWindow.b += y;
     
-    if(screen.t < worldBox.t)
+    if(midWindow.t < worldBox.t)
     {
-        screen.b += worldBox.t - screen.t;
-        screen.t = worldBox.t;
+        midWindow.b += worldBox.t - midWindow.t;
+        midWindow.t = worldBox.t;
     }
-    else if(screen.b > worldBox.b)
+    else if(midWindow.b > worldBox.b)
     {
-        screen.t += worldBox.b - screen.b;
-        screen.b = worldBox.b;
+        midWindow.t += worldBox.b - midWindow.b;
+        midWindow.b = worldBox.b;
     }
+    
+    backWindow.t = midWindow.t * SCROLL_BACK_FACTOR;
+    backWindow.b = midWindow.b * SCROLL_BACK_FACTOR;
+    foreWindow.t = midWindow.t * SCROLL_FORE_FACTOR;
+    foreWindow.b = midWindow.b * SCROLL_FORE_FACTOR;
 }
 
 } // namespace chimp
