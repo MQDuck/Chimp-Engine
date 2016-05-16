@@ -73,6 +73,7 @@ public:
     void initialize();
     void update();
     void render();
+    void reset();
 };
 
 inline void ChimpGame::translateScreenX(const int x)

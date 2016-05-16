@@ -22,16 +22,7 @@
 namespace chimp
 {
 
-ChimpGame::ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr) : renderer(rend), player(plyr)
-{
-    midWindow.l = 0;
-    midWindow.r = SCREEN_WIDTH;
-    midWindow.t = 0;
-    midWindow.b = SCREEN_HEIGHT;
-    backWindow = midWindow;
-    foreWindow = midWindow;
-    worldBox = midWindow;
-}
+ChimpGame::ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr) : renderer(rend), player(plyr) {}
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
 {
@@ -138,6 +129,13 @@ void ChimpGame::pushChar(const Layer lay, const ChimpTile &til, const int x, con
 
 void ChimpGame::initialize()
 {
+    midWindow.l = 0;
+    midWindow.r = SCREEN_WIDTH;
+    midWindow.t = 0;
+    midWindow.b = SCREEN_HEIGHT;
+    backWindow = midWindow;
+    foreWindow = midWindow;
+    
     for(auto& obj : background)
         obj->initialize(midWindow);
     for(auto& obj : middle)
@@ -180,6 +178,19 @@ void ChimpGame::render()
     player->render(midWindow);
     for(auto& obj : foreground)
         obj->render(foreWindow);
+}
+
+void ChimpGame::reset()
+{
+    for(auto& obj : background)
+        obj->reset();
+    for(auto& obj : middle)
+        obj->reset();
+    player->reset();
+    for(auto& obj : foreground)
+        obj->reset();
+    
+    initialize();
 }
 
 

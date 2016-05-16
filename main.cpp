@@ -60,6 +60,8 @@ inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* fo
 //chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
 void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer, chimp::ChimpGame& game);
 
+static Uint32 resetTimer(Uint32 interval, void* game);
+
 //int main(int argc, char** argv)
 int main()
 {    
@@ -175,6 +177,16 @@ int main()
         game.render();
         drawHUD(game, renderer, font, healthTex);
         SDL_RenderPresent(renderer);
+        if( game.getPlayer()->getHealth() <= 0 && game.getPlayer()->isActive() )
+        {
+            game.getPlayer()->deactivate();
+            SDL_AddTimer(GAME_OVER_TIME, resetTimer, &game);
+        }
+        /*{
+            SDL_Delay(INVULNERABLE_TIME);
+            game.reset();
+        }*/
+        
         
         SDL_Delay(1);
     }
@@ -401,6 +413,15 @@ void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer
     game.initialize();
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static Uint32 resetTimer(Uint32 interval, void* game)
+{
+    ((chimp::ChimpGame*)game)->reset();
+    return 0;
+}
+#pragma GCC diagnostic pop
+
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
 {
     switch(event.key.keysym.sym)
@@ -484,7 +505,16 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game)
 inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
 {
     static int oldHealth, w1, w2, h, x;
-    static SDL_Texture* currentHealthTex;
+    static SDL_Texture* currentHealthTex = nullptr;
+    static SDL_Texture* gameOverTex = nullptr;
+    static int gameOverX, gameOverY;
+    if(!gameOverTex)
+    {
+        gameOverTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
+        SDL_QueryTexture(gameOverTex, nullptr, nullptr, &gameOverX, &gameOverY);
+        gameOverX = (SCREEN_WIDTH - gameOverX) >> 1;
+        gameOverY = (SCREEN_HEIGHT - gameOverY) >> 1;
+    }
     
     if(oldHealth != game.getPlayer()->getHealth() || !currentHealthTex)
     {
@@ -492,14 +522,16 @@ inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* fo
         oldHealth = game.getPlayer()->getHealth();
         std::string healthString = std::to_string(oldHealth);
         currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
-        SDL_QueryTexture(healthTex, NULL, NULL, &w1, &h);
-        SDL_QueryTexture(currentHealthTex, NULL, NULL, &w2, &h);
+        SDL_QueryTexture(healthTex, nullptr, nullptr, &w1, &h);
+        SDL_QueryTexture(currentHealthTex, nullptr, nullptr, &w2, &h);
     }
     
     //x = (SCREEN_WIDTH - w1 - w2)>>1;
     x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);
+    if(game.getPlayer()->getHealth() <= 0)
+        renderTexture(gameOverTex, renderer, gameOverX, gameOverY);
 }
 
 

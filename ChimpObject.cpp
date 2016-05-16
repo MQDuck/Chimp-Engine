@@ -133,21 +133,6 @@ bool ChimpObject::onScreen(const IntBox& screen) const
     return coord.x <= screen.r && coord.y+height >= screen.t && coord.x+width >= screen.l && coord.y <= screen.b;
 }
 
-/*ChimpObject& ChimpObject::operator=(const ChimpObject& rhs)
-{
-    tile = other.tile;
-    renderer = other.renderer;
-    coord = other.coord;
-    center = other.center;
-    approx_zero_float = other.approx_zero_float;
-    approx_zero_y = other.approx_zero_y;
-    flip = other.flip;
-    friends = other.friends;
-    enemies = other.enemies;
-    damageBox = other.damageBox;
-    active = other.active;
-}*/
-
 } // namespace chimp
 
 

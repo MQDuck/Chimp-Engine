@@ -37,8 +37,10 @@ ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX,
                          const int tilesY, Faction frnds, Faction enms)
     : ChimpObject(til, rend, pX, pY, tilesX, tilesY, frnds, enms)
 {
-    coordInitial.x = pX;
-    coordInitial.y = pY;
+    //coordInitial.x = pX;
+    //coordInitial.y = pY;
+    coordInitial.x = coord.x;
+    coordInitial.y = coord.y;
     accelerationY = GRAVITY;
     velocityX = 0;
     //velocityY = accelerationY;
@@ -184,6 +186,17 @@ void ChimpMobile::stopSprinting() { sprinting = false; }
 }*/
 
 /**
+ * @brief ChimpMobile::reset()
+ * 
+ * Resets Mobile to original position.
+ */
+void ChimpMobile::reset()
+{
+    coord = coordInitial;
+    ChimpObject::deactivate();
+}
+
+/**
  * @brief ChimpMobile::deactivate()
  * 
  * calls ChimpObject::deactivate(). This Mobile is returned to their initial position.
@@ -192,7 +205,7 @@ void ChimpMobile::deactivate()
 {
     ChimpObject::deactivate();
     if(respawn)
-        coord = coordInitial;
+        reset();
 }
 
 /**
@@ -200,8 +213,8 @@ void ChimpMobile::deactivate()
  * 
  * Calls ChimpObject::update(). Updates Mobile's position and platform.
  * 
- * @param objects Vector for the game layer in which this Mobile resides.
- * @param screen Current window for this Mobile's game layer.
+ * @param objects Vector for the game layer in which this Object resides.
+ * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
 void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
@@ -237,7 +250,7 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
         for(const std::unique_ptr<ChimpObject>& obj : objects)
         {
             if(   obj->isActive()
-               && platform != &*obj 
+               && platform != &*obj //necessary?
                && ( !(friends & obj->getEnemies()) || !obj->getDamageTop() )
                && touchesAtBottom(*obj) )
             {

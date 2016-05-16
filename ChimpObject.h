@@ -39,7 +39,7 @@ namespace chimp
 class ChimpObject;
 
 typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
-enum Faction { FACTION_VOID = 0, FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 };
+enum Faction { FACTION_VOID = 0, FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 }; // each bit represents one unique faction
 
 class ChimpObject
 {    
@@ -103,6 +103,7 @@ public:
     
     virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
     virtual void render(const IntBox& screen);
+    virtual void reset() {}
     
     float getApproxZeroFloat() { return approx_zero_float; }
     float getApproxZeroY() { return approx_zero_y; }

@@ -14,8 +14,10 @@ static const int
     JOYSTICK_DEAD_ZONE     = 8000,
     FONT_SIZE              = 24,
     INVULNERABLE_TIME      = 750,  // Character invulnerable time after being damaged in miliseconds
+    GAME_OVER_TIME         = 1500, // time before game resets after game over
     PIXELS_PER_FRAME_X     = 50,   // for run animation
-    PIXELS_PER_FRAME_Y     = 30;   // for jump animation    
+    PIXELS_PER_FRAME_Y     = 30,   // for jump animation    
+    DEFAULT_HEALTH         = 100;  // default maximum health for Characters
 
 static const Uint32
     TIME_PER_FRAME         = 600;  // for idle animation
@@ -45,7 +47,8 @@ static /*const*/ std::string
     TILES_FILE             = ASSETS_PATH + "tiles",
     FONT_FILE              = "LiberationSans-Bold.ttf",
     CONTROLLER_MAP_FILE    = "gamecontrollerdb",
-    TEXT_HEALTH            = "Health: ";
+    TEXT_HEALTH            = "Health: ",
+    GAME_OVER_TEXT         = "GAME OVER";
 
 static const SDL_Color
     FONT_COLOR             = {0, 0, 0, 255}; // HUD font color

@@ -20,7 +20,6 @@
 #ifndef CHIMPMOBILE_H
 #define CHIMPMOBILE_H
 
-#include <memory>
 #include <vector>
 #include "ChimpObject.h"
 #include "ChimpTile.h"
@@ -33,7 +32,7 @@ class ChimpMobile : public ChimpObject
 protected:
     bool runningRight, runningLeft, doubleJumped, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom,
          respawn;
-    ChimpObject* platform; // pointer to object this mobile is standing on, nullptr if none
+    ChimpObject* platform; // pointer to Object this Mobile is standing on, null if none
     Coordinate coordInitial;
 
     float accelerationY, velocityX, velocityY;
@@ -58,6 +57,7 @@ public:
     void stopJumping();
     void sprint();
     void stopSprinting();
+    virtual void reset();
         
     bool isJumper() const { return jumper; }
     void setJumper(bool b) { jumper = b; }

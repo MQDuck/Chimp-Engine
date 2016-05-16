@@ -100,6 +100,17 @@ void ChimpCharacter::jump()
 }
 
 /**
+ * @brief ChimpCharacter::reset()
+ * 
+ * Calls ChimpMobile::reset(). Sets health to maxHealth.
+ */
+void ChimpCharacter::reset()
+{
+    ChimpMobile::reset();
+    health = maxHealth;
+}
+
+/**
  * @brief ChimpCharacter::update
  * 
  * Calls ChimpMobile::update(). This method is where Characters take damage and/or die.
@@ -115,7 +126,7 @@ void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, c
         {
             if( !obj->getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
                 continue;
-            if( touches(*obj) && ( friends & obj->getEnemies()) )
+            if( touches(*obj) && (friends & obj->getEnemies()) )
             {
                 float x = getCenterX() - obj->getCenterX();
                 float y = getCenterY() - obj->getCenterY();
@@ -126,8 +137,13 @@ void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, c
                 
                 health -= DAMAGE;
                 
-                makeInvulnerable();
-                SDL_AddTimer(INVULNERABLE_TIME, vulnerableTimer, this);
+                if(health <= 0)
+                    deactivate();
+                else
+                {
+                    makeInvulnerable();
+                    SDL_AddTimer(INVULNERABLE_TIME, vulnerableTimer, this);
+                }
             }
         }
     

@@ -28,7 +28,7 @@ namespace chimp
 {
 
 typedef std::vector<ChimpTile> TileVec;
-
+    
 class ChimpCharacter : public ChimpMobile
 {
 protected:
@@ -41,8 +41,8 @@ protected:
     
 public:
     ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, SDL_Renderer* rend, const int pX,
-                   const int pY, const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
-                   Faction enms = FACTION_VOID, const int maxH = 100);
+                   const int pY, const int tilesX = 1, const int tilesY = 1, const Faction frnds = FACTION_VOID,
+                   const Faction enms = FACTION_VOID, const int maxH = DEFAULT_HEALTH);
     ~ChimpCharacter() {}
     
     void makeInvulnerable() { vulnerable = false; }
@@ -51,6 +51,7 @@ public:
     void runRight();
     void runLeft();
     void jump();
+    void reset();
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"
