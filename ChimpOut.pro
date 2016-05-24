@@ -5,6 +5,12 @@ CONFIG -= qt
 LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf
 #LIBS += -lSDL2 -ldl -lpthread
 
+QMAKE_CXXFLAGS_DEBUG += -pg
+QMAKE_LFLAGS_DEBUG += -pg
+
+CONFIG += link_pkgconfig
+PKGCONFIG += x11
+
 DESTDIR = $$PWD
 TARGET = ChimpOut
 

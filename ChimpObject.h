@@ -78,10 +78,6 @@ public:
     inline int collisionRight() const { return coord.x + width - tile.collisionBox.r; }
     inline int collisionTop() const { return coord.y + tile.collisionBox.t; }
     inline int collisionBottom() const {return coord.y + height - tile.collisionBox.b; }
-    /*inline int getCollisionSizeLeft() const { return collisionRect.x; }
-    inline int getCollisionSizeRight() const { return collisionRect.w; }
-    inline int getCollisionSizeTop() const { return collisionRect.y; }
-    inline int getCollisionSizeBottom() const { return collisionRect.h; }*/
     inline bool getDamageLeft() const { return damageBox.l; }
     inline void setDamageLeft(const bool bl) { damageBox.l = bl; }
     inline bool getDamageRight() const { return damageBox.r; }
@@ -105,8 +101,8 @@ public:
     virtual void render(const IntBox& screen);
     virtual void reset() {}
     
-    float getApproxZeroFloat() { return approx_zero_float; }
-    float getApproxZeroY() { return approx_zero_y; }
+    float getApproxZeroFloat() const { return approx_zero_float; }
+    float getApproxZeroY() const { return approx_zero_y; }
     
     //ChimpObject& operator=(const ChimpObject& rhs);
     

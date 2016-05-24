@@ -55,7 +55,7 @@ inline void buttonDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPr
 inline void buttonUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 
-inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
 
 //chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
 void generateWorld2(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer, chimp::ChimpGame& game);
@@ -131,7 +131,7 @@ int main()
     SDL_Event event;
     bool quit = false;
     bool keyJumpPressed = false;
-    chimp::ChimpGame game(renderer);
+    chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     generateWorld2(tiles, renderer, game);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     
@@ -502,12 +502,13 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game)
     }
 }
 
-inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
 {
-    static int oldHealth, w1, w2, h, x;
+    static int oldHealth = -1, w1, w2, h, x;
     static SDL_Texture* currentHealthTex = nullptr;
     static SDL_Texture* gameOverTex = nullptr;
     static int gameOverX, gameOverY;
+    
     if(!gameOverTex)
     {
         gameOverTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
@@ -516,17 +517,16 @@ inline void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* fo
         gameOverY = (SCREEN_HEIGHT - gameOverY) >> 1;
     }
     
-    if(oldHealth != game.getPlayer()->getHealth() || !currentHealthTex)
+    if( oldHealth != game.getPlayer()->getHealth() )
     {
         SDL_DestroyTexture(currentHealthTex);
         oldHealth = game.getPlayer()->getHealth();
-        std::string healthString = std::to_string(oldHealth);
+        std::string healthString = std::to_string(oldHealth); // Cannot be combined with the line below, apparently
         currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
         SDL_QueryTexture(healthTex, nullptr, nullptr, &w1, &h);
         SDL_QueryTexture(currentHealthTex, nullptr, nullptr, &w2, &h);
     }
     
-    //x = (SCREEN_WIDTH - w1 - w2)>>1;
     x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);

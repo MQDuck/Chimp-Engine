@@ -30,6 +30,8 @@
 #include "cleanup.h"
 #include "SDLUtils.h"
 
+#include <SDL/SDL_thread.h>
+
 namespace chimp
 {
 
@@ -42,9 +44,10 @@ private:
     ChimpCharacter* player;
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
+    unsigned int windowWidth, windowHeight;
     
 public:
-    ChimpGame(SDL_Renderer* rend, ChimpCharacter* plyr = nullptr);
+    ChimpGame(SDL_Renderer* rend, unsigned int winWidth, unsigned int winHeight, ChimpCharacter* plyr = nullptr);
     ~ChimpGame() { if(player) delete player; }
     
     ChimpCharacter*& getPlayer() { return player; }
@@ -55,29 +58,46 @@ public:
     int getWorldRight() const { return worldBox.r; }
     int getWorldTop() const { return worldBox.t; }
     int getWorldBottom() const { return worldBox.b; }
+    SDL_Renderer* getRenderer() const { return renderer; }
+    bool setRenderer(SDL_Renderer* rend);
+    unsigned int getWindowWidth() const { return windowWidth; }
+    void setWindowWidth(const unsigned int winWidth) { windowWidth = winWidth; }
+    unsigned int getWindowHeight() { return windowHeight; }
+    void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
     
-    void pushObj(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+    void pushObj(const Layer layr, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
                  const int tilesY = 1);
-    void pushMob(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+    void pushMob(const Layer layr, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
                  const int tilesY = 1);
     void pushChar(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
-                  const int tilesY = 1, const int maxH = 100, const Faction frnds = FACTION_VOID,
+                  const int tilesY = 1, const int maxH = DEFAULT_HEALTH, const Faction frnds = FACTION_VOID,
                   const Faction enms = FACTION_VOID);
     void pushChar(const Layer lay, const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, const int x,
                   const int y, const int tilesX = 1, const int tilesY = 1, const int maxH = 100,
                   const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID);
     
-    inline void translateScreenX(const int x);
-    inline void translateScreenY(const int y);
+    inline void translateWindowX(const int x);
+    inline void translateWindowY(const int y);
     
     void initialize();
     void update();
     void render();
     void reset();
+    
+private:
+    void updateBack();
+    void updateMid();
+    void updateFore();
+    /*static int updateThreadBack(void* game);
+    static int updateThreadMid(void* game);
+    static int updateThreadFore(void* game);*/
 };
 
-inline void ChimpGame::translateScreenX(const int x)
+inline void ChimpGame::translateWindowX(const int x)
 {
+    if(x == 0)
+        return;
+    
     midWindow.l += x;
     midWindow.r += x;
     
@@ -98,8 +118,11 @@ inline void ChimpGame::translateScreenX(const int x)
     foreWindow.r = midWindow.r * SCROLL_FORE_FACTOR;
 }
 
-inline void ChimpGame::translateScreenY(const int y)
+inline void ChimpGame::translateWindowY(const int y)
 {
+    if(y == 0)
+        return;
+    
     midWindow.t += y;
     midWindow.b += y;
     

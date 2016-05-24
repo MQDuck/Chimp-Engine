@@ -36,8 +36,8 @@ static const float
     APPROX_ZERO_Y_FACTOR   = 1.0,//0.90,
     DAMAGE_VELOCITY        = 20.0, // when a character takes damage from an object, it gains velocity equal to this radially from object's center
     DAMAGE                 = 10.0, // enemy damage
-    SCROLL_BACK_FACTOR     = 0.1,  // background window location as a multiple of middle window position
-    SCROLL_FORE_FACTOR     = 1.25; // foreground window location as a multiple of middle window position
+    SCROLL_BACK_FACTOR     = 0.1,  // background window position as a multiple of middle window position
+    SCROLL_FORE_FACTOR     = 1.25; // foreground window position as a multiple of middle window position
 
 static /*const*/ std::string
     TEXTURE_DELIMITER      = ";",

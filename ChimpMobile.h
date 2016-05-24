@@ -60,7 +60,7 @@ public:
     virtual void reset();
         
     bool isJumper() const { return jumper; }
-    void setJumper(bool b) { jumper = b; }
+    void setJumper(const bool b) { jumper = b; }
     float getAccelerationY() const { return accelerationY; }
     void setAccelerationY(const float accel) { accelerationY = accel; }
     float getVelocityX() const { return velocityX; }
