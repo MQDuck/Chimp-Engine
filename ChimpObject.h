@@ -97,7 +97,7 @@ public:
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     virtual void render(const IntBox& screen);
     virtual void reset() {}
     

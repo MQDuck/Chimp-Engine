@@ -134,6 +134,7 @@ int main()
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     generateWorld2(tiles, renderer, game);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
+    Uint32 timeLast, timeNow;
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
@@ -145,6 +146,7 @@ int main()
     }
     quit = false;*/
     
+    timeLast = SDL_GetTicks();
     while(!quit)
     {
         while( SDL_PollEvent(&event) )
@@ -173,7 +175,11 @@ int main()
         }
         
         SDL_RenderClear(renderer);
-        game.update();
+        
+        timeNow = SDL_GetTicks();
+        game.update(timeNow - timeLast);
+        timeLast = timeNow;
+        
         game.render();
         drawHUD(game, renderer, font, healthTex);
         SDL_RenderPresent(renderer);

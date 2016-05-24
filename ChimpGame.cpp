@@ -155,15 +155,15 @@ void ChimpGame::initialize()
     player->initialize(midWindow);
 }
 
-void ChimpGame::update()
+void ChimpGame::update(const Uint32 time)
 {
     for(auto& obj : background)
-        obj->update(background, midWindow, worldBox);
+        obj->update(background, midWindow, worldBox, time);
     for(auto& obj : middle)
-        obj->update(middle, midWindow, worldBox);
-    player->update(middle, midWindow, worldBox);
+        obj->update(middle, midWindow, worldBox, time);
+    player->update(middle, midWindow, worldBox, time);
     for(auto& obj : foreground)
-        obj->update(foreground, midWindow, worldBox);
+        obj->update(foreground, midWindow, worldBox, time);
     
     /*SDL_Thread* threadBack = SDL_CreateThread(updateThreadBack, "back update thread", this);
     SDL_Thread* threadMid  = SDL_CreateThread(updateThreadMid, "mid update thread",  this);

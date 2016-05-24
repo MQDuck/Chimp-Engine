@@ -96,7 +96,7 @@ public:
     inline bool getRespawn() const { return respawn; }
     inline void setRespawn(const bool pd) { respawn = pd; }
 
-    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     
     //ChimpMobile& operator=(const ChimpMobile& rhs);
 };

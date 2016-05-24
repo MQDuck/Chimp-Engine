@@ -79,7 +79,7 @@ void ChimpObject::initialize(const IntBox& screen)
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
+void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time)
 {
     if(active)
     {

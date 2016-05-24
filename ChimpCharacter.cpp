@@ -119,7 +119,7 @@ void ChimpCharacter::reset()
  * @param screen Current window for this Character's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
+void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time)
 {    
     if(active && vulnerable)
         for(const std::unique_ptr<ChimpObject>& obj : objects)
@@ -147,7 +147,7 @@ void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, c
             }
         }
     
-    ChimpMobile::update(objects, screen, world);
+    ChimpMobile::update(objects, screen, world, time);
     
     if(coord.y > SCREEN_HEIGHT + height)
         health = 0;

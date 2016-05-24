@@ -80,7 +80,7 @@ public:
     inline void translateWindowY(const int y);
     
     void initialize();
-    void update();
+    void update(const Uint32 time);
     void render();
     void reset();
     

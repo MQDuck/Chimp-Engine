@@ -217,9 +217,9 @@ void ChimpMobile::deactivate()
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world)
+void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time)
 {
-    ChimpObject::update(objects, screen, world);
+    ChimpObject::update(objects, screen, world, time);
     
     if(!active)
         return;

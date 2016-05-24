@@ -67,7 +67,7 @@ public:
     inline int getFriends() const { return friends; }
     inline int getEnemies() const { return enemies; }
     
-    void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world);
+    void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     void render(const IntBox& screen);
 };
 
