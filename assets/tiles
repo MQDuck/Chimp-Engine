@@ -17,39 +17,39 @@
 # comment: tile index and description
 
 #tex; x;  y;   w;   h;  sw;  sh;   l;   r;   t;   b; comment
-;player;   0;  0;  68;  97;  68;  97;  17;  21;  12;   2; #0 player
-;platform;   0;  0;  20;  10;  20;  10;   0;   0;   0;   0; #1 platform
-;baddie;   0;  0;  68;  45;  68;  45;   2;   2;   1;   1; #2 baddie
-;fire;   0;  0; 512; 512; 512; 512;   0;   0;   0;   0; #3 fire
-;MiniK; 256; 72;  32;  56;  32;  56;   0;   0;   0;   0; #4 water
-;tree;   0;  0; 156; 134; 156; 134;   0;   0;   0;   0; #5 tree
+;player;player;                         0;  0;  68;  97;  68;  97;  17;  21;  12;   2; #0 player
+;platform;platform;                     0;  0;  20;  10;  20;  10;   0;   0;   0;   0; #1 platform
+;baddie;baddie;                         0;  0;  68;  45;  68;  45;   2;   2;   1;   1; #2 baddie
+;fire;fire;                             0;  0; 512; 512; 512; 512;   0;   0;   0;   0; #3 fire
+;MiniK;water;                         256; 72;  32;  56;  32;  56;   0;   0;   0;   0; #4 water
+;tree;tree;                             0;  0; 156; 134; 156; 134;   0;   0;   0;   0; #5 tree
 
-;spritessheet;   0;  0; 256; 256; 256; 256;  90;   0; 115;   0; #6 top ground left cliff
-;spritessheet; 256;  0; 256; 256; 256; 256;   0;   0; 115;   0; #7 top ground
-;spritessheet; 512;  0; 256; 256; 256; 256;   0;  90; 115;   0; #8 top ground right cliff
-;spritessheet;   0;768; 256; 256; 256; 256;  90;   0; 115;   0; #9 left island
-;spritessheet; 256;768; 256; 256; 256; 256;   0;   0; 115;   0; #10 mid island
-;spritessheet; 512;768; 256; 256; 256; 256;   0;  90; 115;   0; #11 right island
+;top ground left cliff;spritessheet;    0;  0; 256; 256; 256; 256;  90;   0; 115;   0; #6 top ground left cliff
+;top ground;spritessheet;             256;  0; 256; 256; 256; 256;   0;   0; 115;   0; #7 top ground
+;top ground right cliff;spritessheet; 512;  0; 256; 256; 256; 256;   0;  90; 115;   0; #8 top ground right cliff
+;left island;spritessheet;             0;768; 256; 256; 256; 256;  90;   0; 115;   0; #9 left island
+;mid island;spritessheet;             256;768; 256; 256; 256; 256;   0;   0; 115;   0; #10 mid island
+;right island;spritessheet;           512;768; 256; 256; 256; 256;   0;  90; 115;   0; #11 right island
 
-;background1;   0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #12 background
-;background2;   0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #13 background2
+;background1;background1;               0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #12 background1
+;background2;background2;               0;  0;3400;2400;1333; 800;3400;3400;2400;2400; #13 background2
 
-;monkey;   0;  0; 256; 256; 256; 256;  86;  62;  50;  40; #14 monkey run 1
-;monkey; 256;  0; 256; 256; 256; 256;  86;  62;  50;  40; #15 monkey run 2
-;monkey; 512;  0; 256; 256; 256; 256;  86;  62;  50;  40; #16 monkey run 3
-;monkey; 768;  0; 256; 256; 256; 256;  86;  62;  50;  40; #17 monkey run 4
-;monkey;1024;  0; 256; 256; 256; 256;  86;  62;  50;  40; #18 monkey run 5
-;monkey;1280;  0; 256; 256; 256; 256;  86;  62;  50;  40; #19 monkey run 6
-;monkey;1536;  0; 256; 256; 256; 256;  86;  62;  50;  40; #20 monkey run 7
-;monkey;   0;256; 256; 256; 256; 256;  86;  62;  50;  40; #21 monkey jump 1
-;monkey; 256;256; 256; 256; 256; 256;  86;  62;  50;  40; #22 monkey jump 2
-;monkey; 512;256; 256; 256; 256; 256;  86;  62;  50;  40; #23 monkey jump 3
-;monkey; 768;256; 256; 256; 256; 256;  86;  62;  50;  40; #24 monkey jump 4
-;monkey;1024;256; 256; 256; 256; 256;  86;  62;  50;  40; #25 monkey jump 5
-;monkey;1280;256; 256; 256; 256; 256;  86;  62;  50;  40; #26 monkey jump 6
-;monkey;1536;256; 256; 256; 256; 256;  86;  62;  50;  40; #27 monkey jump 7
-;monkey;   0;512; 256; 256; 256; 256;  86;  62;  50;  40; #28 monkey idle 1
-;monkey; 256;512; 256; 256; 256; 256;  86;  62;  50;  40; #29 monkey idle 2
+;monkey run 1;monkey;                   0;  0; 256; 256; 256; 256;  86;  62;  50;  40; #14 monkey run 1
+;monkey run 2;monkey;                 256;  0; 256; 256; 256; 256;  86;  62;  50;  40; #15 monkey run 2
+;monkey run 3;monkey;                 512;  0; 256; 256; 256; 256;  86;  62;  50;  40; #16 monkey run 3
+;monkey run 4;monkey;                 768;  0; 256; 256; 256; 256;  86;  62;  50;  40; #17 monkey run 4
+;monkey run 5;monkey;                1024;  0; 256; 256; 256; 256;  86;  62;  50;  40; #18 monkey run 5
+;monkey run 6;monkey;                1280;  0; 256; 256; 256; 256;  86;  62;  50;  40; #19 monkey run 6
+;monkey run 7;monkey;                1536;  0; 256; 256; 256; 256;  86;  62;  50;  40; #20 monkey run 7
+;monkey jump 1;monkey;                  0;256; 256; 256; 256; 256;  86;  62;  50;  40; #21 monkey jump 1
+;monkey jump 2;monkey;                256;256; 256; 256; 256; 256;  86;  62;  50;  40; #22 monkey jump 2
+;monkey jump 3;monkey;                512;256; 256; 256; 256; 256;  86;  62;  50;  40; #23 monkey jump 3
+;monkey jump 4;monkey;                768;256; 256; 256; 256; 256;  86;  62;  50;  40; #24 monkey jump 4
+;monkey jump 5;monkey;               1024;256; 256; 256; 256; 256;  86;  62;  50;  40; #25 monkey jump 5
+;monkey jump 6;monkey;               1280;256; 256; 256; 256; 256;  86;  62;  50;  40; #26 monkey jump 6
+;monkey jump 7;monkey;               1536;256; 256; 256; 256; 256;  86;  62;  50;  40; #27 monkey jump 7
+;monkey idle 1;monkey;                  0;512; 256; 256; 256; 256;  86;  62;  50;  40; #28 monkey idle 1
+;monkey idle 2;monkey;                256;512; 256; 256; 256; 256;  86;  62;  50;  40; #29 monkey idle 2
 
-;spritessheet;1024;768; 256; 256; 512; 512;   0;   0;   0;   0; #30 green bush
+;green bush;spritessheet;            1024;768; 256; 256; 512; 512;   0;   0;   0;   0; #30 green bush
 
