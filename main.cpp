@@ -26,6 +26,7 @@
 #include <SDL2/SDL_gamecontroller.h>
 #include <string>
 #include <vector>
+#include <map>
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "ChimpGame.h"
@@ -39,7 +40,7 @@
 using std::cout;
 using std::endl;
 
-bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Texture*>& textures,
+bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
                        SDL_Renderer* renderer);
 void addController(int id);
 void pushObject(chimp::ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
@@ -69,7 +70,8 @@ int main()
     SDL_Renderer* renderer;
     TTF_Font* font;
     std::vector<SDL_GameController*> controllers;
-    std::vector<SDL_Texture*> textures;
+    //std::vector<SDL_Texture*> textures;
+    std::map<std::string, SDL_Texture*> textures;
     std::vector<chimp::ChimpTile> tiles;
     
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER) < 0)
@@ -116,7 +118,7 @@ int main()
     }
     if( !loadChimpTextures(tiles, textures, renderer) )
     {
-        cleanup(window, renderer, font, &textures);
+        cleanup(window, renderer, font/*, &textures*/);
         SDL_Quit();
         return 1;
     }
@@ -197,18 +199,18 @@ int main()
         SDL_Delay(1);
     }
     
-    cleanup(window, renderer, font, &textures);
+    cleanup(window, renderer, font/*, &textures*/);
     
     return 0;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
-bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Texture*>& textures,
+bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
                        SDL_Renderer* renderer)
 {
     std::string line;
-    int sub1, sub2;
+    int sub1, sub2, sub3;
     int count;
     bool countLoaded;
     
@@ -249,9 +251,13 @@ bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Tex
             continue;
         ++sub1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        textures.push_back( loadTexture(ASSETS_PATH + line.substr(sub1, sub2-sub1), renderer) );
+        const std::string texfile = ASSETS_PATH + line.substr(sub1, sub2-sub1);
+        sub1 = sub2 + 1;
+        sub2 = line.find(TEXTURE_DELIMITER, sub1);
+        const std::string texname = line.substr(sub1, sub2-sub1);
+        textures[texname] = loadTexture(texfile, renderer);
         
-        if(textures.back() == nullptr)
+        if(textures[texname] == nullptr)
             return false;
     }
     textureData.close();
@@ -299,7 +305,7 @@ bool loadChimpTextures(std::vector<chimp::ChimpTile>& tiles, std::vector<SDL_Tex
         
         ++sub1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles.back().texture = textures[std::stoi( line.substr(sub1, sub2-sub1) )];
+        tiles.back().texture = textures[line.substr(sub1, sub2-sub1)];
         
         sub1 = sub2 + 1;
         sub2 = line.find(TEXTURE_DELIMITER, sub1);
