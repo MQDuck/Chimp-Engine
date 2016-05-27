@@ -22,8 +22,9 @@
 namespace chimp
 {
 
-ChimpGame::ChimpGame(SDL_Renderer* rend, unsigned int winWidth, unsigned int winHeight, ChimpCharacter* plyr)
-    : renderer(rend), windowWidth(winWidth), windowHeight(winHeight), player(plyr) {}
+ChimpGame::ChimpGame(SDL_Renderer* rend, const unsigned int winWidth, const unsigned int winHeight,
+                     ChimpCharacter* plyr)
+    : renderer(rend), player(plyr), windowWidth(winWidth), windowHeight(winHeight) {}
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
 {
@@ -68,7 +69,7 @@ bool ChimpGame::setWorldBox(const int l, const int r, const int t, const int b)
     return true;
 }
 
-bool ChimpGame::setRenderer(SDL_Renderer *rend)
+bool ChimpGame::setRenderer(SDL_Renderer* rend)
 {
     if(rend == nullptr)
         return false;

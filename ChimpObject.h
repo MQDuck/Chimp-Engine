@@ -21,7 +21,6 @@
 #define CHIMPOBJECT_H
 
 #include <SDL2/SDL.h>
-#include <iostream>
 #include <memory>
 #include "SDLUtils.h"
 #include "cleanup.h"

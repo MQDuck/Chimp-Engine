@@ -47,7 +47,8 @@ private:
     unsigned int windowWidth, windowHeight;
     
 public:
-    ChimpGame(SDL_Renderer* rend, unsigned int winWidth, unsigned int winHeight, ChimpCharacter* plyr = nullptr);
+    ChimpGame(SDL_Renderer* rend, const unsigned int winWidth, const unsigned int winHeight,
+              ChimpCharacter* plyr = nullptr);
     ~ChimpGame() { if(player) delete player; }
     
     ChimpCharacter*& getPlayer() { return player; }
