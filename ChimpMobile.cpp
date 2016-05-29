@@ -33,9 +33,9 @@ namespace chimp
  * @param frnds Factions to which the Object belongs.
  * @param enms Factions which the Object can deal damage to.
  */
-ChimpMobile::ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
+ChimpMobile::ChimpMobile(SDL_Renderer* rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
-    : ChimpObject(til, rend, pX, pY, tilesX, tilesY, frnds, enms)
+    : ChimpObject(rend, til, pX, pY, tilesX, tilesY, frnds, enms)
 {
     //coordInitial.x = pX;
     //coordInitial.y = pY;

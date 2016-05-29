@@ -40,8 +40,8 @@ protected:
           resistance_x, resistance_y;
     
 public:
-    ChimpMobile(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX = 1,
-                const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
+    ChimpMobile(SDL_Renderer* rend, const ChimpTile& til, const int pX = 0, const int pY = 0,
+                const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpMobile() {}
 
     virtual void runRight();
@@ -85,16 +85,20 @@ public:
     void setResistanceX(const float resistance) { resistance_x = resistance; }
     float getResistanceY() const { return resistance_y; }
     void setResistanceY(const float resistance);
-    inline bool getBoundLeft() const { return boundLeft; }
-    inline void setBoundLeft(bool b) { boundLeft = b; }
-    inline bool getBoundRight() const { return boundRight; }
-    inline void setBoundRight(bool b) { boundRight = b; }
-    inline bool getBoundTop() const { return boundTop; }
-    inline void setBoundTop(bool b) { boundTop = b; }
-    inline bool getBoundBottom() const { return boundBottom; }
-    inline void setBoundBottom(bool b) { boundBottom = b; }
-    inline bool getRespawn() const { return respawn; }
-    inline void setRespawn(const bool pd) { respawn = pd; }
+    float getInitialX() const { return coordInitial.x; }
+    void setInitialX(const float x) { coordInitial.x = x; }
+    float getInitialY() const { return coordInitial.y; }
+    void setInitialY(const float y) { coordInitial.y = y; }
+    bool getBoundLeft() const { return boundLeft; }
+    void setBoundLeft(bool b) { boundLeft = b; }
+    bool getBoundRight() const { return boundRight; }
+    void setBoundRight(bool b) { boundRight = b; }
+    bool getBoundTop() const { return boundTop; }
+    void setBoundTop(bool b) { boundTop = b; }
+    bool getBoundBottom() const { return boundBottom; }
+    void setBoundBottom(bool b) { boundBottom = b; }
+    bool getRespawn() const { return respawn; }
+    void setRespawn(const bool pd) { respawn = pd; }
 
     virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     

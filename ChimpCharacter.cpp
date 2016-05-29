@@ -37,10 +37,10 @@ namespace chimp
  * @param enms Factions which the Object can deal damage to.
  * @param maxH Charcter's maximum health
  */
-ChimpCharacter::ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, SDL_Renderer* rend,
-                               const int pX,const int pY, const int tilesX, const int tilesY, Faction frnds,
+ChimpCharacter::ChimpCharacter(SDL_Renderer* rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
+                               const int pX, const int pY, const int tilesX, const int tilesY, Faction frnds,
                                Faction enms, const int maxH)
-    : ChimpMobile(tilIdl[0], rend, pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
+    : ChimpMobile(rend, tilIdl[0], pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
       tilesIdle(tilIdl), maxHealth(maxH)
 {
     health = maxHealth;

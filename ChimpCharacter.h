@@ -40,13 +40,20 @@ protected:
     int maxHealth, health;
     
 public:
-    ChimpCharacter(const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, SDL_Renderer* rend, const int pX,
-                   const int pY, const int tilesX = 1, const int tilesY = 1, const Faction frnds = FACTION_VOID,
-                   const Faction enms = FACTION_VOID, const int maxH = DEFAULT_HEALTH);
+    ChimpCharacter(SDL_Renderer* rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
+                   const int pX = 0, const int pY = 0, const int tilesX = 1, const int tilesY = 1,
+                   const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID,
+                   const int maxH = DEFAULT_HEALTH);
     ~ChimpCharacter() {}
     
-    void makeInvulnerable() { vulnerable = false; }
-    void makeVulnerable() { vulnerable = true; }
+    inline void makeInvulnerable() { vulnerable = false; }
+    inline void makeVulnerable() { vulnerable = true; }
+    inline TileVec& getTilesRun() { return tilesRun; }
+    inline void setTilesRun(const TileVec& vec) { tilesRun = vec; }
+    inline TileVec& getTilesJump() { return tilesJump; }
+    inline void setTilesJump(const TileVec& vec) { tilesJump = vec; }
+    inline TileVec& getTilesIdle() { return tilesIdle; }
+    inline void setTilesIdle(const TileVec& vec) { tilesIdle = vec; }
     
     void runRight();
     void runLeft();
@@ -64,8 +71,8 @@ public:
     
     int getHealth() const { return health; }
     void setHealth(const int heal) { health = heal; }
-    inline int getFriends() const { return friends; }
-    inline int getEnemies() const { return enemies; }
+    int getMaxHealth() const { return maxHealth; }
+    void setMaxHealth(const int heal) { maxHealth = heal; }
     
     void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     void render(const IntBox& screen);

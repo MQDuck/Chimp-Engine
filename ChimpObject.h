@@ -56,15 +56,16 @@ public: // make private/protected
     Box<bool> damageBox;
     
 public:
-    ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX,
-                const int pY, const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID,
-                Faction enms = FACTION_VOID);
+    ChimpObject(SDL_Renderer* rend, const ChimpTile& til, const int pX = 0, const int pY = 0,
+                const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpObject() {}
     
     void initialize(const IntBox& screen);
     
-    inline int getX() const { return coord.x; }
-    inline int getY() const { return coord.y; }
+    inline float getX() const { return coord.x; }
+    inline void setX(const float x) { coord.x = x; }
+    inline float getY() const { return coord.y; }
+    inline void setY(const float y) { coord.y = y; }
     inline int getCenterX() const { return coord.x + center.x; }
     inline int getCenterY() const { return coord.y + center.y; }
     inline int getWidth() const { return width; }
@@ -85,7 +86,12 @@ public:
     inline void setDamageTop(const bool bl) { damageBox.t = bl; }
     inline bool getDamageBottom() const { return damageBox.b; }
     inline void setDamageBottom(const bool bl) { damageBox.b = bl; }
-    virtual ChimpTile& getChimpTile() { return tile; }
+    inline ChimpTile& getChimpTile() { return tile; }
+    inline void setChimpTile(const ChimpTile& til) { tile = til; }
+    inline Faction getFriends() const { return friends; }
+    inline void setFriends(const Faction& facs) { friends = facs; }
+    inline Faction getEnemies() const { return enemies; }
+    inline void setEnemies(const Faction& facs) { enemies = facs; }
     
     inline bool isActive() const { return active; }
     inline bool onScreen(const IntBox& screen) const;
@@ -135,8 +141,24 @@ public:
     virtual void setResistanceX(const float resistance) {}
     virtual float getResistanceY() const { return 0; }
     virtual void setResistanceY(const float resistance) {}
-    virtual int getFriends() const { return 0; }
-    virtual int getEnemies() const { return 0; }
+    virtual float getInitialX() const { return 0.0; }
+    virtual void setInitialX(const float x) {}
+    virtual float getInitialY() const { return 0.0; }
+    virtual void setInitialY(const float y) {}
+    virtual int getHealth() const { return 0; }
+    virtual void setHealth(const int heal) {}
+    virtual int getMaxHealth() const { return 0; }
+    virtual void setMaxHealth(const int heal) {}
+    virtual bool getBoundLeft() const { return false; }
+    virtual void setBoundLeft(bool b) {}
+    virtual bool getBoundRight() const { return false; }
+    virtual void setBoundRight(bool b) {}
+    virtual bool getBoundTop() const { return false; }
+    virtual void setBoundTop(bool b) { }
+    virtual bool getBoundBottom() const { return false; }
+    virtual void setBoundBottom(bool b) {}
+    virtual bool getRespawn() const { return false; }
+    virtual void setRespawn(const bool pd) {}
     #pragma GCC diagnostic pop
     
 protected:

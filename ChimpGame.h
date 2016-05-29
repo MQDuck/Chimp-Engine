@@ -66,15 +66,15 @@ public:
     unsigned int getWindowHeight() { return windowHeight; }
     void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
     
-    void pushObj(const Layer layr, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+    void pushObj(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);
-    void pushMob(const Layer layr, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+    void pushMob(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);
-    void pushChar(const Layer lay, const ChimpTile& til, const int x, const int y, const int tilesX = 1,
+    void pushChar(const Layer lay, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                   const int tilesY = 1, const int maxH = DEFAULT_HEALTH, const Faction frnds = FACTION_VOID,
                   const Faction enms = FACTION_VOID);
-    void pushChar(const Layer lay, const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, const int x,
-                  const int y, const int tilesX = 1, const int tilesY = 1, const int maxH = 100,
+    void pushChar(const Layer lay, const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, const int x = 0,
+                  const int y = 0, const int tilesX = 1, const int tilesY = 1, const int maxH = 100,
                   const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID);
     
     inline void translateWindowX(const int x);

@@ -83,13 +83,13 @@ void ChimpGame::pushObj(const Layer layr, const ChimpTile &til, const int x, con
     switch(layr)
     {
     case BACK:
-        background.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
+        background.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
         return;
     case MID:
-        middle.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
+        middle.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
         return;
     case FORE:
-        foreground.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(til, renderer, x, y, tilesX, tilesY) ));
+        foreground.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
     }
 }
 
@@ -99,13 +99,13 @@ void ChimpGame::pushMob(const Layer layr, const ChimpTile &til, const int x, con
     switch(layr)
     {
     case BACK:
-        background.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
+        background.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(renderer, til, x, y, tilesX, tilesY) ));
         return;
     case MID:
-        middle.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
+        middle.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(renderer, til, x, y, tilesX, tilesY) ));
         return;
     case FORE:
-        foreground.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(til, renderer, x, y, tilesX, tilesY) ));
+        foreground.push_back(std::unique_ptr<ChimpMobile>( new ChimpMobile(renderer, til, x, y, tilesX, tilesY) ));
     }
 }
 
@@ -117,15 +117,15 @@ void ChimpGame::pushChar(const Layer lay, const TileVec &tilRn, const TileVec &t
     {
     case BACK:
         background.push_back(std::unique_ptr<ChimpCharacter>(
-            new ChimpCharacter(tilRn, tilJmp, tilIdl, renderer, x, y, tilesX, tilesY, frnds, enms, maxH) ));
+            new ChimpCharacter(renderer, tilRn, tilJmp, tilIdl, x, y, tilesX, tilesY, frnds, enms, maxH) ));
         break;
     case MID:
         middle.push_back(std::unique_ptr<ChimpCharacter>(
-            new ChimpCharacter(tilRn, tilJmp, tilIdl, renderer, x, y, tilesX, tilesY, frnds, enms, maxH) ));
+            new ChimpCharacter(renderer, tilRn, tilJmp, tilIdl, x, y, tilesX, tilesY, frnds, enms, maxH) ));
         break;
     case FORE:
         foreground.push_back(std::unique_ptr<ChimpCharacter>(
-            new ChimpCharacter(tilRn, tilJmp, tilIdl, renderer, x, y, tilesX, tilesY, frnds, enms, maxH) ));
+            new ChimpCharacter(renderer, tilRn, tilJmp, tilIdl, x, y, tilesX, tilesY, frnds, enms, maxH) ));
         break;
     }
 }

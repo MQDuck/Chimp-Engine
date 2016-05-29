@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <tinyxml2.h>
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "ChimpGame.h"
@@ -36,19 +37,15 @@
 #include "ChimpTile.h"
 #include "ChimpStructs.h"
 #include "SDLUtils.h"
+#include "loadLevel.h"
 
-using std::cout;
-using std::endl;
+/*#ifndef parseTrueFalse
+#define parseTrueFalse(a_val, a_tf) { if(a_val == "true") a_tf = true; else if(a_val == "false") a_tf = false; else continue; }
+#endif*/
 
 bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
                        SDL_Renderer* renderer);
-void addController(int id);
-void pushObject(chimp::ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
-                 const int tilesX, const int tilesY);
-void pushMobile(chimp::ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
-                const int tilesX, const int tilesY);
-void pushCharacter(chimp::ObjectVector& objects, chimp::ChimpTile& til, SDL_Renderer* renderer, const int x, const int y,
-                   const int tilesX, const int tilesY, int maxH, chimp::Faction friends, chimp::Faction enemies);
+//void addController(int id);
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void keyUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -134,7 +131,8 @@ int main()
     bool quit = false;
     bool keyJumpPressed = false;
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    generateWorld2(tiles, renderer, game);
+    //generateWorld2(tiles, renderer, game);
+    loadLevel(tiles, renderer, game);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     Uint32 timeLast, timeNow;
     
@@ -400,6 +398,8 @@ bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<
 
 void generateWorld2(std::map<std::string, chimp::ChimpTile>& tiles, SDL_Renderer* renderer, chimp::ChimpGame& game)
 {
+    game.setWorldBox(-SCREEN_WIDTH/2, SCREEN_WIDTH*2, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
+    
     chimp::TileVec runtiles =  { tiles["monkey run 1"], tiles["monkey run 2"], tiles["monkey run 3"],
                                 tiles["monkey run 4"], tiles["monkey run 5"], tiles["monkey run 6"],
                                 tiles["monkey run 7"] };
@@ -407,15 +407,16 @@ void generateWorld2(std::map<std::string, chimp::ChimpTile>& tiles, SDL_Renderer
                                  tiles["monkey jump 4"], tiles["monkey jump 5"], tiles["monkey jump 6"],
                                  tiles["monkey jump 7"] };
     chimp::TileVec idletiles = { tiles["monkey idle 1"], tiles["monkey idle 1"], tiles["monkey idle 2"] };
-    game.getPlayer() = new chimp::ChimpCharacter(runtiles, jumptiles, idletiles, renderer, SCREEN_WIDTH>>1, 400, 1, 1,
+    game.getPlayer() = new chimp::ChimpCharacter(renderer, runtiles, jumptiles, idletiles, SCREEN_WIDTH>>1, 400, 1, 1,
             chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
     
-    game.setWorldBox(-SCREEN_WIDTH/2, SCREEN_WIDTH*2, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
     game.pushObj(chimp::BACK, tiles["background1"], -SCREEN_WIDTH/2, 0, 5, 1);
     //game.pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);
     game.getPlayer()->setBoundLeft(true);
     game.getPlayer()->setBoundRight(true);
     game.getPlayer()->setRespawn(false);
+    
+    
     game.pushObj(chimp::MID, tiles["top ground"], -SCREEN_WIDTH>>1, 0, 8, 1);
     game.pushObj(chimp::MID, tiles["top ground right cliff"], game.getObjBack(chimp::MID).collisionRight(), 0, 1, 1);
     game.pushObj(chimp::MID, tiles["mid island"], (SCREEN_WIDTH<<1) - tiles["mid island"].textureRect.w*2,

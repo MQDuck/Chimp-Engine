@@ -34,13 +34,14 @@ namespace chimp
  * @param frnds Factions to which the Object belongs.
  * @param enms Factions which the Object can deal damage to.
  */
-ChimpObject::ChimpObject(const ChimpTile& til, SDL_Renderer* rend, const int pX, const int pY, const int tilesX,
+ChimpObject::ChimpObject(SDL_Renderer* rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
     : tile(til), renderer(rend), friends(frnds), enemies(enms), width(tile.drawRect.w*tilesX),
       height(tile.drawRect.h*tilesY)
 {
     coord.x = pX;
     coord.y = SCREEN_HEIGHT - pY - height;
+    //coord.y = pY;
     center.x = (tile.collisionBox.l + width - tile.collisionBox.r) / 2.0;
     center.y = (tile.collisionBox.r + height - tile.collisionBox.b) / 2.0;
     damageBox.l = true;
