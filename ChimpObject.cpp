@@ -36,9 +36,10 @@ namespace chimp
  */
 ChimpObject::ChimpObject(SDL_Renderer* rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
-    : tile(til), renderer(rend), friends(frnds), enemies(enms), width(tile.drawRect.w*tilesX),
-      height(tile.drawRect.h*tilesY)
+    : tile(til), renderer(rend), friends(frnds), enemies(enms)
 {
+    setTilesX(tilesX);
+    setTilesY(tilesY);
     coord.x = pX;
     coord.y = SCREEN_HEIGHT - pY - height;
     //coord.y = pY;
@@ -65,7 +66,7 @@ ChimpObject::ChimpObject(SDL_Renderer* rend, const ChimpTile& til, const int pX,
  */
 void ChimpObject::initialize(const IntBox& screen)
 {
-    if( onScreen(screen) )
+    if(onScreen(screen))
         activate();
 }
 

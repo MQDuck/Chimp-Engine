@@ -69,6 +69,20 @@ ChimpMobile::ChimpMobile(SDL_Renderer* rend, const ChimpTile& til, const int pX,
 }
 
 /**
+ * @brief ChimpMobile::initialize()
+ * 
+ * Should be run once for each object after it's added to the game. For Objects added at the start of the game, this
+ * should be called only after all Objects are added.
+ * 
+ * @param screen Current window for this Object's game layer.
+ */
+void ChimpMobile::initialize(const IntBox &screen)
+{
+    coord = coordInitial;
+    ChimpObject::initialize(screen);
+}
+
+/**
  * @brief ChimpMobile::runRight()
  * 
  * Called when a Mobile begins moving right.

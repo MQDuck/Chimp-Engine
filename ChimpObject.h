@@ -60,18 +60,24 @@ public:
                 const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpObject() {}
     
-    void initialize(const IntBox& screen);
+    virtual void initialize(const IntBox& screen);
     
     inline float getX() const { return coord.x; }
     inline void setX(const float x) { coord.x = x; }
     inline float getY() const { return coord.y; }
     inline void setY(const float y) { coord.y = y; }
+    virtual float getInitialX() const { return getX(); }
+    virtual void setInitialX(const float x) { setX(x); }
+    virtual float getInitialY() const { return getY(); }
+    virtual void setInitialY(const float y) { setY(y); }
     inline int getCenterX() const { return coord.x + center.x; }
     inline int getCenterY() const { return coord.y + center.y; }
+    inline int getTilesX() const { return width / tile.drawRect.w; }
+    inline void setTilesX(const int tilesX) { width = tile.drawRect.w*tilesX; }
+    inline int getTilesY() const { return height / tile.drawRect.h; }
+    inline void setTilesY(const int tilesY) { height = tile.drawRect.h*tilesY; }
     inline int getWidth() const { return width; }
     inline int getHeight() const { return height; }
-    inline int getTrueX() const { return coord.x; }
-    inline int getTrueY() const { return coord.y; }
     inline int getTexRectW() const { return tile.textureRect.w; }
     inline int getTexRectH() const { return tile.textureRect.h; }
     inline int collisionLeft() const { return coord.x + tile.collisionBox.l; }
@@ -141,10 +147,6 @@ public:
     virtual void setResistanceX(const float resistance) {}
     virtual float getResistanceY() const { return 0; }
     virtual void setResistanceY(const float resistance) {}
-    virtual float getInitialX() const { return 0.0; }
-    virtual void setInitialX(const float x) {}
-    virtual float getInitialY() const { return 0.0; }
-    virtual void setInitialY(const float y) {}
     virtual int getHealth() const { return 0; }
     virtual void setHealth(const int heal) {}
     virtual int getMaxHealth() const { return 0; }

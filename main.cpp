@@ -55,9 +55,6 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
 
-//chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer);
-void generateWorld2(std::map<std::string, chimp::ChimpTile>& tiles, SDL_Renderer* renderer, chimp::ChimpGame& game);
-
 static Uint32 resetTimer(Uint32 interval, void* game);
 
 //int main(int argc, char** argv)
@@ -131,8 +128,8 @@ int main()
     bool quit = false;
     bool keyJumpPressed = false;
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    //generateWorld2(tiles, renderer, game);
     loadLevel(tiles, renderer, game);
+    game.initialize();
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     Uint32 timeLast, timeNow;
     
@@ -208,7 +205,7 @@ bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<
                        SDL_Renderer* renderer)
 {
     std::string line;
-    int sub1, sub2, sub3;
+    int sub1, sub2;
     int count;
     bool countLoaded;
     
@@ -367,75 +364,6 @@ bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<
         }
     }
 }*/
-
-/*chimp::ChimpGame* generateWorld1(std::vector<chimp::ChimpTile> &tiles, SDL_Renderer* renderer)
-{
-    chimp::ChimpCharacter* player = new chimp::ChimpCharacter(tiles[0], renderer, SCREEN_WIDTH>>1, 400, 1, 1,
-                                                              chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
-    chimp::ChimpGame* game = new chimp::ChimpGame(renderer, player);
-    
-    (*game).getPlayer()->setBoundLeft(true);
-    (*game).getPlayer()->setBoundRight(true);
-    
-    (*game).pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, 0, 5, 1);
-    (*game).pushObj(chimp::MID, tiles[1], 0, 120, 8, 1);
-    (*game).pushObj(chimp::MID, tiles[1], SCREEN_WIDTH / 10, 0, SCREEN_WIDTH / tiles[1].textureRect.w + 1, 3);
-    (*game).pushChar(chimp::MID, tiles[2], -35, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
-    (*game).getObjBack(chimp::MID).setDamageTop(false);
-    (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 3.8);
-    (*game).getObjBack(chimp::MID).runRight();
-    (*game).pushChar(chimp::MID, tiles[2], SCREEN_WIDTH, 160, 1, 1, 100, chimp::FACTION_BADDIES, chimp::FACTION_PLAYER);
-    (*game).getObjBack(chimp::MID).setDamageTop(false);
-    (*game).getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 4.0);
-    (*game).getObjBack(chimp::MID).runLeft();
-    (*game).getObjBack(chimp::MID).setJumper(true);
-    (*game).getObjBack(chimp::MID).setJumpImpulse(JUMP_IMPULSE * 0.75);
-    (*game).pushObj(chimp::BACK, tiles[4], 0, -tiles[4].textureRect.h + 25, SCREEN_WIDTH/tiles[4].textureRect.w+1, 1);
-    (*game).pushObj(chimp::FORE, tiles[5], SCREEN_WIDTH*0.75, 10, 1, 1);
-    
-    return game;
-}*/
-
-void generateWorld2(std::map<std::string, chimp::ChimpTile>& tiles, SDL_Renderer* renderer, chimp::ChimpGame& game)
-{
-    game.setWorldBox(-SCREEN_WIDTH/2, SCREEN_WIDTH*2, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
-    
-    chimp::TileVec runtiles =  { tiles["monkey run 1"], tiles["monkey run 2"], tiles["monkey run 3"],
-                                tiles["monkey run 4"], tiles["monkey run 5"], tiles["monkey run 6"],
-                                tiles["monkey run 7"] };
-    chimp::TileVec jumptiles = { tiles["monkey jump 1"], tiles["monkey jump 2"], tiles["monkey jump 3"],
-                                 tiles["monkey jump 4"], tiles["monkey jump 5"], tiles["monkey jump 6"],
-                                 tiles["monkey jump 7"] };
-    chimp::TileVec idletiles = { tiles["monkey idle 1"], tiles["monkey idle 1"], tiles["monkey idle 2"] };
-    game.getPlayer() = new chimp::ChimpCharacter(renderer, runtiles, jumptiles, idletiles, SCREEN_WIDTH>>1, 400, 1, 1,
-            chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);
-    
-    game.pushObj(chimp::BACK, tiles["background1"], -SCREEN_WIDTH/2, 0, 5, 1);
-    //game.pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);
-    game.getPlayer()->setBoundLeft(true);
-    game.getPlayer()->setBoundRight(true);
-    game.getPlayer()->setRespawn(false);
-    
-    
-    game.pushObj(chimp::MID, tiles["top ground"], -SCREEN_WIDTH>>1, 0, 8, 1);
-    game.pushObj(chimp::MID, tiles["top ground right cliff"], game.getObjBack(chimp::MID).collisionRight(), 0, 1, 1);
-    game.pushObj(chimp::MID, tiles["mid island"], (SCREEN_WIDTH<<1) - tiles["mid island"].textureRect.w*2,
-                 tiles["top ground"].textureRect.h*1.5, 2, 1);
-    game.pushObj(chimp::MID, tiles["left island"],
-                 (SCREEN_WIDTH<<1) - tiles["mid island"].textureRect.w*2 - tiles["left island"].textureRect.w,
-                 tiles["top ground"].textureRect.h*1.5, 1, 1);
-    
-    game.pushChar(chimp::MID, tiles["baddie"], -SCREEN_WIDTH>>1, 160, 1, 1, 100, chimp::FACTION_BADDIES,
-                  chimp::FACTION_PLAYER);
-    game.getObjBack(chimp::MID).setDamageTop(false);
-    game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
-    game.getObjBack(chimp::MID).runRight();
-    game.getObjBack(chimp::MID).setJumper(true);
-    
-    game.pushObj(chimp::FORE, tiles["green bush"], 0, 0, 1, 1);
-    
-    game.initialize();
-}
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"

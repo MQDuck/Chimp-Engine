@@ -44,6 +44,8 @@ public:
                 const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpMobile() {}
 
+    void initialize(const IntBox& screen);
+    
     virtual void runRight();
     virtual void runLeft();
     virtual void stopRunningRight();

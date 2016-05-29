@@ -9,7 +9,7 @@ static const int
     SCREEN_HEIGHT          = 690,
     ACTIVE_ZONE            = 750,   // Mobiles activate when this far from the screen.
     INACTIVE_ZONE          = 1500,  // Mobiles deactivate when this far from the screen
-    FOLLOW_ZONE_X          = 350,   // maximum horizontal distance from player to screen edge
+    FOLLOW_ZONE_X          = 375,   // minimum horizontal distance from player to screen edge
     FOLLOW_ZONE_Y          = SCREEN_HEIGHT / 4, // maximum vertical distance from player to screen edge
     JOYSTICK_DEAD_ZONE     = 8000,
     FONT_SIZE              = 24,

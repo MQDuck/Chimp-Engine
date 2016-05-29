@@ -6,164 +6,274 @@ tinyxml2::XMLError loadLevel(std::map<std::string, chimp::ChimpTile>& tiles, SDL
                              chimp::ChimpGame& game)
 {    
     game.setWorldBox(-SCREEN_WIDTH/2, SCREEN_WIDTH*2, -SCREEN_HEIGHT*0.15, SCREEN_HEIGHT);
-    
-    /*chimp::TileVec runtiles =  { tiles["monkey run 1"], tiles["monkey run 2"], tiles["monkey run 3"],
-                                tiles["monkey run 4"], tiles["monkey run 5"], tiles["monkey run 6"],
-                                tiles["monkey run 7"] };
-    chimp::TileVec jumptiles = { tiles["monkey jump 1"], tiles["monkey jump 2"], tiles["monkey jump 3"],
-                                 tiles["monkey jump 4"], tiles["monkey jump 5"], tiles["monkey jump 6"],
-                                 tiles["monkey jump 7"] };
-    chimp::TileVec idletiles = { tiles["monkey idle 1"], tiles["monkey idle 1"], tiles["monkey idle 2"] };
-    game.getPlayer() = new chimp::ChimpCharacter(runtiles, jumptiles, idletiles, renderer, SCREEN_WIDTH>>1, 400, 1, 1,
-            chimp::FACTION_PLAYER, chimp::FACTION_BADDIES, 100);*/
-    
+        
     XMLDocument levelXML;
     XMLError result;
     XMLNode* level;
     XMLElement* objXML;
-    XMLElement* tag;
-    const char* attrib;
-    const char* val;
-    std::string attribStr, valStr;
-    chimp::TileVec runtiles, jumptiles, idletiles;
     
-    result = levelXML.LoadFile("assets/world2.xml");
-    XMLCheckResult(result);
+    if( (result = levelXML.LoadFile("assets/world2.xml")) != XML_SUCCESS )
+        return result;
     level = levelXML.FirstChildElement("chimp_level");
-    if(level == nullptr)
+    if(!level)
         return XML_ERROR_FILE_READ_ERROR;
     
     for( objXML = level->FirstChildElement("object"); objXML; objXML = objXML->NextSiblingElement("object") )
     {
-        attrib = objXML->Attribute("type");
-        if(!attrib)
+        const char* type = objXML->Attribute("type");
+        if(!type)
             continue;
-        attribStr = attrib;
-        if(attribStr == "player")
+        std::string typeStr = type;
+        if(typeStr == "player")
         {
-            loadAnimation(objXML, "run", runtiles, tiles);
-            loadAnimation(objXML, "jump", jumptiles, tiles);
-            loadAnimation(objXML, "idle", idletiles, tiles);
-            game.getPlayer() = new chimp::ChimpCharacter(renderer, runtiles, jumptiles, idletiles);
-            loadObject(objXML, *game.getPlayer());
+            chimp::TileVec runtiles, jumptiles, idletiles;
+            if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+            {
+                game.getPlayer() = new chimp::ChimpCharacter(renderer, runtiles, jumptiles, idletiles);
+                loadObject(objXML, game.getPlayer());
+            }
+        }
+        else if(typeStr == "character")
+        {
+            chimp::TileVec runtiles, jumptiles, idletiles;
+            std::string tile;
+            if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+            {
+                chimp::Layer layer = getLayer(objXML);
+                game.pushChar(layer, runtiles, jumptiles, idletiles);
+                loadObject(objXML, &game.getObjBack(layer));
+            }
+            else if(getString(objXML->FirstChildElement("tile")->GetText(), &tile))
+            {
+                //chimp::Layer layer = getLayer(objXML);
+                //game.pushChar(layer, tiles[tile]);
+                //loadObject(objXML, &game.getObjBack(layer));
+                game.pushChar(chimp::MID, tiles["baddie"], -SCREEN_WIDTH>>1, 160, 1, 1, 100, chimp::FACTION_BADDIES,
+                              chimp::FACTION_PLAYER);
+                game.getObjBack(chimp::MID).setDamageTop(false);
+                game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
+                game.getObjBack(chimp::MID).runRight();
+                game.getObjBack(chimp::MID).setJumper(true);
+            }
+        }
+        else if(typeStr == "object")
+        {
+            std::string tile;
+            if(getString(objXML->FirstChildElement("tile")->GetText(), &tile))
+            {
+                chimp::Layer layer = getLayer(objXML);
+                game.pushObj(layer, tiles[tile]);
+                loadObject(objXML, &game.getObjBack(layer));
+            }   
         }
     }
-    
-    
-    game.pushObj(chimp::BACK, tiles["background1"], -SCREEN_WIDTH/2, 0, 5, 1);
-    //game.pushObj(chimp::BACK, tiles[13], -SCREEN_WIDTH>>1, tiles[13].drawRect.h, 5, 1);    
-    
-    game.pushObj(chimp::MID, tiles["top ground"], -SCREEN_WIDTH>>1, 0, 8, 1);
-    game.pushObj(chimp::MID, tiles["top ground right cliff"], game.getObjBack(chimp::MID).collisionRight(), 0, 1, 1);
-    game.pushObj(chimp::MID, tiles["mid island"], (SCREEN_WIDTH<<1) - tiles["mid island"].textureRect.w*2,
-                 tiles["top ground"].textureRect.h*1.5, 2, 1);
-    game.pushObj(chimp::MID, tiles["left island"],
-                 (SCREEN_WIDTH<<1) - tiles["mid island"].textureRect.w*2 - tiles["left island"].textureRect.w,
-                 tiles["top ground"].textureRect.h*1.5, 1, 1);
-    
-    game.pushChar(chimp::MID, tiles["baddie"], -SCREEN_WIDTH>>1, 160, 1, 1, 100, chimp::FACTION_BADDIES,
-                  chimp::FACTION_PLAYER);
-    game.getObjBack(chimp::MID).setDamageTop(false);
-    game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
-    game.getObjBack(chimp::MID).runRight();
-    game.getObjBack(chimp::MID).setJumper(true);
-    
-    game.pushObj(chimp::FORE, tiles["green bush"], 0, 0, 1, 1);
-    
-    game.initialize();
     
     return result;
 }
 
-XMLError loadAnimation(XMLElement* objXML, std::string anim, chimp::TileVec& tilvec,
+void loadAnimation(XMLElement* objXML, std::string anim, chimp::TileVec& tilvec,
                        std::map<std::string, chimp::ChimpTile>& tiles)
 {
+    std::string animation;
     for( XMLElement* tag = objXML->FirstChildElement("tile"); tag; tag = tag->NextSiblingElement("tile") )
-        if( anim == tag->Attribute("animation") )
+        if(getString(tag->Attribute("animation"), &animation) && anim == animation)
             tilvec.push_back( tiles[tag->GetText()] );
 }
 
-void loadObject(XMLElement* objXML, chimp::ChimpObject& obj)
+bool loadAllAnimations(XMLElement *objXML, chimp::TileVec &idletiles, chimp::TileVec &runtiles,
+                       chimp::TileVec &jumptiles, std::map<std::string, chimp::ChimpTile> &tiles)
+{
+    loadAnimation(objXML, "idle", idletiles, tiles);
+    if(idletiles.empty())
+        return false;
+    loadAnimation(objXML, "run", runtiles, tiles);
+    if(runtiles.empty())
+        runtiles = idletiles;
+    loadAnimation(objXML, "jump", jumptiles, tiles);
+    if(jumptiles.empty())
+        jumptiles = idletiles;
+    return true;
+}
+
+void loadObject(XMLElement* objXML, chimp::ChimpObject* obj)
 {
     XMLElement* tag;
-    const char* attrib;
-    const char* val;
-    std::string attribStr, valStr;
     
-    tag = objXML->FirstChildElement("position");
-    if(tag)
+    if( (tag = objXML->FirstChildElement("position")) )
     {
         int pos;
         if(tag->QueryIntAttribute("x", &pos) == XML_SUCCESS)
-        {
-            obj.setInitialX(pos);
-            obj.setX(pos);
-        }
+            obj->setInitialX(pos);
         if(tag->QueryIntAttribute("y", &pos) == XML_SUCCESS)
-        {
-            obj.setInitialY(SCREEN_HEIGHT - pos - obj.height);
-            obj.setY(SCREEN_HEIGHT - pos - obj.height);
-        }
+            obj->setInitialY(SCREEN_HEIGHT - pos - obj->height);
     }
-    
-    tag = objXML->FirstChildElement("factions");
-    if(tag)
+    if( (tag = objXML->FirstChildElement("factions")) )
     {
         int factions;
         if(tag->QueryIntAttribute("friends", &factions) == XML_SUCCESS)
-            obj.setFriends((chimp::Faction)factions);
+            obj->setFriends((chimp::Faction)factions);
         if(tag->QueryIntAttribute("enemies", &factions) == XML_SUCCESS)
-            obj.setEnemies((chimp::Faction)factions);
+            obj->setEnemies((chimp::Faction)factions);
     }
-    
-    tag = objXML->FirstChildElement("maxhealth");
-    if(tag)
+    if( (tag = objXML->FirstChildElement("tiles")) )
+    {
+        int tiles;
+        if(tag->QueryIntAttribute("x", &tiles) == XML_SUCCESS)
+            obj->setTilesX(tiles);
+        if(tag->QueryIntAttribute("y", &tiles) == XML_SUCCESS)
+            obj->setTilesY(tiles);
+    }
+    if( (tag = objXML->FirstChildElement("maxhealth")) )
     {
         int health;
         if(tag->QueryIntText(&health) == XML_SUCCESS)
         {
-            obj.setMaxHealth(health);
-            obj.setHealth(health);
+            obj->setMaxHealth(health);
+            obj->setHealth(health);
+        }
+    }
+    if( (tag = objXML->FirstChildElement("respawn")) )
+    {
+        bool respawn;
+        if(getBool(tag->GetText(), &respawn))
+            obj->setRespawn(respawn);
+    }
+    if( (tag = objXML->FirstChildElement("jumper")) )
+    {
+        bool jumper;
+        if(getBool(tag->GetText(), &jumper))
+            obj->setJumper(jumper);
+    }
+    if( (tag = objXML->FirstChildElement("damage")) )
+    {
+        bool tf;
+        if(getBool(tag->Attribute("left"), &tf))
+            obj->setDamageLeft(tf);
+        if(getBool(tag->Attribute("right"), &tf))
+            obj->setDamageRight(tf);
+        if(getBool(tag->Attribute("top"), &tf))
+            obj->setDamageTop(tf);
+        if(getBool(tag->Attribute("bottom"), &tf))
+            obj->setDamageBottom(tf);
+    }
+    if( (tag = objXML->FirstChildElement("bounded")) )
+    {
+        bool tf;
+        if(getBool(tag->Attribute("left"), &tf))
+            obj->setBoundLeft(tf);
+        if(getBool(tag->Attribute("right"), &tf))
+            obj->setBoundRight(tf);
+        if(getBool(tag->Attribute("top"), &tf))
+            obj->setBoundTop(tf);
+        if(getBool(tag->Attribute("bottom"), &tf))
+            obj->setBoundBottom(tf);
+    }
+    if( (tag = objXML->FirstChildElement("run")) )
+    {
+        std::string run;
+        if(getString(tag->GetText(), &run))
+        {
+            if(run == "left")
+                obj->runLeft();
+            else if(run == "right")
+                obj->runRight();
+        }
+    }
+    if( (tag = objXML->FirstChildElement("jumper")) )
+    {
+        bool jumper;
+        if(getBool(tag->GetText(), &jumper))
+            obj->setJumper(jumper);
+    }
+    
+    for(tag = objXML->FirstChildElement("acceleration"); tag; tag = tag->NextSiblingElement("acceleration"))
+    {
+        float accel;
+        std::string type, mode;
+        if(   tag->QueryFloatText(&accel) == XML_SUCCESS
+           && getString(tag->Attribute("type"), &type)
+           && getString(tag->Attribute("mode"), &mode) )
+        {
+            if(type == "run")
+            {
+                if(mode == "absolute")
+                    obj->setRunAccel(accel);
+                else if(mode == "scale")
+                    obj->setRunAccel(obj->getRunAccel() * accel);
+            }
+            else if(type == "jump")
+            {
+                if(mode == "absolute")
+                    obj->setJumpAccel(accel);
+                else if(mode == "scale")
+                    obj->setJumpAccel(obj->getJumpAccel() * accel);
+            }
         }
     }
     
-    for(tag = objXML->FirstChildElement("bounded"); tag; tag = tag->NextSiblingElement("bounded"))
+    /*for(tag = objXML->FirstChildElement("bounded"); tag; tag = tag->NextSiblingElement("bounded"))
     {
-        attrib = tag->Attribute("type");
-        val = tag->GetText();
-        if(!val || !attrib)
-            continue;
-        attribStr = attrib;
-        valStr = val;
-        
-        bool tf;
-        if(valStr == "true")
-            tf = true;
-        else if(valStr == "false")
-            tf = false;
-        else
-            continue;
-            
-        if(attribStr == "left")
-            obj.setBoundLeft(tf);
-        else if(attribStr == "right")
-            obj.setBoundRight(tf);
-        else if(attribStr == "top")
-            obj.setBoundTop(tf);
-        else if(attribStr == "bottom")
-            obj.setBoundBottom(tf);
-    }
-    
-    tag = objXML->FirstChildElement("respawn");
-    if(tag)
-    {
-        valStr = tag->GetText();
-        if(valStr == "true")
-            obj.setRespawn(true);
-        else if(valStr == "false")
-            obj.setRespawn(false);
-    }
+        std::string type;
+        bool bound;
+        if(getString(tag->Attribute("type"), &type) && getBool(tag->GetText(), &bound))
+        {
+            if(type == "left")
+                obj->setBoundLeft(bound);
+            else if(type == "right")
+                obj->setBoundRight(bound);
+            else if(type == "top")
+                obj->setBoundTop(bound);
+            else if(type == "bottom")
+                obj->setBoundBottom(bound);
+        }
+    }*/
 }
+
+chimp::Layer getLayer(XMLElement* objXML)
+{
+    const char* layer = objXML->Attribute("layer");
+    if(layer)
+    {
+        std::string layerStr = layer;
+        if(layerStr == "background")
+            return chimp::BACK;
+        else if(layerStr == "foreground")
+            return chimp::FORE;
+    }
+    return chimp::MID;
+}
+
+bool getBool(const char* boolStr, bool* result)
+{
+    if(!boolStr)
+        return false;
+    if(strcmp(boolStr, "true") == 0)
+    {
+        *result = true;
+        return true;
+    }
+    if(strcmp(boolStr, "false") == 0)
+    {
+        *result = false;
+        return true;
+    }
+    return false;
+}
+
+bool getString(const char* cStr, std::string* str)
+{
+    if(cStr)
+    {
+        *str = cStr;
+        return true;
+    }
+    return false;
+}
+
+
+
+
+
 
 
 
