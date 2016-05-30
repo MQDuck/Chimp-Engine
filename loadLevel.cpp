@@ -45,15 +45,9 @@ tinyxml2::XMLError loadLevel(std::map<std::string, chimp::ChimpTile>& tiles, SDL
             }
             else if(getString(objXML->FirstChildElement("tile")->GetText(), &tile))
             {
-                //chimp::Layer layer = getLayer(objXML);
-                //game.pushChar(layer, tiles[tile]);
-                //loadObject(objXML, &game.getObjBack(layer));
-                game.pushChar(chimp::MID, tiles["baddie"], -SCREEN_WIDTH>>1, 160, 1, 1, 100, chimp::FACTION_BADDIES,
-                              chimp::FACTION_PLAYER);
-                game.getObjBack(chimp::MID).setDamageTop(false);
-                game.getObjBack(chimp::MID).setRunAccel(RUN_ACCEL / 2.0);
-                game.getObjBack(chimp::MID).runRight();
-                game.getObjBack(chimp::MID).setJumper(true);
+                chimp::Layer layer = getLayer(objXML);
+                game.pushChar(layer, tiles[tile]);
+                loadObject(objXML, &game.getObjBack(layer));
             }
         }
         else if(typeStr == "object")
