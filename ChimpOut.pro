@@ -16,20 +16,20 @@ TARGET = ChimpOut
 
 SOURCES += main.cpp \
     SDLUtils.cpp \
-    ChimpObject.cpp \
-    ChimpMobile.cpp \
-    ChimpCharacter.cpp \
-    ChimpGame.cpp \
-    loadLevel.cpp
+    chimp/ChimpCharacter.cpp \
+    chimp/ChimpGame.cpp \
+    chimp/ChimpMobile.cpp \
+    chimp/ChimpObject.cpp \
+    chimp/loadLevel.cpp
 
 HEADERS += \
     cleanup.h \
     SDLUtils.h \
-    ChimpObject.h \
     ChimpConstants.h \
-    ChimpMobile.h \
-    ChimpCharacter.h \
-    ChimpTile.h \
-    ChimpGame.h \
-    ChimpStructs.h \
-    loadLevel.h
+    chimp/ChimpCharacter.h \
+    chimp/ChimpGame.h \
+    chimp/ChimpMobile.h \
+    chimp/ChimpObject.h \
+    chimp/ChimpStructs.h \
+    chimp/ChimpTile.h \
+    chimp/loadLevel.h

@@ -26,8 +26,8 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, cons
                      ChimpCharacter* plyr)
     : renderer(rend), player(plyr), windowWidth(winWidth), windowHeight(winHeight)
 {
-    scroll_factor_back = DEFAULT_SCROLL_FACTOR_BACK;
-    scroll_factor_fore = DEFAULT_SCROLL_FACTOR_FORE;
+    scroll_factor_back = 1.0;
+    scroll_factor_fore = 1.0;
 }
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)

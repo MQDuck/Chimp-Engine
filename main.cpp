@@ -30,14 +30,14 @@
 #include <tinyxml2.h>
 #include "cleanup.h"
 #include "ChimpConstants.h"
-#include "ChimpGame.h"
-#include "ChimpObject.h"
-#include "ChimpMobile.h"
-#include "ChimpCharacter.h"
-#include "ChimpTile.h"
-#include "ChimpStructs.h"
+#include "chimp/ChimpGame.h"
+#include "chimp/ChimpObject.h"
+#include "chimp/ChimpMobile.h"
+#include "chimp/ChimpCharacter.h"
+#include "chimp/ChimpTile.h"
+#include "chimp/ChimpStructs.h"
+#include "chimp/loadLevel.h"
 #include "SDLUtils.h"
-#include "loadLevel.h"
 
 /*#ifndef parseTrueFalse
 #define parseTrueFalse(a_val, a_tf) { if(a_val == "true") a_tf = true; else if(a_val == "false") a_tf = false; else continue; }
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
         if(levelFile[0] != '/')
             levelFile = ASSETS_PATH + levelFile;
     }
-    if(loadLevel(levelFile, tiles, renderer, game) != tinyxml2::XML_SUCCESS)
+    if(chimp::loadLevel(levelFile, tiles, renderer, game) != tinyxml2::XML_SUCCESS)
     {
         std::cout << "Couldn't load level file \"" << levelFile << "\"." << std::endl;
         cleanup(window, renderer, font/*, &textures*/);

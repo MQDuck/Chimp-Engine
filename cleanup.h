@@ -5,7 +5,7 @@
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "ChimpTile.h"
+#include "chimp/ChimpTile.h"
 
 /*
  * Recurse through the list of arguments to clean up, cleaning up
@@ -39,7 +39,7 @@ inline void cleanup<SDL_Window>(SDL_Window* window)
 }
 
 template<>
-inline void cleanup<SDL_Renderer>(SDL_Renderer* renderer)
+inline void cleanup<SDL_Renderer>(SDL_Renderer* const renderer)
 {
 	if (renderer)
         SDL_DestroyRenderer(renderer);
