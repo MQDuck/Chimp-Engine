@@ -2,7 +2,7 @@
 #define CLEANUP_H
 
 #include <utility>
-#include <vector>
+#include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "ChimpTile.h"
@@ -81,20 +81,35 @@ inline void cleanup<TTF_Font>(TTF_Font* font)
 }
 
 template<>
-inline void cleanup<std::vector<SDL_Texture*>>(std::vector<SDL_Texture*>* textures)
+inline void cleanup<std::map<std::string, SDL_Texture*>>(std::map<std::string, SDL_Texture*>* textures)
 {
-    for(SDL_Texture* tex : *textures)
-        cleanup(tex);
-}
-
-template<>
-inline void cleanup<std::vector<SDL_GameController*>>(std::vector<SDL_GameController*>* textures)
-{
-    for(SDL_GameController* tex : *textures)
-        cleanup(tex);
+    for(auto& tex : *textures)
+        cleanup(tex.second);
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

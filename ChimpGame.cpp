@@ -22,9 +22,13 @@
 namespace chimp
 {
 
-ChimpGame::ChimpGame(SDL_Renderer* rend, const unsigned int winWidth, const unsigned int winHeight,
+ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
                      ChimpCharacter* plyr)
-    : renderer(rend), player(plyr), windowWidth(winWidth), windowHeight(winHeight) {}
+    : renderer(rend), player(plyr), windowWidth(winWidth), windowHeight(winHeight)
+{
+    scroll_factor_back = DEFAULT_SCROLL_FACTOR_BACK;
+    scroll_factor_fore = DEFAULT_SCROLL_FACTOR_FORE;
+}
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
 {
@@ -69,12 +73,42 @@ bool ChimpGame::setWorldBox(const int l, const int r, const int t, const int b)
     return true;
 }
 
-bool ChimpGame::setRenderer(SDL_Renderer* rend)
+bool ChimpGame::setRenderer(SDL_Renderer* const rend)
 {
     if(rend == nullptr)
         return false;
     renderer = rend;
     return true;
+}
+
+float ChimpGame::getScrollFactor(const Layer lay) const
+{
+    switch(lay)
+    {
+    case BACK:
+        return scroll_factor_back;
+    case MID:
+        return 1.0;
+    case FORE:
+        return scroll_factor_fore;
+    default:
+        return 0.0;
+    }
+}
+
+bool ChimpGame::setScrollFactor(const Layer lay, const float factor)
+{
+    switch(lay)
+    {
+    case BACK:
+        scroll_factor_back = factor;
+        return true;
+    case FORE:
+        scroll_factor_fore = factor;
+        return true;
+    default:
+        return false;
+    }
 }
 
 void ChimpGame::pushObj(const Layer layr, const ChimpTile &til, const int x, const int y, const int tilesX,
@@ -83,13 +117,13 @@ void ChimpGame::pushObj(const Layer layr, const ChimpTile &til, const int x, con
     switch(layr)
     {
     case BACK:
-        background.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
+        background.push_back(ObjectPointer( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
         return;
     case MID:
-        middle.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
+        middle.push_back(ObjectPointer( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
         return;
     case FORE:
-        foreground.push_back(std::unique_ptr<ChimpObject>( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
+        foreground.push_back(ObjectPointer( new ChimpObject(renderer, til, x, y, tilesX, tilesY) ));
     }
 }
 
@@ -135,6 +169,56 @@ void ChimpGame::pushChar(const Layer lay, const ChimpTile &til, const int x, con
 {
     TileVec tVec = {til};
     pushChar(lay, tVec, tVec, tVec, x, y, tilesX, tilesY, maxH, frnds, enms);
+}
+
+void ChimpGame::translateWindowX(const int x)
+{
+    if(x == 0)
+        return;
+    
+    midWindow.l += x;
+    midWindow.r += x;
+    
+    if(midWindow.l < worldBox.l)
+    {
+        midWindow.r += worldBox.l - midWindow.l;
+        midWindow.l = worldBox.l;
+    }
+    else if(midWindow.r > worldBox.r)
+    {
+        midWindow.l += worldBox.r - midWindow.r;
+        midWindow.r = worldBox.r;
+    }
+    
+    backWindow.l = midWindow.l * scroll_factor_back;
+    backWindow.r = midWindow.r * scroll_factor_back;
+    foreWindow.l = midWindow.l * scroll_factor_fore;
+    foreWindow.r = midWindow.r * scroll_factor_fore;
+}
+
+void ChimpGame::translateWindowY(const int y)
+{
+    if(y == 0)
+        return;
+    
+    midWindow.t += y;
+    midWindow.b += y;
+    
+    if(midWindow.t < worldBox.t)
+    {
+        midWindow.b += worldBox.t - midWindow.t;
+        midWindow.t = worldBox.t;
+    }
+    else if(midWindow.b > worldBox.b)
+    {
+        midWindow.t += worldBox.b - midWindow.b;
+        midWindow.b = worldBox.b;
+    }
+    
+    backWindow.t = midWindow.t * scroll_factor_back;
+    backWindow.b = midWindow.b * scroll_factor_back;
+    foreWindow.t = midWindow.t * scroll_factor_fore;
+    foreWindow.b = midWindow.b * scroll_factor_fore;
 }
 
 void ChimpGame::initialize()

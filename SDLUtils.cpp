@@ -16,7 +16,7 @@ void logSDLError(std::ostream& os, const std::string& msg)
 * @param ren The renderer to load the texture onto
 * @return the loaded texture, or nullptr if something went wrong.
 */
-SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* ren)
+SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 {
 	SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
 	if (texture == nullptr)
@@ -33,9 +33,9 @@ SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* ren)
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void renderTexture(SDL_Texture* tex, SDL_Renderer* ren, SDL_Rect dst, SDL_Rect* clip)
+void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, SDL_Rect dst, SDL_Rect* clip)
 {
-	SDL_RenderCopy(ren, tex, clip, &dst);
+	SDL_RenderCopy(rend, tex, clip, &dst);
 }
 
 /**
@@ -50,7 +50,7 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* ren, SDL_Rect dst, SDL_Rect* 
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void renderTexture(SDL_Texture* tex, SDL_Renderer* ren, int x, int y, SDL_Rect* clip)
+void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip)
 {
 	SDL_Rect dst;
 	dst.x = x;
@@ -62,48 +62,11 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* ren, int x, int y, SDL_Rect* 
 	}
 	else
 		SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-	renderTexture(tex, ren, dst, clip);
+	renderTexture(tex, rend, dst, clip);
 }
 
-/**
-* Render the message we want to display to a texture for drawing
-* @param message The message we want to display
-* @param fontFile The font we want to use to render the text
-* @param color The color we want the text to be
-* @param fontSize The size we want the font to be
-* @param renderer The renderer to load the texture in
-* @return An SDL_Texture containing the rendered message, or nullptr if something went wrong
-*/
-/*SDL_Texture* renderText(const std::string& message, const std::string& fontFile, SDL_Color color, int fontSize,
-                        SDL_Renderer* renderer)
-{
-	//Open the font
-	TTF_Font* font = TTF_OpenFont(fontFile.c_str(), fontSize);
-	if (font == nullptr)
-    {
-		logSDLError(std::cout, "TTF_OpenFont");
-		return nullptr;
-	}	
-	//We need to first render to a surface as that's what TTF_RenderText
-	//returns, then load that surface into a texture
-	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), color);
-	if (surf == nullptr)
-    {
-		TTF_CloseFont(font);
-		logSDLError(std::cout, "TTF_RenderText");
-		return nullptr;
-	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
-	if (texture == nullptr)
-		logSDLError(std::cout, "CreateTexture");
-	//Clean up the surface and font
-	SDL_FreeSurface(surf);
-	TTF_CloseFont(font);
-	return texture;
-}*/
-
-SDL_Texture* renderText(std::string& message, TTF_Font* font, SDL_Color color,
-                        SDL_Renderer* renderer)
+SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color color,
+                        SDL_Renderer* const renderer)
 {	
 	//We need to first render to a surface as that's what TTF_RenderText
 	//returns, then load that surface into a texture

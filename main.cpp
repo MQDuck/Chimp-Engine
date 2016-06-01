@@ -44,7 +44,7 @@
 #endif*/
 
 bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
-                       SDL_Renderer* renderer);
+                       SDL_Renderer* const renderer);
 //void addController(int id);
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -53,13 +53,12 @@ inline void buttonDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPr
 inline void buttonUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 
-void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex);
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* healthTex);
 
 static Uint32 resetTimer(Uint32 interval, void* game);
 
-//int main(int argc, char** argv)
-int main()
-{    
+int main(int argc, char** argv)
+{
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
@@ -112,7 +111,7 @@ int main()
     }
     if( !loadChimpTextures(tiles, textures, renderer) )
     {
-        cleanup(window, renderer, font/*, &textures*/);
+        cleanup(window, renderer, font, &textures);
         SDL_Quit();
         return 1;
     }
@@ -128,10 +127,24 @@ int main()
     bool quit = false;
     bool keyJumpPressed = false;
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    loadLevel(tiles, renderer, game);
-    game.initialize();
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     Uint32 timeLast, timeNow;
+    std::string levelFile = ASSETS_PATH + DEFAULT_LEVEL;
+    
+    if(argc > 1)
+    {
+        levelFile = argv[1];
+        if(levelFile[0] != '/')
+            levelFile = ASSETS_PATH + levelFile;
+    }
+    if(loadLevel(levelFile, tiles, renderer, game) != tinyxml2::XML_SUCCESS)
+    {
+        std::cout << "Couldn't load level file \"" << levelFile << "\"." << std::endl;
+        cleanup(window, renderer, font/*, &textures*/);
+        SDL_Quit();
+        return 1;
+    }
+    game.initialize();
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
@@ -202,7 +215,7 @@ int main()
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
-                       SDL_Renderer* renderer)
+                       SDL_Renderer* const renderer)
 {
     std::string line;
     int sub1, sub2;
@@ -454,7 +467,7 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game)
     }
 }
 
-void drawHUD(chimp::ChimpGame& game, SDL_Renderer* renderer, TTF_Font* font, SDL_Texture* healthTex)
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* healthTex)
 {
     static int oldHealth = -1, w1, w2, h, x;
     static SDL_Texture* currentHealthTex = nullptr;

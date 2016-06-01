@@ -34,7 +34,7 @@ namespace chimp
  * @param frnds Factions to which the Object belongs.
  * @param enms Factions which the Object can deal damage to.
  */
-ChimpObject::ChimpObject(SDL_Renderer* rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
+ChimpObject::ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
     : tile(til), renderer(rend), friends(frnds), enemies(enms)
 {
@@ -122,6 +122,26 @@ void ChimpObject::render(const IntBox& screen)
             tile.drawRect.y = std::round(coord.y + y - screen.t);
             SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &tile.drawRect, 0, NULL, flip);
         }
+}
+
+bool ChimpObject::setFriends(const int facs)
+{
+    if(validateFactions(facs))
+    {
+        friends = facs;
+        return true;
+    }
+    return false;
+}
+
+bool ChimpObject::setEnemies(const int facs)
+{
+    if(validateFactions(facs))
+    {
+        enemies = facs;
+        return true;
+    }
+    return false;
 }
 
 /**

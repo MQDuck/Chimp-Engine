@@ -40,20 +40,20 @@ protected:
     int maxHealth, health;
     
 public:
-    ChimpCharacter(SDL_Renderer* rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
+    ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
                    const int pX = 0, const int pY = 0, const int tilesX = 1, const int tilesY = 1,
                    const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID,
                    const int maxH = DEFAULT_HEALTH);
     ~ChimpCharacter() {}
     
-    inline void makeInvulnerable() { vulnerable = false; }
-    inline void makeVulnerable() { vulnerable = true; }
-    inline TileVec& getTilesRun() { return tilesRun; }
-    inline void setTilesRun(const TileVec& vec) { tilesRun = vec; }
-    inline TileVec& getTilesJump() { return tilesJump; }
-    inline void setTilesJump(const TileVec& vec) { tilesJump = vec; }
+    inline bool getVulnerable() const { return vulnerable; }
+    inline void setVulnerable(const bool vul) { vulnerable = vul; }
     inline TileVec& getTilesIdle() { return tilesIdle; }
-    inline void setTilesIdle(const TileVec& vec) { tilesIdle = vec; }
+    inline bool setTilesIdle(const TileVec& vec);// { tilesIdle = vec; }
+    inline TileVec& getTilesRun() { return tilesRun; }
+    inline bool setTilesRun(const TileVec& vec);// { tilesRun = vec; }
+    inline TileVec& getTilesJump() { return tilesJump; }
+    inline bool setTilesJump(const TileVec& vec);// { tilesJump = vec; }
     
     void runRight();
     void runLeft();
@@ -64,7 +64,7 @@ public:
     #pragma GCC diagnostic ignored "-Wunused-parameter"
     static Uint32 vulnerableTimer(Uint32 interval, void* character)
     {
-        ((ChimpCharacter*)character)->makeVulnerable();
+        ((ChimpCharacter*)character)->setVulnerable(true);
         return 0;
     }
     #pragma GCC diagnostic pop
@@ -72,7 +72,7 @@ public:
     int getHealth() const { return health; }
     void setHealth(const int heal) { health = heal; }
     int getMaxHealth() const { return maxHealth; }
-    void setMaxHealth(const int heal) { maxHealth = heal; }
+    bool setMaxHealth(const int heal);// { maxHealth = heal; }
     
     void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     void render(const IntBox& screen);

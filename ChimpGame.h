@@ -45,9 +45,10 @@ private:
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
     unsigned int windowWidth, windowHeight;
+    float scroll_factor_back, scroll_factor_fore;
     
 public:
-    ChimpGame(SDL_Renderer* rend, const unsigned int winWidth, const unsigned int winHeight,
+    ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
               ChimpCharacter* plyr = nullptr);
     ~ChimpGame() { if(player) delete player; }
     
@@ -60,11 +61,13 @@ public:
     int getWorldTop() const { return worldBox.t; }
     int getWorldBottom() const { return worldBox.b; }
     SDL_Renderer* getRenderer() const { return renderer; }
-    bool setRenderer(SDL_Renderer* rend);
+    bool setRenderer(SDL_Renderer* const rend);
     unsigned int getWindowWidth() const { return windowWidth; }
     void setWindowWidth(const unsigned int winWidth) { windowWidth = winWidth; }
     unsigned int getWindowHeight() { return windowHeight; }
     void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
+    float getScrollFactor(const Layer lay) const;
+    bool setScrollFactor(const Layer lay, const float factor);
     
     void pushObj(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);
@@ -77,8 +80,8 @@ public:
                   const int y = 0, const int tilesX = 1, const int tilesY = 1, const int maxH = 100,
                   const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID);
     
-    inline void translateWindowX(const int x);
-    inline void translateWindowY(const int y);
+    void translateWindowX(const int x);
+    void translateWindowY(const int y);
     
     void initialize();
     void update(const Uint32 time);
@@ -93,56 +96,6 @@ private:
     static int updateThreadMid(void* game);
     static int updateThreadFore(void* game);*/
 };
-
-inline void ChimpGame::translateWindowX(const int x)
-{
-    if(x == 0)
-        return;
-    
-    midWindow.l += x;
-    midWindow.r += x;
-    
-    if(midWindow.l < worldBox.l)
-    {
-        midWindow.r += worldBox.l - midWindow.l;
-        midWindow.l = worldBox.l;
-    }
-    else if(midWindow.r > worldBox.r)
-    {
-        midWindow.l += worldBox.r - midWindow.r;
-        midWindow.r = worldBox.r;
-    }
-    
-    backWindow.l = midWindow.l * SCROLL_BACK_FACTOR;
-    backWindow.r = midWindow.r * SCROLL_BACK_FACTOR;
-    foreWindow.l = midWindow.l * SCROLL_FORE_FACTOR;
-    foreWindow.r = midWindow.r * SCROLL_FORE_FACTOR;
-}
-
-inline void ChimpGame::translateWindowY(const int y)
-{
-    if(y == 0)
-        return;
-    
-    midWindow.t += y;
-    midWindow.b += y;
-    
-    if(midWindow.t < worldBox.t)
-    {
-        midWindow.b += worldBox.t - midWindow.t;
-        midWindow.t = worldBox.t;
-    }
-    else if(midWindow.b > worldBox.b)
-    {
-        midWindow.t += worldBox.b - midWindow.b;
-        midWindow.b = worldBox.b;
-    }
-    
-    backWindow.t = midWindow.t * SCROLL_BACK_FACTOR;
-    backWindow.b = midWindow.b * SCROLL_BACK_FACTOR;
-    foreWindow.t = midWindow.t * SCROLL_FORE_FACTOR;
-    foreWindow.b = midWindow.b * SCROLL_FORE_FACTOR;
-}
 
 } // namespace chimp
 

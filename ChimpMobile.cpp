@@ -33,7 +33,7 @@ namespace chimp
  * @param frnds Factions to which the Object belongs.
  * @param enms Factions which the Object can deal damage to.
  */
-ChimpMobile::ChimpMobile(SDL_Renderer* rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
+ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const int pX, const int pY, const int tilesX,
                          const int tilesY, Faction frnds, Faction enms)
     : ChimpObject(rend, til, pX, pY, tilesX, tilesY, frnds, enms)
 {
@@ -60,7 +60,7 @@ ChimpMobile::ChimpMobile(SDL_Renderer* rend, const ChimpTile& til, const int pX,
     setRunImpulse(RUN_IMPULSE);
     run_accel = RUN_ACCEL;
     jump_impulse = JUMP_IMPULSE;
-    double_jump_fraction = DOUBLE_JUMP_FRACTION;
+    double_jump_impulse = DOUBLE_JUMP_IMPULSE;
     jump_accel = JUMP_ACCEL;
     stop_factor = STOP_FACTOR;
     sprint_factor = SPRINT_FACTOR;
@@ -157,7 +157,7 @@ void ChimpMobile::jump()
         if(platform == nullptr)
         {
             doubleJumped = true;
-            velocityY = jump_impulse * double_jump_fraction;
+            velocityY = double_jump_impulse;
         }
         else
         {
@@ -261,7 +261,7 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
     {
         accelerationY = GRAVITY;
         platform = nullptr;
-        for(const std::unique_ptr<ChimpObject>& obj : objects)
+        for(const ObjectPointer& obj : objects)
         {
             if(   obj->isActive()
                && platform != &*obj //necessary?

@@ -22,6 +22,7 @@
 
 #include <SDL2/SDL.h>
 #include <memory>
+#include <vector>
 #include "SDLUtils.h"
 #include "cleanup.h"
 #include "ChimpConstants.h"
@@ -37,18 +38,19 @@ namespace chimp
 
 class ChimpObject;
 
-typedef std::vector<std::unique_ptr<ChimpObject>> ObjectVector;
+typedef std::unique_ptr<ChimpObject> ObjectPointer;
+typedef std::vector<ObjectPointer> ObjectVector;
 enum Faction { FACTION_VOID = 0, FACTION_PLAYER = 1<<0, FACTION_BADDIES = 1<<1 }; // each bit represents one unique faction
 
 class ChimpObject
 {    
 protected:
     ChimpTile tile;
-    SDL_Renderer* renderer;
+    SDL_Renderer* const renderer;
     Coordinate coord, center;
     float approx_zero_float, approx_zero_y;
     SDL_RendererFlip flip;
-    Faction friends, enemies;
+    int friends, enemies;
     bool active;
     
 public: // make private/protected
@@ -56,7 +58,7 @@ public: // make private/protected
     Box<bool> damageBox;
     
 public:
-    ChimpObject(SDL_Renderer* rend, const ChimpTile& til, const int pX = 0, const int pY = 0,
+    ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const int pX = 0, const int pY = 0,
                 const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpObject() {}
     
@@ -72,10 +74,10 @@ public:
     virtual void setInitialY(const float y) { setY(y); }
     inline int getCenterX() const { return coord.x + center.x; }
     inline int getCenterY() const { return coord.y + center.y; }
-    inline int getTilesX() const { return width / tile.drawRect.w; }
-    inline void setTilesX(const int tilesX) { width = tile.drawRect.w*tilesX; }
-    inline int getTilesY() const { return height / tile.drawRect.h; }
-    inline void setTilesY(const int tilesY) { height = tile.drawRect.h*tilesY; }
+    inline unsigned int getTilesX() const { return width / tile.drawRect.w; }
+    inline void setTilesX(const unsigned int tilesX) { width = tile.drawRect.w*tilesX; }
+    inline unsigned int getTilesY() const { return height / tile.drawRect.h; }
+    inline void setTilesY(const unsigned int tilesY) { height = tile.drawRect.h*tilesY; }
     inline int getWidth() const { return width; }
     inline int getHeight() const { return height; }
     inline int getTexRectW() const { return tile.textureRect.w; }
@@ -94,10 +96,12 @@ public:
     inline void setDamageBottom(const bool bl) { damageBox.b = bl; }
     inline ChimpTile& getChimpTile() { return tile; }
     inline void setChimpTile(const ChimpTile& til) { tile = til; }
-    inline Faction getFriends() const { return friends; }
-    inline void setFriends(const Faction& facs) { friends = facs; }
-    inline Faction getEnemies() const { return enemies; }
-    inline void setEnemies(const Faction& facs) { enemies = facs; }
+    inline int getFriends() const { return friends; }
+    inline bool setFriends(const int facs);
+    inline void addFriend(const Faction fac) { friends |= fac; }
+    inline int getEnemies() const { return enemies; }
+    inline bool setEnemies(const int facs);
+    inline void addEnemy(const Faction fac) { enemies |= fac; }
     
     inline bool isActive() const { return active; }
     inline bool onScreen(const IntBox& screen) const;
@@ -135,8 +139,8 @@ public:
     virtual void setRunAccel(const float accel) {}
     virtual float getJumpImpulse() const { return 0; }
     virtual void setJumpImpulse(const float impulse) {}
-    virtual float getDoubleJumpFraction() const { return 0; }
-    virtual void setDoubleJumpFraction(const float fraction) {}
+    virtual float getDoubleJumpImpulse() const { return 0; }
+    virtual void setDoubleJumpImpulse(const float fraction) {}
     virtual float getJumpAccel() const { return 0; }
     virtual void setJumpAccel(const float accel) {}
     virtual float getStopFactor() const { return 0; }
@@ -150,7 +154,7 @@ public:
     virtual int getHealth() const { return 0; }
     virtual void setHealth(const int heal) {}
     virtual int getMaxHealth() const { return 0; }
-    virtual void setMaxHealth(const int heal) {}
+    virtual bool setMaxHealth(const int heal) { return true; }
     virtual bool getBoundLeft() const { return false; }
     virtual void setBoundLeft(bool b) {}
     virtual bool getBoundRight() const { return false; }
@@ -166,6 +170,8 @@ public:
 protected:
     inline bool approxZeroF(const float f) const { return f > -approx_zero_float && f < approx_zero_float; }
     inline bool approxZeroI(const int i) const { return i > -approx_zero_y && i < approx_zero_y; }
+    inline bool validateFactions(const int facs) // false if facs contains a bit not corresponding to any faction
+        { return( !((facs|FACTION_PLAYER|FACTION_BADDIES) - FACTION_PLAYER - FACTION_BADDIES) ); }
 };
 
 inline bool ChimpObject::touches(const ChimpObject &other) const

@@ -36,11 +36,11 @@ protected:
     Coordinate coordInitial;
 
     float accelerationY, velocityX, velocityY;
-    float run_impulse, run_accel, jump_impulse, double_jump_fraction, jump_accel, stop_factor, sprint_factor,
+    float run_impulse, run_accel, jump_impulse, double_jump_impulse, jump_accel, stop_factor, sprint_factor,
           resistance_x, resistance_y;
     
 public:
-    ChimpMobile(SDL_Renderer* rend, const ChimpTile& til, const int pX = 0, const int pY = 0,
+    ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const int pX = 0, const int pY = 0,
                 const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpMobile() {}
 
@@ -53,8 +53,6 @@ public:
     virtual void stopRunning();
     //virtual void activate();
     virtual void deactivate();
-    void accelerateRight();
-    void accelerateLeft();
     virtual void jump();
     void stopJumping();
     void sprint();
@@ -75,8 +73,8 @@ public:
     void setRunAccel(const float accel) { run_accel = accel; }
     float getJumpImpulse() const { return jump_impulse; }
     void setJumpImpulse(const float impulse) { jump_impulse = impulse; }
-    float getDoubleJumpFraction() const { return double_jump_fraction; }
-    void setDoubleJumpFraction(const float fraction) { double_jump_fraction = fraction; }
+    float getDoubleJumpImpulse() const { return double_jump_impulse; }
+    void setDoubleJumpImpulse(const float fraction) { double_jump_impulse = fraction; }
     float getJumpAccel() const { return jump_accel; }
     void setJumpAccel(const float accel) { jump_accel = accel; }
     float getStopFactor() const { return stop_factor; }
@@ -105,6 +103,10 @@ public:
     virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     
     //ChimpMobile& operator=(const ChimpMobile& rhs);
+    
+protected:
+    void accelerateRight();
+    void accelerateLeft();
 };
 
 } // namespace chimp

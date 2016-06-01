@@ -37,7 +37,7 @@ namespace chimp
  * @param enms Factions which the Object can deal damage to.
  * @param maxH Charcter's maximum health
  */
-ChimpCharacter::ChimpCharacter(SDL_Renderer* rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
+ChimpCharacter::ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
                                const int pX, const int pY, const int tilesX, const int tilesY, Faction frnds,
                                Faction enms, const int maxH)
     : ChimpMobile(rend, tilIdl[0], pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
@@ -46,6 +46,30 @@ ChimpCharacter::ChimpCharacter(SDL_Renderer* rend, const TileVec& tilRn, const T
     health = maxHealth;
     vulnerable = true;
     idleTime = 0;
+}
+
+bool ChimpCharacter::setTilesIdle(const TileVec &vec)
+{
+    if(vec.empty())
+        return false;
+    tilesIdle = vec;
+    return true;
+}
+
+bool ChimpCharacter::setTilesRun(const TileVec &vec)
+{
+    if(vec.empty())
+        return false;
+    tilesRun = vec;
+    return true;
+}
+
+bool ChimpCharacter::setTilesJump(const TileVec &vec)
+{
+    if(vec.empty())
+        return false;
+    tilesJump = vec;
+    return true;
 }
 
 /**
@@ -110,6 +134,16 @@ void ChimpCharacter::reset()
     health = maxHealth;
 }
 
+bool ChimpCharacter::setMaxHealth(const int heal)
+{
+    if(heal >= 0)
+    {
+        health = heal;
+        return true;
+    }
+    return false;
+}
+
 /**
  * @brief ChimpCharacter::update
  * 
@@ -122,7 +156,7 @@ void ChimpCharacter::reset()
 void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time)
 {    
     if(active && vulnerable)
-        for(const std::unique_ptr<ChimpObject>& obj : objects)
+        for(const ObjectPointer& obj : objects)
         {
             if( !obj->getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
                 continue;
@@ -135,13 +169,13 @@ void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, c
                 velocityX = DAMAGE_VELOCITY * x * invMag;
                 velocityY = DAMAGE_VELOCITY * y * invMag;
                 
-                health -= DAMAGE;
+                health -= DEFAULT_DAMAGE;
                 
                 if(health <= 0)
                     deactivate();
                 else
                 {
-                    makeInvulnerable();
+                    setVulnerable(false);
                     SDL_AddTimer(INVULNERABLE_TIME, vulnerableTimer, this);
                 }
             }
