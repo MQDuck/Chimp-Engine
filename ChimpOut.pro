@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += c++11
 CONFIG -= app_bundle
 CONFIG -= qt
-LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -ltinyxml2
+LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -ltinyxml2 -llua
 #LIBS += -lSDL2 -ldl -lpthread
 
 QMAKE_CXXFLAGS_DEBUG += -pg
@@ -20,7 +20,9 @@ SOURCES += main.cpp \
     chimp/ChimpGame.cpp \
     chimp/ChimpMobile.cpp \
     chimp/ChimpObject.cpp \
-    chimp/loadLevel.cpp
+    chimp/loadLevel.cpp \
+    chimp/ChimpLuaInterface.cpp \
+    runlua.cpp
 
 HEADERS += \
     cleanup.h \
@@ -32,4 +34,6 @@ HEADERS += \
     chimp/ChimpObject.h \
     chimp/ChimpStructs.h \
     chimp/ChimpTile.h \
-    chimp/loadLevel.h
+    chimp/loadLevel.h \
+    chimp/ChimpLuaInterface.h \
+    runlua.h

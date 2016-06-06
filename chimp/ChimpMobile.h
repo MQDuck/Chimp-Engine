@@ -30,13 +30,15 @@ namespace chimp
 class ChimpMobile : public ChimpObject
 {
 protected:
-    bool runningRight, runningLeft, doubleJumped, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom,
+    bool runningRight, runningLeft, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom,
          respawn;
     ChimpObject* platform; // pointer to Object this Mobile is standing on, null if none
     Coordinate coordInitial;
+    int maxJumps; // maximum number of jumps before landing
+    int numJumps; // current number of jumps since last standing
 
     float accelerationY, velocityX, velocityY;
-    float run_impulse, run_accel, jump_impulse, double_jump_impulse, jump_accel, stop_factor, sprint_factor,
+    float run_impulse, run_accel, jump_impulse, multi_jump_impulse, jump_accel, stop_factor, sprint_factor,
           resistance_x, resistance_y;
     
 public:
@@ -73,8 +75,8 @@ public:
     void setRunAccel(const float accel) { run_accel = accel; }
     float getJumpImpulse() const { return jump_impulse; }
     void setJumpImpulse(const float impulse) { jump_impulse = impulse; }
-    float getDoubleJumpImpulse() const { return double_jump_impulse; }
-    void setDoubleJumpImpulse(const float fraction) { double_jump_impulse = fraction; }
+    float getMultiJumpImpulse() const { return multi_jump_impulse; }
+    void setMultiJumpImpulse(const float fraction) { multi_jump_impulse = fraction; }
     float getJumpAccel() const { return jump_accel; }
     void setJumpAccel(const float accel) { jump_accel = accel; }
     float getStopFactor() const { return stop_factor; }
@@ -99,6 +101,10 @@ public:
     void setBoundBottom(bool b) { boundBottom = b; }
     bool getRespawn() const { return respawn; }
     void setRespawn(const bool pd) { respawn = pd; }
+    int getMaxJumps() const { return maxJumps; }
+    bool setMaxJumps(const int max);
+
+    bool hasPlatform() const { return platform; }
 
     virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
     

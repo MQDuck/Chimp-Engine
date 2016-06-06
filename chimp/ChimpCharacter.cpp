@@ -169,7 +169,7 @@ void ChimpCharacter::update(const ObjectVector& objects, const IntBox& screen, c
                 velocityX = DAMAGE_VELOCITY * x * invMag;
                 velocityY = DAMAGE_VELOCITY * y * invMag;
                 
-                health -= DEFAULT_DAMAGE;
+                health -= DAMAGE;
                 
                 if(health <= 0)
                     deactivate();

@@ -22,6 +22,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <lua.hpp>
 #include "ChimpConstants.h"
 #include "ChimpTile.h"
 #include "ChimpObject.h"
@@ -29,8 +30,6 @@
 #include "ChimpCharacter.h"
 #include "cleanup.h"
 #include "SDLUtils.h"
-
-#include <SDL/SDL_thread.h>
 
 namespace chimp
 {
@@ -46,6 +45,7 @@ private:
     IntBox midWindow, backWindow, foreWindow, worldBox;
     unsigned int windowWidth, windowHeight;
     float scroll_factor_back, scroll_factor_fore;
+    lua_State* luast;
     
 public:
     ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
@@ -68,13 +68,16 @@ public:
     void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
+    const IntBox& getMidWindow() const { return midWindow; }
+    const IntBox& getBackWindow() const { return backWindow; }
+    const IntBox& getForeWindow() const { return foreWindow; }
     
     void pushObj(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);
     void pushMob(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);
     void pushChar(const Layer lay, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
-                  const int tilesY = 1, const int maxH = DEFAULT_HEALTH, const Faction frnds = FACTION_VOID,
+                  const int tilesY = 1, const int maxH = HEALTH, const Faction frnds = FACTION_VOID,
                   const Faction enms = FACTION_VOID);
     void pushChar(const Layer lay, const TileVec& tilRn, const TileVec& tilJmp, TileVec& tilIdl, const int x = 0,
                   const int y = 0, const int tilesX = 1, const int tilesY = 1, const int maxH = 100,

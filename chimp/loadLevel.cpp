@@ -5,7 +5,17 @@ namespace chimp
 
 using namespace tinyxml2;
 
-tinyxml2::XMLError loadLevel(const std::string levelFile, std::map<std::string, ChimpTile>& tiles,
+Layer getLayer(const XMLElement* objXML);
+bool getBool(const char* const boolStr, bool& result);
+bool getString(const char* const cStr, std::string& str);
+std::string getMode(const XMLElement* const tag);
+void loadWorldBox(const XMLElement* const edges, ChimpGame& game);
+bool loadAllAnimations(XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles, TileVec& jumptiles,
+                       TileMap& tiles);
+void loadAnimation(XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles);
+void loadObject(XMLElement* const objXML, ChimpObject& obj);
+
+XMLError loadLevel(const std::string levelFile, std::map<std::string, ChimpTile>& tiles,
                              SDL_Renderer* const renderer, ChimpGame& game)
 {
     XMLDocument levelXML;
@@ -14,7 +24,7 @@ tinyxml2::XMLError loadLevel(const std::string levelFile, std::map<std::string, 
     XMLElement* objXML;
     XMLElement* tag;
     
-    if(( result = levelXML.LoadFile(levelFile.c_str()) ) != XML_SUCCESS)
+    if( (result = levelXML.LoadFile(levelFile.c_str())) != XML_SUCCESS )
         return result;
     level = levelXML.FirstChildElement("chimplevel");
     if(!level)
@@ -77,6 +87,53 @@ tinyxml2::XMLError loadLevel(const std::string levelFile, std::map<std::string, 
     return XML_SUCCESS;
 }
 
+Layer getLayer(const XMLElement *objXML)
+{
+    const char* layer = objXML->Attribute("layer");
+    if(layer)
+    {
+        std::string layerStr = layer;
+        if(layerStr == "background")
+            return BACK;
+        else if(layerStr == "foreground")
+            return FORE;
+    }
+    return MID;
+}
+
+bool getBool(const char * const boolStr, bool &result)
+{
+    if(!boolStr)
+        return false;
+    if(strcmp(boolStr, "true") == 0)
+    {
+        result = true;
+        return true;
+    }
+    if(strcmp(boolStr, "false") == 0)
+    {
+        result = false;
+        return true;
+    }
+    return false;
+}
+
+bool getString(const char* const cStr, std::string& str)
+{
+    if(cStr)
+    {
+        str = cStr;
+        return true;
+    }
+    return false;
+}
+
+std::string getMode(const XMLElement* const tag)
+{
+    std::string mode;
+    return getString(tag->Attribute("mode"), mode) ? mode : "absolute";
+}
+
 void loadWorldBox(const XMLElement* const edges, ChimpGame& game)
 {
     int wbLeft = 0;
@@ -98,17 +155,8 @@ void loadWorldBox(const XMLElement* const edges, ChimpGame& game)
     game.setWorldBox(wbLeft, wbRight, wbTop, wbBottom);
 }
 
-void loadAnimation(XMLElement* const objXML, std::string anim, TileVec& tilvec,
-                       std::map<std::string, ChimpTile>& tiles)
-{
-    std::string animation;
-    for( XMLElement* tag = objXML->FirstChildElement("tile"); tag; tag = tag->NextSiblingElement("tile") )
-        if(getString(tag->Attribute("animation"), animation) && anim == animation)
-            tilvec.push_back( tiles[tag->GetText()] );
-}
-
-bool loadAllAnimations(XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles,
-                       TileVec& jumptiles, std::map<std::string, ChimpTile>& tiles)
+bool loadAllAnimations(XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles, TileVec& jumptiles,
+                       TileMap& tiles)
 {
     loadAnimation(objXML, "idle", idletiles, tiles);
     if(idletiles.empty())
@@ -122,7 +170,15 @@ bool loadAllAnimations(XMLElement* const objXML, TileVec& idletiles, TileVec& ru
     return true;
 }
 
-void loadObject(XMLElement* const objXML, ChimpObject& obj)
+void loadAnimation(XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles)
+{
+    std::string animation;
+    for( XMLElement* tag = objXML->FirstChildElement("tile"); tag; tag = tag->NextSiblingElement("tile") )
+        if(getString(tag->Attribute("animation"), animation) && anim == animation)
+            tilvec.push_back( tiles[tag->GetText()] );
+}
+
+void  loadObject(XMLElement* const objXML, ChimpObject& obj)
 {
     XMLElement* tag;
     
@@ -223,6 +279,12 @@ void loadObject(XMLElement* const objXML, ChimpObject& obj)
         if(tag->QueryFloatText(&factor) == XML_SUCCESS)
             obj.setSprintFactor(factor);
     }
+    if( (tag = objXML->FirstChildElement("maxjumps")) )
+    {
+        int max;
+        if(tag->QueryIntText(&max) == XML_SUCCESS)
+            obj.setMaxJumps(max);
+    }
     
     for(tag = objXML->FirstChildElement("faction"); tag; tag = tag->NextSiblingElement("faction"))
     {
@@ -287,12 +349,12 @@ void loadObject(XMLElement* const objXML, ChimpObject& obj)
                 else if(mode == "scale")
                     obj.setJumpImpulse(obj.getRunImpulse() * impulse);
             }
-            else if(type == "doublejump")
+            else if(type == "multijump")
             {
                 if(mode == "absolute")
-                    obj.setDoubleJumpImpulse(impulse);
+                    obj.setMultiJumpImpulse(impulse);
                 else if(mode == "scale")
-                    obj.setDoubleJumpImpulse(obj.getDoubleJumpImpulse() * impulse);
+                    obj.setMultiJumpImpulse(obj.getMultiJumpImpulse() * impulse);
             }
         }
     }
@@ -319,53 +381,6 @@ void loadObject(XMLElement* const objXML, ChimpObject& obj)
             }
         }
     }
-}
-
-Layer getLayer(const XMLElement* objXML)
-{
-    const char* layer = objXML->Attribute("layer");
-    if(layer)
-    {
-        std::string layerStr = layer;
-        if(layerStr == "background")
-            return BACK;
-        else if(layerStr == "foreground")
-            return FORE;
-    }
-    return MID;
-}
-
-bool getBool(const char* const boolStr, bool& result)
-{
-    if(!boolStr)
-        return false;
-    if(strcmp(boolStr, "true") == 0)
-    {
-        result = true;
-        return true;
-    }
-    if(strcmp(boolStr, "false") == 0)
-    {
-        result = false;
-        return true;
-    }
-    return false;
-}
-
-bool getString(const char* const cStr, std::string& str)
-{
-    if(cStr)
-    {
-        str = cStr;
-        return true;
-    }
-    return false;
-}
-
-std::string getMode(const XMLElement* const tag)
-{
-    std::string mode;
-    return getString(tag->Attribute("mode"), mode) ? mode : "absolute";
 }
 
 } // namespace chimp

@@ -17,8 +17,9 @@ static const int
     GAME_OVER_TIME             = 1500, // time before game resets after game over
     PIXELS_PER_FRAME_X         = 50,   // for run animation
     PIXELS_PER_FRAME_Y         = 30,   // for jump animation    
-    DEFAULT_HEALTH             = 1,    // default maximum health for Characters
-    DEFAULT_DAMAGE             = 10;   // default damage dealt
+    HEALTH                     = 1,    // default maximum health for Characters
+    DAMAGE                     = 10,   // default damage dealt
+    MAX_JUMPS                  = 1;    // default maximum number of Mobile jumps before landing
 
 static const Uint32
     TIME_PER_FRAME             = 600;  // for idle animation
@@ -27,7 +28,7 @@ static const float
     RUN_IMPULSE                = 2.5,   // magnitude of x impulse given when mobile begins running with x velocity near zero
     RUN_ACCEL                  = 0.4,   // magnitude of base x acceleration while running
     JUMP_IMPULSE               = -20.0, // y impulse given when mobile jumpes from standing position
-    DOUBLE_JUMP_IMPULSE        = -15.0,
+    MULTI_JUMP_IMPULSE         = -15.0,
     JUMP_ACCEL                 = -1.5,  // player y acceleration caused by holding the jump button before falling
     GRAVITY                    = 1.6,   // this is added to y acceleration when not standing
     STOP_FACTOR                = 0.9,   // x velocity scales by this when not running

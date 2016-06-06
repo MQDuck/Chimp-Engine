@@ -72,8 +72,8 @@ public:
     virtual void setInitialX(const float x) { setX(x); }
     virtual float getInitialY() const { return getY(); }
     virtual void setInitialY(const float y) { setY(y); }
-    inline int getCenterX() const { return coord.x + center.x; }
-    inline int getCenterY() const { return coord.y + center.y; }
+    inline float getCenterX() const { return coord.x + center.x; }
+    inline float getCenterY() const { return coord.y + center.y; }
     inline unsigned int getTilesX() const { return width / tile.drawRect.w; }
     inline void setTilesX(const unsigned int tilesX) { width = tile.drawRect.w*tilesX; }
     inline unsigned int getTilesY() const { return height / tile.drawRect.h; }
@@ -82,10 +82,10 @@ public:
     inline int getHeight() const { return height; }
     inline int getTexRectW() const { return tile.textureRect.w; }
     inline int getTexRectH() const { return tile.textureRect.h; }
-    inline int collisionLeft() const { return coord.x + tile.collisionBox.l; }
-    inline int collisionRight() const { return coord.x + width - tile.collisionBox.r; }
-    inline int collisionTop() const { return coord.y + tile.collisionBox.t; }
-    inline int collisionBottom() const {return coord.y + height - tile.collisionBox.b; }
+    inline float collisionLeft() const { return coord.x + tile.collisionBox.l; }
+    inline float collisionRight() const { return coord.x + width - tile.collisionBox.r; }
+    inline float collisionTop() const { return coord.y + tile.collisionBox.t; }
+    inline float collisionBottom() const {return coord.y + height - tile.collisionBox.b; }
     inline bool getDamageLeft() const { return damageBox.l; }
     inline void setDamageLeft(const bool bl) { damageBox.l = bl; }
     inline bool getDamageRight() const { return damageBox.r; }
@@ -105,6 +105,7 @@ public:
     
     inline bool isActive() const { return active; }
     inline bool onScreen(const IntBox& screen) const;
+    virtual bool hasPlatform() const { return false; }
     
     virtual void activate() { active = true; }
     virtual void deactivate() { active = false; }
@@ -133,14 +134,17 @@ public:
     virtual void setVelocityY(const float velocity) {}
     virtual void runRight() {}
     virtual void runLeft() {}
+    virtual void stopRunningRight() {}
+    virtual void stopRunningLeft() {}
+    virtual void stopRunning() {}
     virtual float getRunImpulse() const { return 0; }
     virtual void setRunImpulse(const float impulse) {}
     virtual float getRunAccel() const { return 0; }
     virtual void setRunAccel(const float accel) {}
     virtual float getJumpImpulse() const { return 0; }
     virtual void setJumpImpulse(const float impulse) {}
-    virtual float getDoubleJumpImpulse() const { return 0; }
-    virtual void setDoubleJumpImpulse(const float fraction) {}
+    virtual float getMultiJumpImpulse() const { return 0; }
+    virtual void setMultiJumpImpulse(const float fraction) {}
     virtual float getJumpAccel() const { return 0; }
     virtual void setJumpAccel(const float accel) {}
     virtual float getStopFactor() const { return 0; }
@@ -165,6 +169,8 @@ public:
     virtual void setBoundBottom(bool b) {}
     virtual bool getRespawn() const { return false; }
     virtual void setRespawn(const bool pd) {}
+    virtual int getMaxJumps() const { return 0; }
+    virtual bool setMaxJumps(const int max) { return true; }
     #pragma GCC diagnostic pop
     
 protected:

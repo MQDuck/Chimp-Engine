@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <tinyxml2.h>
+#include <lua.hpp>
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "chimp/ChimpGame.h"
@@ -39,11 +40,7 @@
 #include "chimp/loadLevel.h"
 #include "SDLUtils.h"
 
-/*#ifndef parseTrueFalse
-#define parseTrueFalse(a_val, a_tf) { if(a_val == "true") a_tf = true; else if(a_val == "false") a_tf = false; else continue; }
-#endif*/
-
-bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
+bool loadChimpTextures(chimp::TileMap& tiles, std::map<std::string, SDL_Texture*>& textures,
                        SDL_Renderer* const renderer);
 //void addController(int id);
 
@@ -53,11 +50,11 @@ inline void buttonDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPr
 inline void buttonUp(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 
-void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* healthTex);
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
 
-static Uint32 resetTimer(Uint32 interval, void* game);
+static Uint32 resetTimer(Uint32 interval, void* const game);
 
-int main(int argc, char** argv)
+int main(const int argc, char** const argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -65,7 +62,7 @@ int main(int argc, char** argv)
     std::vector<SDL_GameController*> controllers;
     //std::vector<SDL_Texture*> textures;
     std::map<std::string, SDL_Texture*> textures;
-    std::map<std::string, chimp::ChimpTile> tiles;
+    chimp::TileMap tiles;
     
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER) < 0)
     {
@@ -140,21 +137,13 @@ int main(int argc, char** argv)
     if(chimp::loadLevel(levelFile, tiles, renderer, game) != tinyxml2::XML_SUCCESS)
     {
         std::cout << "Couldn't load level file \"" << levelFile << "\"." << std::endl;
-        cleanup(window, renderer, font/*, &textures*/);
+        cleanup(window, renderer, font, &textures);
         SDL_Quit();
         return 1;
     }
     game.initialize();
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    
-    /*while(!quit)
-    {
-        SDL_PollEvent(&event);
-        if(event.type == SDL_CONTROLLERBUTTONDOWN && event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
-            quit = true;
-    }
-    quit = false;*/
     
     timeLast = SDL_GetTicks();
     while(!quit)
@@ -214,7 +203,7 @@ int main(int argc, char** argv)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
-bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<std::string, SDL_Texture*>& textures,
+bool loadChimpTextures(chimp::TileMap& tiles, std::map<std::string, SDL_Texture*>& textures,
                        SDL_Renderer* const renderer)
 {
     std::string line;
@@ -380,7 +369,7 @@ bool loadChimpTextures(std::map<std::string, chimp::ChimpTile>& tiles, std::map<
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-static Uint32 resetTimer(Uint32 interval, void* game)
+static Uint32 resetTimer(Uint32 interval, void* const game)
 {
     ((chimp::ChimpGame*)game)->reset();
     return 0;
@@ -467,7 +456,7 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game)
     }
 }
 
-void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* healthTex)
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex)
 {
     static int oldHealth = -1, w1, w2, h, x;
     static SDL_Texture* currentHealthTex = nullptr;

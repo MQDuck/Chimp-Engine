@@ -18,6 +18,8 @@
 */
 
 #include "ChimpGame.h"
+#include "ChimpLuaInterface.h"
+#include "runlua.h"
 
 namespace chimp
 {
@@ -28,6 +30,8 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, cons
 {
     scroll_factor_back = 1.0;
     scroll_factor_fore = 1.0;
+    luast = luaL_newstate();
+    lua::expose(luast);
 }
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
@@ -242,6 +246,8 @@ void ChimpGame::initialize()
 
 void ChimpGame::update(const Uint32 time)
 {
+    executeLua("assets/jumper.lua", luast, this, &*(middle[0]));
+    
     for(auto& obj : background)
         obj->update(background, midWindow, worldBox, time);
     for(auto& obj : middle)

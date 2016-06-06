@@ -43,7 +43,7 @@ public:
     ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
                    const int pX = 0, const int pY = 0, const int tilesX = 1, const int tilesY = 1,
                    const Faction frnds = FACTION_VOID, const Faction enms = FACTION_VOID,
-                   const int maxH = DEFAULT_HEALTH);
+                   const int maxH = HEALTH);
     ~ChimpCharacter() {}
     
     inline bool getVulnerable() const { return vulnerable; }

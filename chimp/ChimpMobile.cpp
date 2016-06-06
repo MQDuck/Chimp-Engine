@@ -37,8 +37,6 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
                          const int tilesY, Faction frnds, Faction enms)
     : ChimpObject(rend, til, pX, pY, tilesX, tilesY, frnds, enms)
 {
-    //coordInitial.x = pX;
-    //coordInitial.y = pY;
     coordInitial.x = coord.x;
     coordInitial.y = coord.y;
     accelerationY = GRAVITY;
@@ -47,7 +45,6 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
     velocityY = 0;
     runningRight = false;
     runningLeft = false;
-    doubleJumped = false;
     sprinting = false;
     jumper = false;
     boundLeft = false;
@@ -56,11 +53,13 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
     boundBottom = false;
     platform = nullptr;
     respawn = true;
+    maxJumps = MAX_JUMPS;
+    numJumps = 0;
     
     setRunImpulse(RUN_IMPULSE);
     run_accel = RUN_ACCEL;
     jump_impulse = JUMP_IMPULSE;
-    double_jump_impulse = DOUBLE_JUMP_IMPULSE;
+    multi_jump_impulse = MULTI_JUMP_IMPULSE;
     jump_accel = JUMP_ACCEL;
     stop_factor = STOP_FACTOR;
     sprint_factor = SPRINT_FACTOR;
@@ -147,24 +146,20 @@ void ChimpMobile::accelerateLeft()
 /**
  * @brief ChimpMobile::jump()
  * 
- * Called when a Mobile tries to jump. Mobiles can double jump. If the mobile is not standing on a platform and has
+ * Called when a Mobile tries to jump. Mobiles can double jump. If the Mobile is not standing on a platform and has
  * already double jumped, this method does nothing.
  */
 void ChimpMobile::jump()
 {
-    if(!doubleJumped)
+    if(numJumps < maxJumps)
     {
-        if(platform == nullptr)
-        {
-            doubleJumped = true;
-            velocityY = double_jump_impulse;
-        }
-        else
-        {
+        if(numJumps == 0)
             velocityY = jump_impulse;
-            platform = nullptr;
-        }
+        else
+            velocityY = multi_jump_impulse;
         accelerationY = jump_accel + GRAVITY;
+        platform = nullptr;
+        ++numJumps;
     }
 }
 
@@ -222,6 +217,14 @@ void ChimpMobile::deactivate()
         reset();
 }
 
+bool ChimpMobile::setMaxJumps(const int max)
+{
+    if(max < 0)
+        return false;
+    maxJumps = max;
+    return true;
+}
+
 /**
  * @brief ChimpMobile::update()
  * 
@@ -245,7 +248,7 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
     else
         velocityX *= stop_factor;    
     
-    if(jumper && platform)
+    if(jumper)
         jump();
     
     if( !runningLeft && !runningRight && approxZeroF(velocityX) )
@@ -271,7 +274,7 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
                 accelerationY = 0;
                 velocityY = 0;
                 coord.y = obj->collisionTop() - height + tile.collisionBox.b;
-                doubleJumped = false;
+                numJumps = 0;
                 platform = &*obj;
                 break;
             }
