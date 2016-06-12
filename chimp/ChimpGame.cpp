@@ -24,6 +24,9 @@
 namespace chimp
 {
 
+ChimpGame* ChimpGame::self;
+ChimpObject* ChimpGame::currentObj;
+
 ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
                      ChimpCharacter* plyr)
     : renderer(rend), player(plyr), windowWidth(winWidth), windowHeight(winHeight)
@@ -31,7 +34,8 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, cons
     scroll_factor_back = 1.0;
     scroll_factor_fore = 1.0;
     luast = luaL_newstate();
-    lua::expose(luast);
+    setupLua(luast);
+    self = this;
 }
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
@@ -246,15 +250,23 @@ void ChimpGame::initialize()
 
 void ChimpGame::update(const Uint32 time)
 {
-    executeLua("assets/jumper.lua", luast, this, &*(middle[0]));
-    
     for(auto& obj : background)
-        obj->update(background, midWindow, worldBox, time);
+    {
+        currentObj = &*obj;
+        obj->update(background, *this, luast, time);
+    }
     for(auto& obj : middle)
-        obj->update(middle, midWindow, worldBox, time);
-    player->update(middle, midWindow, worldBox, time);
+    {
+        currentObj = &*obj;
+        obj->update(middle, *this, luast, time);
+    }
+    currentObj = player;
+    player->update(middle, *this, luast, time);
     for(auto& obj : foreground)
-        obj->update(foreground, midWindow, worldBox, time);
+    {
+        currentObj = &*obj;
+        obj->update(foreground, *this, luast, time);
+    }
     
     /*SDL_Thread* threadBack = SDL_CreateThread(updateThreadBack, "back update thread", this);
     SDL_Thread* threadMid  = SDL_CreateThread(updateThreadMid, "mid update thread",  this);

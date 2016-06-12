@@ -1,62 +1,321 @@
 #include "ChimpLuaInterface.h"
+#include "ChimpGame.h"
+#include "ChimpObject.h"
 
 namespace chimp
 {
-namespace lua
-{
 
-#define gamePtr(param) static_cast<ChimpGame*>(lua_touserdata(state, param))
-#define objPtr(param) static_cast<ChimpObject*>(lua_touserdata(state, param))
+#ifdef __cplusplus
+extern "C"
+#endif
+{
+int getWorldLeft(lua_State* const state);
+int getWorldRight(lua_State* const state);
+int getWorldTop(lua_State* const state);
+int getWorldBottom(lua_State* const state);
+int getWindowWidth(lua_State* const state);
+int getWindowHeight(lua_State* const state);
+
+int getX(lua_State* const state);
+int getY(lua_State* const state);
+int getInitialX(lua_State* const state);
+int getInitialY(lua_State* const state);
+int getCenterX(lua_State* const state);
+int getCenterY(lua_State* const state);
+int getTilesX(lua_State* const state);
+int getTilesY(lua_State* const state);
+int getWidth(lua_State* const state);
+int getHeight(lua_State* const state);
+int getTexRectW(lua_State* const state);
+int getTexRectH(lua_State* const state);
+int collisionLeft(lua_State* const state);
+int collisionRight(lua_State* const state);
+int collisionTop(lua_State* const state);
+int collisionBottom(lua_State* const state);
+int getDamageLeft(lua_State* const state);
+int getDamageRight(lua_State* const state);
+int getDamageTop(lua_State* const state);
+int getDamageBottom(lua_State* const state);
+int getFriends(lua_State* const state);
+//void addFriend(lua_State* const state);
+int getEnemies(lua_State* const state);
+//void addEnemy(lua_State* const state);
+int isActive(lua_State* const state);
+int onScreen(lua_State* const state);
+int activate(lua_State* const state);
+int deactivate(lua_State* const state);
+//int touches(lua_State* const state);
+//int touchesAtBottom(lua_State* const state);
+int reset(lua_State* const state);
+int getAccelerationY(lua_State* const state);
+int setAccelerationY(lua_State* const state);
+int getVelocityX(lua_State* const state);
+int setVelocityX(lua_State* const state);
+int getVelocityY(lua_State* const state);
+int setVelocityY(lua_State* const state);
+int runRight(lua_State* const state);
+int stopRunningRight(lua_State* const state);
+int stopRunningLeft(lua_State* const state);
+int stopRunning(lua_State* const state);
+int getRunImpulse(lua_State* const state);
+int setRunImpulse(lua_State* const state);
+int getJumpImpulse(lua_State* const state);
+int setJumpImpulse(lua_State* const state);
+int getMultiJumpImpulse(lua_State* const state);
+int setMultiJumpImpulse(lua_State* const state);
+int getJumpAccel(lua_State* const state);
+int setJumpAccel(lua_State* const state);
+int getStopFactor(lua_State* const state);
+int setStopFactor(lua_State* const state);
+int getSprintFactor(lua_State* const state);
+int setSprintFactor(lua_State* const state);
+int getResistanceX(lua_State* const state);
+int setResistanceX(lua_State* const state);
+int getResistanceY(lua_State* const state);
+int setResistanceY(lua_State* const state);
+int getHealth(lua_State* const state);
+int setHealth(lua_State* const state);
+int getMaxHealth(lua_State* const state);
+int setMaxHealth(lua_State* const state);
+int getBoundLeft(lua_State* const state);
+int setBoundLeft(lua_State* const state);
+int getBoundRight(lua_State* const state);
+int setBoundRight(lua_State* const state);
+int getBoundTop(lua_State* const state);
+int setBoundTop(lua_State* const state);
+int getBoundBottom(lua_State* const state);
+int setBoundBottom(lua_State* const state);
+int getRespawn(lua_State* const state);
+int setRespawn(lua_State* const state);
+int getMaxJumps(lua_State* const state);
+int setMaxJumps(lua_State* const state);
+int hasPlatform(lua_State* const state);
+} // extern "C"
+
+//ChimpGame* gamePtr(lua_State* const state) { return static_cast<ChimpGame*>(lua_touserdata(state, 1)); }
+//ChimpObject* objPtr(lua_State* const state) { return static_cast<ChimpObject*>(lua_touserdata(state, 1)); }
+//inline ChimpGame* setup(lua_State* const state, const int args);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 int getWorldLeft(lua_State* const state)
 {
+    lua_pushnumber(state, ChimpGame::getGame()->getWorldLeft());
+    return 1;
+}
+
+int getWorldRight(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getGame()->getWorldRight());
+    return 1;
+}
+
+int getWorldTop(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getGame()->getWorldTop());
+    return 1;
+}
+
+int getWorldBottom(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getGame()->getWorldBottom());
+    return 1;
+}
+
+int getWindowWidth(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getGame()->getWindowWidth());
+    return 1;
+}
+
+int getWindowHeight(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getGame()->getWindowHeight());
+    return 1;
+}
+
+int getX(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getX());
+    return 1;
+}
+
+int getY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getY());
+    return 1;
+}
+
+int getInitialX(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getInitialX());
+    return 1;
+}
+
+int getInitialY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getInitialY());
+    return 1;
+}
+
+int getCenterX(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getCenterX());
+    return 1;
+}
+
+int getCenterY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getCenterY());
+    return 1;
+}
+
+int getTilesX(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getTilesX());
+    return 1;
+}
+
+int getTilesY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getTilesY());
+    return 1;
+}
+
+int getWidth(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getWidth());
+    return 1;
+}
+
+int getHeight(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getHeight());
+    return 1;
+}
+
+int getTexRectW(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getTexRectW());
+    return 1;
+}
+
+int getTexRectH(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getTexRectH());
+    return 1;
+}
+
+int collisionLeft(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionLeft());
+    return 1;
+}
+
+int collisionRight(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionRight());
+    return 1;
+}
+
+int collisionTop(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionTop());
+    return 1;
+}
+
+int collisionBottom(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionBottom());
+    return 1;
+}
+
+int getDamageLeft(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getDamageLeft());
+    return 1;
+}
+
+int getDamageRight(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getDamageRight());
+    return 1;
+}
+
+int getDamageTop(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getDamageTop());
+    return 1;
+}
+
+int getDamageBottom(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getDamageBottom());
+    return 1;
+}
+
+int getFriends(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getFriends());
+    return 1;
+}
+
+int getEnemies(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getEnemies());
+    return 1;
+}
+
+int isActive(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->isActive());
+    return 1;
+}
+
+int onScreen(lua_State* const state)
+{
+    /*if(lua_gettop(state) == 2)
+    {
+        lua_pushboolean( state, ChimpGame::getCurrentObject()->onScreen() );
+        return 1;
+    }*/
+    return 0;
+}
+
+int activate(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->activate();
+    return 0;
+}
+
+int deactivate(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->deactivate();
+    return 0;
+}
+
+int reset(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->reset();
+    return 0;
+}
+
+int getAccelerationY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getAccelerationY());
+    return 1;
+}
+
+int setAccelerationY(lua_State* const state)
+{
     if(lua_gettop(state) == 1)
     {
-        lua_pushnumber(state, gamePtr(1)->getWorldLeft());
-        return 1;
+        ChimpGame::getCurrentObject()->setAccelerationY(lua_tonumber(state, 1));
     }
     return 0;
 }
 
-int getWorldRight(lua_State* const state) { return 0; }
-int getWorldTop(lua_State* const state) { return 0; }
-int getWorldBottom(lua_State* const state) { return 0; }
-int getWindowWidth(lua_State* const state) { return 0; }
-int getWindowHeight(lua_State* const state) { return 0; }
-int getX(lua_State* const state) { return 0; }
-int getY(lua_State* const state) { return 0; }
-int getInitialX(lua_State* const state) { return 0; }
-int getInitialY(lua_State* const state) { return 0; }
-int getCenterX(lua_State* const state) { return 0; }
-int getCenterY(lua_State* const state) { return 0; }
-int getTilesX(lua_State* const state) { return 0; }
-int getTilesY(lua_State* const state) { return 0; }
-int getWidth(lua_State* const state) { return 0; }
-int getHeight(lua_State* const state) { return 0; }
-int getTexTectW(lua_State* const state) { return 0; }
-int getTexTectH(lua_State* const state) { return 0; }
-int collisionLeft(lua_State* const state) { return 0; }
-int collisionRight(lua_State* const state) { return 0; }
-int collisionTop(lua_State* const state) { return 0; }
-int collisionBottom(lua_State* const state) { return 0; }
-int getDamageLeft(lua_State* const state) { return 0; }
-int getDamageRight(lua_State* const state) { return 0; }
-int getDamageTop(lua_State* const state) { return 0; }
-int getDamageBottom(lua_State* const state) { return 0; }
-int getFriends(lua_State* const state) { return 0; }
-int getEnemies(lua_State* const state) { return 0; }
-int isActive(lua_State* const state) { return 0; }
-int onScreen(lua_State* const state) { return 0; }
-int activate(lua_State* const state) { return 0; }
-int deactivate(lua_State* const state) { return 0; }
-int touches(lua_State* const state) { return 0; }
-int touchesAtBottom(lua_State* const state) { return 0; }
-int reset(lua_State* const state) { return 0; }
-int getAccelerationY(lua_State* const state) { return 0; }
-int setAccelerationY(lua_State* const state) { return 0; }
 int getVelocityX(lua_State* const state) { return 0; }
 int setVelocityX(lua_State* const state) { return 0; }
 int getVelocityY(lua_State* const state) { return 0; }
@@ -98,17 +357,27 @@ int setRespawn(lua_State* const state) { return 0; }
 int getMaxJumps(lua_State* const state) { return 0; }
 int setMaxJumps(lua_State* const state) { return 0; }
 
+int jump(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->jump();
+    return 0;
+}
+
+int stopJumping(lua_State* const state) { return 0; }
+int sprint(lua_State* const state) { return 0; }
+int stopSprinting(lua_State* const state) { return 0; }
+
 int hasPlatform(lua_State* const state)
 {
     if(lua_gettop(state) != 1)
         return 0;
-    ChimpObject* const obj = (ChimpObject*)lua_touserdata(state, 1);
-    lua_pushboolean(state, obj->hasPlatform());
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->hasPlatform());
     return 1;
 }
 
-void expose(lua_State* const state)
+void setupLua(lua_State* const state)
 {
+    luaL_openlibs(state);
     lua_register(state, "getWorldLeft", getWorldLeft);
     lua_register(state, "getWorldRight", getWorldRight);
     lua_register(state, "getWorldTop", getWorldTop);
@@ -125,8 +394,8 @@ void expose(lua_State* const state)
     lua_register(state, "getTilesY", getTilesY);
     lua_register(state, "getWidth", getWidth);
     lua_register(state, "getHeight", getHeight);
-    lua_register(state, "getTexTectW", getTexTectW);
-    lua_register(state, "getTexTectH", getTexTectH);
+    lua_register(state, "getTexTectW", getTexRectW);
+    lua_register(state, "getTexTectH", getTexRectH);
     lua_register(state, "collisionLeft", collisionLeft);
     lua_register(state, "collisionRight", collisionRight);
     lua_register(state, "collisionTop", collisionTop);
@@ -141,8 +410,6 @@ void expose(lua_State* const state)
     lua_register(state, "onScreen", onScreen);
     lua_register(state, "activate", activate);
     lua_register(state, "deactivate", deactivate);
-    lua_register(state, "touches", touches);
-    lua_register(state, "touchesAtBottom", touchesAtBottom);
     lua_register(state, "reset", reset);
     lua_register(state, "getAccelerationY", getAccelerationY);
     lua_register(state, "setAccelerationY", setAccelerationY);
@@ -185,13 +452,20 @@ void expose(lua_State* const state)
     lua_register(state, "getRespawn", getRespawn);
     lua_register(state, "setRespawn", setRespawn);
     lua_register(state, "getMaxJumps", getMaxJumps);
-    lua_register(state, "setMaxJumps", setMaxJumps);
+    lua_register(state, "jump", jump);
+    lua_register(state, "stopJumping", stopJumping);
+    lua_register(state, "sprint", sprint);
+    lua_register(state, "stopSprinting", stopSprinting);
 }
+
+/*inline ChimpGame* setup(lua_State* const state, const int args)
+{
+    return lua_gettop(state) == args ? static_cast<ChimpGame*>(lua_touserdata(state, 1)) : nullptr;
+}*/
 
 #pragma GCC diagnostic pop
 
 #undef gamePtr
 #undef objPtr
 
-} // namespace lua
 } // namespace chimp

@@ -213,12 +213,6 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
         if(getBool(tag->GetText(), respawn))
             obj.setRespawn(respawn);
     }
-    if( (tag = objXML->FirstChildElement("jumper")) )
-    {
-        bool jumper;
-        if(getBool(tag->GetText(), jumper))
-            obj.setJumper(jumper);
-    }
     if( (tag = objXML->FirstChildElement("damage")) )
     {
         bool tf;
@@ -254,12 +248,6 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
                 obj.runRight();
         }
     }
-    if( (tag = objXML->FirstChildElement("jumper")) )
-    {
-        bool jumper;
-        if(getBool(tag->GetText(), jumper))
-            obj.setJumper(jumper);
-    }
     if( (tag = objXML->FirstChildElement("stopfactor")) )
     {
         float factor;
@@ -284,6 +272,12 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
         int max;
         if(tag->QueryIntText(&max) == XML_SUCCESS)
             obj.setMaxJumps(max);
+    }
+    if( (tag = objXML->FirstChildElement("behavior")) )
+    {
+        std::string behavior;
+        if(getString(tag->GetText(), behavior))
+            obj.setBehavior(behavior);
     }
     
     for(tag = objXML->FirstChildElement("faction"); tag; tag = tag->NextSiblingElement("faction"))

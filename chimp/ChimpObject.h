@@ -23,6 +23,7 @@
 #include <SDL2/SDL.h>
 #include <memory>
 #include <vector>
+#include <lua.hpp>
 #include "SDLUtils.h"
 #include "cleanup.h"
 #include "ChimpConstants.h"
@@ -30,12 +31,10 @@
 #include "ChimpStructs.h"
 #include "ChimpStructs.h"
 
-using std::cout;
-using std::endl;
-
 namespace chimp
 {
 
+class ChimpGame;
 class ChimpObject;
 
 typedef std::unique_ptr<ChimpObject> ObjectPointer;
@@ -104,7 +103,7 @@ public:
     inline void addEnemy(const Faction fac) { enemies |= fac; }
     
     inline bool isActive() const { return active; }
-    inline bool onScreen(const IntBox& screen) const;
+    inline bool onScreen(const IntBox& window) const;
     virtual bool hasPlatform() const { return false; }
     
     virtual void activate() { active = true; }
@@ -113,7 +112,7 @@ public:
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
+    virtual void update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time);
     virtual void render(const IntBox& screen);
     virtual void reset() {}
     
@@ -124,8 +123,6 @@ public:
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"
-    virtual bool isJumper() const { return false; }
-    virtual void setJumper(bool b) {}
     virtual float getAccelerationY() const { return 0; }
     virtual void setAccelerationY(const float accel) {}
     virtual float getVelocityX() const { return 0; }
@@ -171,6 +168,9 @@ public:
     virtual void setRespawn(const bool pd) {}
     virtual int getMaxJumps() const { return 0; }
     virtual bool setMaxJumps(const int max) { return true; }
+    virtual std::string getBehavior() const { return ""; }
+    virtual bool setBehavior(const std::string& behav) { return false; }
+    virtual void jump() {}
     #pragma GCC diagnostic pop
     
 protected:

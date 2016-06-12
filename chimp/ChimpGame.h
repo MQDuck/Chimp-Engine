@@ -47,6 +47,9 @@ private:
     float scroll_factor_back, scroll_factor_fore;
     lua_State* luast;
     
+    static ChimpGame* self;
+    static ChimpObject* currentObj;
+    
 public:
     ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
               ChimpCharacter* plyr = nullptr);
@@ -60,6 +63,10 @@ public:
     int getWorldRight() const { return worldBox.r; }
     int getWorldTop() const { return worldBox.t; }
     int getWorldBottom() const { return worldBox.b; }
+    int getMidWindowLeft() const { return midWindow.l; }
+    int getMidWindowRight() const { return midWindow.r; }
+    int getMidWindowTop() const { return midWindow.t; }
+    int getMidWindowBottom() const { return midWindow.b; }
     SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
     unsigned int getWindowWidth() const { return windowWidth; }
@@ -71,6 +78,9 @@ public:
     const IntBox& getMidWindow() const { return midWindow; }
     const IntBox& getBackWindow() const { return backWindow; }
     const IntBox& getForeWindow() const { return foreWindow; }
+    
+    static ChimpGame* getGame() { return self; }
+    static ChimpObject* getCurrentObject() { return currentObj; }
     
     void pushObj(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);
@@ -92,10 +102,10 @@ public:
     void reset();
     
 private:
-    void updateBack();
+    /*void updateBack();
     void updateMid();
     void updateFore();
-    /*static int updateThreadBack(void* game);
+    static int updateThreadBack(void* game);
     static int updateThreadMid(void* game);
     static int updateThreadFore(void* game);*/
 };

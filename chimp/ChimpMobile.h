@@ -30,10 +30,11 @@ namespace chimp
 class ChimpMobile : public ChimpObject
 {
 protected:
-    bool runningRight, runningLeft, sprinting, jumper, boundLeft, boundRight, boundTop, boundBottom,
+    bool runningRight, runningLeft, sprinting, boundLeft, boundRight, boundTop, boundBottom,
          respawn;
     ChimpObject* platform; // pointer to Object this Mobile is standing on, null if none
     Coordinate coordInitial;
+    std::string behavior;
     int maxJumps; // maximum number of jumps before landing
     int numJumps; // current number of jumps since last standing
 
@@ -60,9 +61,7 @@ public:
     void sprint();
     void stopSprinting();
     virtual void reset();
-        
-    bool isJumper() const { return jumper; }
-    void setJumper(const bool b) { jumper = b; }
+
     float getAccelerationY() const { return accelerationY; }
     void setAccelerationY(const float accel) { accelerationY = accel; }
     float getVelocityX() const { return velocityX; }
@@ -103,10 +102,12 @@ public:
     void setRespawn(const bool pd) { respawn = pd; }
     int getMaxJumps() const { return maxJumps; }
     bool setMaxJumps(const int max);
+    std::string getBehavior() const { return behavior; }
+    bool setBehavior(const std::string& behav);
 
     bool hasPlatform() const { return platform; }
 
-    virtual void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
+    virtual void update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time);
     
     //ChimpMobile& operator=(const ChimpMobile& rhs);
     

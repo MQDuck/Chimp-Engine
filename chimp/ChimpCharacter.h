@@ -74,7 +74,7 @@ public:
     int getMaxHealth() const { return maxHealth; }
     bool setMaxHealth(const int heal);// { maxHealth = heal; }
     
-    void update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time);
+    void update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time);
     void render(const IntBox& screen);
 };
 

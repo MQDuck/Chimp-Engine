@@ -18,6 +18,8 @@
 */
 
 #include "ChimpMobile.h"
+#include "sys/stat.h"
+#include "runlua.h"
 
 namespace chimp
 {
@@ -46,7 +48,6 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
     runningRight = false;
     runningLeft = false;
     sprinting = false;
-    jumper = false;
     boundLeft = false;
     boundRight = false;
     boundTop = false;
@@ -225,6 +226,18 @@ bool ChimpMobile::setMaxJumps(const int max)
     return true;
 }
 
+bool ChimpMobile::setBehavior(const std::string& behav)
+{
+    struct stat buffer;
+    if(   stat(behav.c_str(), &buffer) == 0
+       && ( behav.substr(behav.size()-4, 4) == ".lua" || behav.substr(behav.size()-5, 5) == ".luac" ))
+    {
+        behavior = behav;
+        return true;
+    }
+    return false;
+}
+
 /**
  * @brief ChimpMobile::update()
  * 
@@ -234,9 +247,9 @@ bool ChimpMobile::setMaxJumps(const int max)
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time)
+void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time)
 {
-    ChimpObject::update(objects, screen, world, time);
+    ChimpObject::update(objects, game, luast, time);
     
     if(!active)
         return;
@@ -246,10 +259,10 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
     else if(runningLeft)
         accelerateLeft();
     else
-        velocityX *= stop_factor;    
+        velocityX *= stop_factor;
     
-    if(jumper)
-        jump();
+    if(!behavior.empty())
+        runLua(behavior, luast);
     
     if( !runningLeft && !runningRight && approxZeroF(velocityX) )
         velocityX = 0;
@@ -290,25 +303,25 @@ void ChimpMobile::update(const ObjectVector& objects, const IntBox& screen, cons
         coord.y = platform->collisionTop() - height + tile.collisionBox.b;
     }
     
-    if(boundLeft && collisionLeft() < world.l)
+    if(boundLeft && collisionLeft() < game.getWorldLeft())
     {
         velocityX = 0;
-        coord.x = world.l - tile.collisionBox.l;
+        coord.x = game.getWorldLeft() - tile.collisionBox.l;
     }
-    else if(boundRight && collisionRight() > world.r)
+    else if(boundRight && collisionRight() > game.getWorldRight())
     {
         velocityX = 0;
-        coord.x = world.r - width + tile.collisionBox.r;
+        coord.x = game.getWorldRight() - width + tile.collisionBox.r;
     }
-    else if(boundTop && collisionTop() < world.t)
+    else if(boundTop && collisionTop() < game.getWorldTop())
     {
         velocityY = 0;
-        coord.y = world.t - tile.collisionBox.r;
+        coord.y = game.getWorldTop() - tile.collisionBox.r;
     }
-    else if(boundBottom && collisionBottom() > world.b)
+    else if(boundBottom && collisionBottom() > game.getWorldBottom())
     {
         velocityY = 0;
-        coord.y = world.b - height + tile.collisionBox.b;
+        coord.y = game.getWorldBottom() - height + tile.collisionBox.b;
     }
 }
 

@@ -19,6 +19,7 @@
 
 #include <cmath>
 #include "ChimpObject.h"
+#include "ChimpGame.h"
 
 namespace chimp
 {
@@ -81,23 +82,23 @@ void ChimpObject::initialize(const IntBox& screen)
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpObject::update(const ObjectVector& objects, const IntBox& screen, const IntBox& world, const Uint32 time)
+void ChimpObject::update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time)
 {
     if(active)
     {
-        if(   coord.x+width < screen.l - INACTIVE_ZONE
-           || coord.x > screen.r + INACTIVE_ZONE
-           || coord.y > screen.b + INACTIVE_ZONE
-           || coord.y+height < screen.t - INACTIVE_ZONE)
+        if(   coord.x+width < game.getMidWindowLeft() - INACTIVE_ZONE
+           || coord.x > game.getMidWindowRight() + INACTIVE_ZONE
+           || coord.y > game.getMidWindowBottom() + INACTIVE_ZONE
+           || coord.y+height < game.getMidWindowTop() - INACTIVE_ZONE)
             deactivate();
     }
     else
     {
-        if(   coord.x <= screen.r + ACTIVE_ZONE
-           && coord.y+height >= screen.t - ACTIVE_ZONE
-           && coord.x+width >= screen.l - ACTIVE_ZONE
-           && coord.y <= screen.b + ACTIVE_ZONE
-           && !onScreen(screen) )
+        if(   coord.x <= game.getMidWindowRight() + ACTIVE_ZONE
+           && coord.y+height >= game.getMidWindowTop() - ACTIVE_ZONE
+           && coord.x+width >= game.getMidWindowLeft() - ACTIVE_ZONE
+           && coord.y <= game.getMidWindowBottom() + ACTIVE_ZONE
+           && !onScreen(game.getMidWindow()) )
             activate();
     }
 }
@@ -150,9 +151,9 @@ bool ChimpObject::setEnemies(const int facs)
  * @param screen Current window for this Object's game layer.
  * @return true if this Object is at least partially inside the passed screen boundaries
  */
-bool ChimpObject::onScreen(const IntBox& screen) const
+bool ChimpObject::onScreen(const IntBox& window) const
 {
-    return coord.x <= screen.r && coord.y+height >= screen.t && coord.x+width >= screen.l && coord.y <= screen.b;
+    return coord.x <= window.r && coord.y+height >= window.t && coord.x+width >= window.l && coord.y <= window.b;
 }
 
 } // namespace chimp
