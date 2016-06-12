@@ -53,6 +53,7 @@ int getVelocityX(lua_State* const state);
 int setVelocityX(lua_State* const state);
 int getVelocityY(lua_State* const state);
 int setVelocityY(lua_State* const state);
+int runLeft(lua_State* const state);
 int runRight(lua_State* const state);
 int stopRunningRight(lua_State* const state);
 int stopRunningLeft(lua_State* const state);
@@ -91,10 +92,6 @@ int getMaxJumps(lua_State* const state);
 int setMaxJumps(lua_State* const state);
 int hasPlatform(lua_State* const state);
 } // extern "C"
-
-//ChimpGame* gamePtr(lua_State* const state) { return static_cast<ChimpGame*>(lua_touserdata(state, 1)); }
-//ChimpObject* objPtr(lua_State* const state) { return static_cast<ChimpObject*>(lua_touserdata(state, 1)); }
-//inline ChimpGame* setup(lua_State* const state, const int args);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -310,52 +307,273 @@ int getAccelerationY(lua_State* const state)
 int setAccelerationY(lua_State* const state)
 {
     if(lua_gettop(state) == 1)
-    {
         ChimpGame::getCurrentObject()->setAccelerationY(lua_tonumber(state, 1));
-    }
     return 0;
 }
 
-int getVelocityX(lua_State* const state) { return 0; }
-int setVelocityX(lua_State* const state) { return 0; }
-int getVelocityY(lua_State* const state) { return 0; }
-int setVelocityY(lua_State* const state) { return 0; }
-int runRight(lua_State* const state) { return 0; }
-int stopRunningRight(lua_State* const state) { return 0; }
-int stopRunningLeft(lua_State* const state) { return 0; }
-int stopRunning(lua_State* const state) { return 0; }
-int getRunImpulse(lua_State* const state) { return 0; }
-int setRunImpulse(lua_State* const state) { return 0; }
-int getJumpImpulse(lua_State* const state) { return 0; }
-int setJumpImpulse(lua_State* const state) { return 0; }
-int getMultiJumpImpulse(lua_State* const state) { return 0; }
-int setMultiJumpImpulse(lua_State* const state) { return 0; }
-int getJumpAccel(lua_State* const state) { return 0; }
-int setJumpAccel(lua_State* const state) { return 0; }
-int getStopFactor(lua_State* const state) { return 0; }
-int setStopFactor(lua_State* const state) { return 0; }
-int getSprintFactor(lua_State* const state) { return 0; }
-int setSprintFactor(lua_State* const state) { return 0; }
-int getResistanceX(lua_State* const state) { return 0; }
-int setResistanceX(lua_State* const state) { return 0; }
-int getResistanceY(lua_State* const state) { return 0; }
-int setResistanceY(lua_State* const state) { return 0; }
-int getHealth(lua_State* const state) { return 0; }
-int setHealth(lua_State* const state) { return 0; }
-int getMaxHealth(lua_State* const state) { return 0; }
-int setMaxHealth(lua_State* const state) { return 0; }
-int getBoundLeft(lua_State* const state) { return 0; }
-int setBoundLeft(lua_State* const state) { return 0; }
-int getBoundRight(lua_State* const state) { return 0; }
-int setBoundRight(lua_State* const state) { return 0; }
-int getBoundTop(lua_State* const state) { return 0; }
-int setBoundTop(lua_State* const state) { return 0; }
-int getBoundBottom(lua_State* const state) { return 0; }
-int setBoundBottom(lua_State* const state) { return 0; }
-int getRespawn(lua_State* const state) { return 0; }
-int setRespawn(lua_State* const state) { return 0; }
-int getMaxJumps(lua_State* const state) { return 0; }
-int setMaxJumps(lua_State* const state) { return 0; }
+int getVelocityX(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getVelocityX());
+    return 1;
+}
+
+int setVelocityX(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setVelocityX(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getVelocityY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getVelocityY());
+    return 1;
+}
+
+int setVelocityY(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setVelocityY(lua_tonumber(state, 1));
+    return 0;
+}
+
+int runLeft(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->runLeft();
+    return 0;
+}
+
+int stopRunningLeft(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->stopRunningLeft();
+    return 0;
+}
+
+int runRight(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->runRight();
+    return 0;
+}
+
+int stopRunningRight(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->stopRunningRight();
+    return 0;
+}
+
+int stopRunning(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->stopRunning();
+    return 0;
+}
+
+int getRunImpulse(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getRunImpulse());
+    return 1;
+}
+
+int setRunImpulse(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setRunImpulse(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getJumpImpulse(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getJumpImpulse());
+    return 1;
+}
+
+int setJumpImpulse(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setJumpImpulse(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getMultiJumpImpulse(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getMultiJumpImpulse());
+    return 1;
+}
+
+int setMultiJumpImpulse(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setMultiJumpImpulse(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getJumpAccel(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getJumpAccel());
+    return 1;
+}
+
+int setJumpAccel(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setJumpAccel(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getStopFactor(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getStopFactor());
+    return 1;
+}
+
+int setStopFactor(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setStopFactor(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getSprintFactor(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getSprintFactor());
+    return 1;
+}
+
+int setSprintFactor(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setSprintFactor(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getResistanceX(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getResistanceX());
+    return 1;
+}
+
+int setResistanceX(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setResistanceX(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getResistanceY(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getResistanceY());
+    return 1;
+}
+
+int setResistanceY(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setResistanceY(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getHealth(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getHealth());
+    return 1;
+}
+
+int setHealth(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setHealth(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getMaxHealth(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getMaxHealth());
+    return 1;
+}
+
+int setMaxHealth(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setMaxHealth(lua_tonumber(state, 1));
+    return 0;
+}
+
+int getBoundLeft(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getBoundLeft());
+    return 1;
+}
+
+int setBoundLeft(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setBoundLeft(lua_toboolean(state, 1));
+    return 0;
+}
+
+int getBoundRight(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getBoundRight());
+    return 1;
+}
+
+int setBoundRight(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setBoundRight(lua_toboolean(state, 1));
+    return 0;
+}
+
+int getBoundTop(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getBoundTop());
+    return 1;
+}
+
+int setBoundTop(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setBoundTop(lua_toboolean(state, 1));
+    return 0;
+}
+
+int getBoundBottom(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getBoundBottom());
+    return 1;
+}
+
+int setBoundBottom(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setBoundBottom(lua_toboolean(state, 1));
+    return 0;
+}
+
+int getRespawn(lua_State* const state)
+{
+    lua_pushboolean(state, ChimpGame::getCurrentObject()->getRespawn());
+    return 1;
+}
+
+int setRespawn(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setRespawn(lua_toboolean(state, 1));
+    return 0;
+}
+
+int getMaxJumps(lua_State* const state)
+{
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getMaxJumps());
+    return 1;
+}
+
+int setMaxJumps(lua_State* const state)
+{
+    if(lua_gettop(state) == 1)
+        ChimpGame::getCurrentObject()->setMaxJumps(lua_tonumber(state, 1));
+    return 0;
+}
 
 int jump(lua_State* const state)
 {
@@ -363,9 +581,23 @@ int jump(lua_State* const state)
     return 0;
 }
 
-int stopJumping(lua_State* const state) { return 0; }
-int sprint(lua_State* const state) { return 0; }
-int stopSprinting(lua_State* const state) { return 0; }
+int stopJumping(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->stopJumping();
+    return 0;
+}
+
+int sprint(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->sprint();
+    return 0;
+}
+
+int stopSprinting(lua_State* const state)
+{
+    ChimpGame::getCurrentObject()->stopSprinting();
+    return 0;
+}
 
 int hasPlatform(lua_State* const state)
 {
@@ -374,6 +606,8 @@ int hasPlatform(lua_State* const state)
     lua_pushboolean(state, ChimpGame::getCurrentObject()->hasPlatform());
     return 1;
 }
+
+#pragma GCC diagnostic pop
 
 void setupLua(lua_State* const state)
 {
@@ -457,13 +691,6 @@ void setupLua(lua_State* const state)
     lua_register(state, "sprint", sprint);
     lua_register(state, "stopSprinting", stopSprinting);
 }
-
-/*inline ChimpGame* setup(lua_State* const state, const int args)
-{
-    return lua_gettop(state) == args ? static_cast<ChimpGame*>(lua_touserdata(state, 1)) : nullptr;
-}*/
-
-#pragma GCC diagnostic pop
 
 #undef gamePtr
 #undef objPtr

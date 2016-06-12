@@ -171,6 +171,9 @@ public:
     virtual std::string getBehavior() const { return ""; }
     virtual bool setBehavior(const std::string& behav) { return false; }
     virtual void jump() {}
+    virtual void stopJumping() {}
+    virtual void sprint() {}
+    virtual void stopSprinting() {}
     #pragma GCC diagnostic pop
     
 protected:
