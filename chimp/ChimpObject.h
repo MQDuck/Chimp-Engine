@@ -109,8 +109,8 @@ public:
     virtual void activate() { active = true; }
     virtual void deactivate() { active = false; }
     
-    inline bool touches(const ChimpObject& other) const;
-    inline bool touchesAtBottom(const ChimpObject& other) const;
+    bool touches(const ChimpObject& other) const;
+    bool touchesAtBottom(const ChimpObject& other) const;
     
     virtual void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
     virtual void render(const IntBox& screen);
@@ -184,22 +184,6 @@ protected:
     inline bool validateFactions(const int facs) // false if facs contains a bit not corresponding to any faction
         { return( !((facs|FACTION_PLAYER|FACTION_BADDIES) - FACTION_PLAYER - FACTION_BADDIES) ); }
 };
-
-inline bool ChimpObject::touches(const ChimpObject &other) const
-{
-    return    collisionLeft()   <= other.collisionRight()
-           && collisionRight()  >= other.collisionLeft()
-           && collisionTop()    <= other.collisionBottom()
-           && collisionBottom() >= other.collisionTop();
-}
-
-inline bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
-{
-    return    collisionBottom() - approx_zero_y <= other.collisionTop()
-           && collisionBottom() + approx_zero_y > other.collisionTop()
-           && collisionLeft()  <= other.collisionRight()
-           && collisionRight() >= other.collisionLeft();
-}
 
 } // namespace chimp
 

@@ -18,8 +18,8 @@
 */
 
 #include "ChimpMobile.h"
+#include "ChimpGame.h"
 #include "sys/stat.h"
-#include "runlua.h"
 
 namespace chimp
 {

@@ -19,13 +19,14 @@ XMLError loadLevel(const std::string levelFile, std::map<std::string, ChimpTile>
                              SDL_Renderer* const renderer, ChimpGame& game)
 {
     XMLDocument levelXML;
-    XMLError result;
+    XMLError loadFileResult;
     XMLNode* level;
     XMLElement* objXML;
     XMLElement* tag;
     
-    if( (result = levelXML.LoadFile(levelFile.c_str())) != XML_SUCCESS )
-        return result;
+    loadFileResult = levelXML.LoadFile(levelFile.c_str());
+    if(loadFileResult != XML_SUCCESS)
+        return loadFileResult;
     level = levelXML.FirstChildElement("chimplevel");
     if(!level)
         return XML_ERROR_FILE_READ_ERROR;
@@ -42,45 +43,45 @@ XMLError loadLevel(const std::string levelFile, std::map<std::string, ChimpTile>
     
     for( objXML = level->FirstChildElement("object"); objXML; objXML = objXML->NextSiblingElement("object") )
     {
-        const char* type = objXML->Attribute("type");
-        if(!type)
-            continue;
-        std::string typeStr = type;
-        if(typeStr == "player")
+        std::string type;
+        if(getString(objXML->Attribute("type"), type))
         {
-            TileVec runtiles, jumptiles, idletiles;
-            if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+            if(type == "player")
             {
-                game.getPlayer() = new ChimpCharacter(renderer, runtiles, jumptiles, idletiles);
-                loadObject(objXML, *game.getPlayer());
+                TileVec runtiles, jumptiles, idletiles;
+                if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+                {
+                    game.getPlayer() = new ChimpCharacter(renderer, runtiles, jumptiles, idletiles);
+                    loadObject(objXML, *game.getPlayer());
+                }
             }
-        }
-        else if(typeStr == "character")
-        {
-            TileVec runtiles, jumptiles, idletiles;
-            std::string tile;
-            if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+            else if(type == "character")
             {
-                Layer layer = getLayer(objXML);
-                game.pushChar(layer, runtiles, jumptiles, idletiles);
-                loadObject(objXML, game.getObjBack(layer));
+                TileVec runtiles, jumptiles, idletiles;
+                std::string tile;
+                if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+                {
+                    Layer layer = getLayer(objXML);
+                    game.pushChar(layer, runtiles, jumptiles, idletiles);
+                    loadObject(objXML, game.getObjBack(layer));
+                }
+                else if(getString(objXML->FirstChildElement("tile")->GetText(), tile))
+                {
+                    Layer layer = getLayer(objXML);
+                    game.pushChar(layer, tiles[tile]);
+                    loadObject(objXML, game.getObjBack(layer));
+                }
             }
-            else if(getString(objXML->FirstChildElement("tile")->GetText(), tile))
+            else if(type == "object")
             {
-                Layer layer = getLayer(objXML);
-                game.pushChar(layer, tiles[tile]);
-                loadObject(objXML, game.getObjBack(layer));
+                std::string tile;
+                if(getString(objXML->FirstChildElement("tile")->GetText(), tile))
+                {
+                    Layer layer = getLayer(objXML);
+                    game.pushObj(layer, tiles[tile]);
+                    loadObject(objXML, game.getObjBack(layer));
+                }   
             }
-        }
-        else if(typeStr == "object")
-        {
-            std::string tile;
-            if(getString(objXML->FirstChildElement("tile")->GetText(), tile))
-            {
-                Layer layer = getLayer(objXML);
-                game.pushObj(layer, tiles[tile]);
-                loadObject(objXML, game.getObjBack(layer));
-            }   
         }
     }
     
@@ -89,19 +90,18 @@ XMLError loadLevel(const std::string levelFile, std::map<std::string, ChimpTile>
 
 Layer getLayer(const XMLElement *objXML)
 {
-    const char* layer = objXML->Attribute("layer");
-    if(layer)
+    std::string layer;
+    if(getString(objXML->Attribute("layer"), layer))
     {
-        std::string layerStr = layer;
-        if(layerStr == "background")
+        if(layer == "background")
             return BACK;
-        else if(layerStr == "foreground")
+        else if(layer == "foreground")
             return FORE;
     }
     return MID;
 }
 
-bool getBool(const char * const boolStr, bool &result)
+bool getBool(const char* const boolStr, bool& result)
 {
     if(!boolStr)
         return false;
@@ -204,7 +204,6 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
         if(tag->QueryIntText(&health) == XML_SUCCESS)
         {
             obj.setMaxHealth(health);
-            obj.setHealth(health);
         }
     }
     if( (tag = objXML->FirstChildElement("respawn")) )

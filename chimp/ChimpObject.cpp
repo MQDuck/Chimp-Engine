@@ -71,6 +71,22 @@ void ChimpObject::initialize(const ChimpGame& game)
         activate();
 }
 
+bool ChimpObject::touches(const ChimpObject &other) const
+{
+    return    collisionLeft()   <= other.collisionRight()
+           && collisionRight()  >= other.collisionLeft()
+           && collisionTop()    <= other.collisionBottom()
+           && collisionBottom() >= other.collisionTop();
+}
+
+bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
+{
+    return    collisionBottom() - approx_zero_y <= other.collisionTop()
+           && collisionBottom() + approx_zero_y > other.collisionTop()
+           && collisionLeft()  <= other.collisionRight()
+           && collisionRight() >= other.collisionLeft();
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 /**

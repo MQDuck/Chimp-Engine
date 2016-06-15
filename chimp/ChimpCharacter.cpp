@@ -48,6 +48,12 @@ ChimpCharacter::ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, c
     idleTime = 0;
 }
 
+void ChimpCharacter::initialize(const ChimpGame& game)
+{
+    health = maxHealth;
+    ChimpMobile::initialize(game);
+}
+
 bool ChimpCharacter::setTilesIdle(const TileVec &vec)
 {
     if(vec.empty())
@@ -138,7 +144,7 @@ bool ChimpCharacter::setMaxHealth(const int heal)
 {
     if(heal >= 0)
     {
-        health = heal;
+        maxHealth = heal;
         return true;
     }
     return false;

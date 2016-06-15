@@ -191,12 +191,9 @@ int main(const int argc, char** const argv)
             SDL_Delay(INVULNERABLE_TIME);
             game.reset();
         }*/
-        
-        
-        SDL_Delay(1);
     }
     
-    cleanup(window, renderer, font/*, &textures*/);
+    cleanup(window, renderer, font, &textures);
     
     return 0;
 }

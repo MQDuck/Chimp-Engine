@@ -19,7 +19,6 @@
 
 #include "ChimpGame.h"
 #include "ChimpLuaInterface.h"
-#include "runlua.h"
 
 namespace chimp
 {
@@ -121,7 +120,7 @@ bool ChimpGame::setScrollFactor(const Layer lay, const float factor)
     }
 }
 
-void ChimpGame::pushObj(const Layer layr, const ChimpTile &til, const int x, const int y, const int tilesX,
+void ChimpGame::pushObj(const Layer layr, const ChimpTile& til, const int x, const int y, const int tilesX,
                         const int tilesY)
 {
     switch(layr)

@@ -46,6 +46,8 @@ public:
                    const int maxH = HEALTH);
     ~ChimpCharacter() {}
     
+    void initialize(const ChimpGame& game);
+    
     inline bool getVulnerable() const { return vulnerable; }
     inline void setVulnerable(const bool vul) { vulnerable = vul; }
     inline TileVec& getTilesIdle() { return tilesIdle; }
