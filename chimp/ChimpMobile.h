@@ -31,7 +31,7 @@ class ChimpMobile : public ChimpObject
 {
 protected:
     bool runningRight, runningLeft, sprinting, boundLeft, boundRight, boundTop, boundBottom,
-         respawn;
+         respawn, jumping;
     ChimpObject* platform; // pointer to Object this Mobile is standing on, null if none
     Coordinate coordInitial;
     std::string scriptInit, scriptBehavior;
@@ -61,6 +61,8 @@ public:
     void sprint();
     void stopSprinting();
     virtual void reset();
+    virtual void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
+    void accelerate();
 
     float getAccelerationY() const { return accelerationY; }
     void setAccelerationY(const float accel) { accelerationY = accel; }
@@ -108,8 +110,6 @@ public:
     bool setScriptInit(const std::string& behav);
 
     bool hasPlatform() const { return platform; }
-
-    virtual void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
     
     //ChimpMobile& operator=(const ChimpMobile& rhs);
     

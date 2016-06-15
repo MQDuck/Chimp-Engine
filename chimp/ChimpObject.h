@@ -113,6 +113,7 @@ public:
     bool touchesAtBottom(const ChimpObject& other) const;
     
     virtual void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
+    virtual void accelerate() {}
     virtual void render(const IntBox& screen);
     virtual void reset() {}
     

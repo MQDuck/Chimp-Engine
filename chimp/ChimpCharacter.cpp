@@ -161,10 +161,12 @@ bool ChimpCharacter::setMaxHealth(const int heal)
  */
 void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {    
+    ChimpMobile::update(objects, game, time);
+    
     if(active && vulnerable)
         for(const ObjectPointer& obj : objects)
         {
-            if( !obj->getDamageTop() && (platform == &*obj || touchesAtBottom(*obj)) )
+            if((!obj->getDamageTop() && touchesAtBottom(*obj)) || &*obj == platform)
                 continue;
             if( touches(*obj) && (friends & obj->getEnemies()) )
             {
@@ -186,8 +188,6 @@ void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const 
                 }
             }
         }
-    
-    ChimpMobile::update(objects, game, time);
     
     if(coord.y > SCREEN_HEIGHT + height)
         health = 0;

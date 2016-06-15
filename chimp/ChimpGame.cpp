@@ -259,6 +259,14 @@ void ChimpGame::update(const Uint32 time)
     for(auto& obj : foreground)
         obj->update(foreground, *this, time);
     
+    for(auto& obj : background)
+        obj->accelerate();
+    for(auto& obj : middle)
+        obj->accelerate();
+    player->accelerate();
+    for(auto& obj : foreground)
+        obj->accelerate();
+    
     /*SDL_Thread* threadBack = SDL_CreateThread(updateThreadBack, "back update thread", this);
     SDL_Thread* threadMid  = SDL_CreateThread(updateThreadMid, "mid update thread",  this);
     SDL_Thread* threadFore = SDL_CreateThread(updateThreadFore, "fore update thread", this);

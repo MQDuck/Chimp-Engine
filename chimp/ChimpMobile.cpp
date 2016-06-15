@@ -54,6 +54,7 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
     boundBottom = false;
     platform = nullptr;
     respawn = true;
+    jumping = false;
     maxJumps = MAX_JUMPS;
     numJumps = 0;
     
@@ -124,26 +125,26 @@ void ChimpMobile::stopRunning()
  * 
  * Called by update() while the Mobile is running right.
  */
-void ChimpMobile::accelerateRight()
+/*void ChimpMobile::accelerateRight()
 {
     if(sprinting && velocityX > -approx_zero_float)
         velocityX += run_accel*sprint_factor - velocityX*resistance_x;
     else
         velocityX += run_accel - velocityX*resistance_x;
-}
+}*/
 
 /**
  * @brief ChimpMobile::accelerateLeft()
  * 
  * Called by update() while the Mobile is running left.
  */
-void ChimpMobile::accelerateLeft()
+/*void ChimpMobile::accelerateLeft()
 {
     if(sprinting && velocityX < approx_zero_float)
         velocityX += -run_accel*sprint_factor - velocityX*resistance_x;
     else
         velocityX += -run_accel - velocityX * resistance_x;
-}
+}*/
 
 /**
  * @brief ChimpMobile::jump()
@@ -161,6 +162,7 @@ void ChimpMobile::jump()
             velocityY = multi_jump_impulse;
         accelerationY = jump_accel + GRAVITY;
         platform = nullptr;
+        jumping = true;
         ++numJumps;
     }
 }
@@ -173,8 +175,9 @@ void ChimpMobile::jump()
  */
 void ChimpMobile::stopJumping()
 {
-    if(!platform)
+    if(!platform) //necessary?
         accelerationY = GRAVITY;
+    jumping = false;
 }
 
 /**
@@ -199,51 +202,10 @@ void ChimpMobile::stopSprinting() { sprinting = false; }
 void ChimpMobile::reset()
 {
     coord = coordInitial;
+    platform = nullptr;
+    velocityX = 0;
+    velocityY = 0;
     ChimpObject::deactivate();
-}
-
-/**
- * @brief ChimpMobile::deactivate()
- * 
- * calls ChimpObject::deactivate(). This Mobile is returned to their initial position.
- */
-void ChimpMobile::deactivate()
-{
-    ChimpObject::deactivate();
-    if(respawn)
-        reset();
-}
-
-bool ChimpMobile::setMaxJumps(const int max)
-{
-    if(max < 0)
-        return false;
-    maxJumps = max;
-    return true;
-}
-
-bool ChimpMobile::setScriptBehavior(const std::string& script)
-{
-    struct stat buffer;
-    if(   stat(script.c_str(), &buffer) == 0
-       && ( script.substr(script.size()-4, 4) == ".lua" || script.substr(script.size()-5, 5) == ".luac" ))
-    {
-        scriptBehavior = script;
-        return true;
-    }
-    return false;
-}
-
-bool ChimpMobile::setScriptInit(const std::string& script)
-{
-    struct stat buffer;
-    if(   stat(script.c_str(), &buffer) == 0
-       && ( script.substr(script.size()-4, 4) == ".lua" || script.substr(script.size()-5, 5) == ".luac" ))
-    {
-        scriptInit = script;
-        return true;
-    }
-    return false;
 }
 
 /**
@@ -255,7 +217,7 @@ bool ChimpMobile::setScriptInit(const std::string& script)
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
+/*void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {
     ChimpObject::update(objects, game, time);
     
@@ -274,11 +236,13 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     if( !runningLeft && !runningRight && approxZeroF(velocityX) )
         velocityX = 0;
     
-    /*if(velocityY > 0)
-        accelerationY = GRAVITY;*/
+    if(velocityY > 0)
+        accelerationY = GRAVITY;
     
     if( platform && collisionBottom() > platform->collisionTop() )
         coord.y -= collisionBottom() - platform->collisionTop();
+    if( platform && collisionBottom() < platform->collisionTop() )
+        coord.y += collisionBottom() - platform->collisionTop();
     
     if( velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
     {
@@ -330,6 +294,131 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
         velocityY = 0;
         coord.y = game.getWorldBottom() - height + tile.collisionBox.b;
     }
+}*/
+
+void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
+{
+    ChimpObject::update(objects, game, time);
+    
+    if(!active)
+        return;
+    
+    runScript(scriptBehavior, game.getLuaState());
+    
+    if(platform)
+    {
+        coord.x += platform->getVelocityX();
+        coord.y = platform->collisionTop() - height + tile.collisionBox.b;
+    }
+    if( !jumping && (!platform || !touchesAtBottom(*platform)) )
+    {
+        platform = nullptr;
+        for(const ObjectPointer& obj : objects)
+            if(   obj->isActive()
+                  && platform != &*obj //necessary?
+                  && ( !(friends & obj->getEnemies()) || !obj->getDamageTop() )
+                  && touchesAtBottom(*obj) )
+            {
+                platform = &*obj;
+                numJumps = 0;
+                break;
+            }
+    }
+    
+    coord.x += velocityX;
+    coord.y += velocityY;
+    
+    if(boundLeft && collisionLeft() < game.getWorldLeft())
+    {
+        velocityX = 0;
+        coord.x = game.getWorldLeft() - tile.collisionBox.l;
+    }
+    else if(boundRight && collisionRight() > game.getWorldRight())
+    {
+        velocityX = 0;
+        coord.x = game.getWorldRight() - width + tile.collisionBox.r;
+    }
+    else if(boundTop && collisionTop() < game.getWorldTop())
+    {
+        velocityY = 0;
+        coord.y = game.getWorldTop() - tile.collisionBox.r;
+    }
+    else if(boundBottom && collisionBottom() > game.getWorldBottom())
+    {
+        velocityY = 0;
+        coord.y = game.getWorldBottom() - height + tile.collisionBox.b;
+    }
+}
+
+void ChimpMobile::accelerate()
+{
+    if(runningRight)
+    {
+        if(sprinting && velocityX > -approx_zero_float)
+            velocityX += run_accel*sprint_factor - velocityX*resistance_x;
+        else
+            velocityX += run_accel - velocityX*resistance_x;
+    }
+    else if(runningLeft)
+    {
+        if(sprinting && velocityX < approx_zero_float)
+            velocityX += -run_accel*sprint_factor - velocityX*resistance_x;
+        else
+            velocityX += -run_accel - velocityX * resistance_x;
+    }
+    else
+        velocityX *= stop_factor;
+    
+    if(velocityY > 0)
+        stopJumping();
+    if(platform)
+        velocityY = 0;
+    else
+        velocityY += accelerationY - velocityY * resistance_y;
+}
+
+/**
+ * @brief ChimpMobile::deactivate()
+ * 
+ * calls ChimpObject::deactivate(). This Mobile is returned to their initial position.
+ */
+void ChimpMobile::deactivate()
+{
+    ChimpObject::deactivate();
+    if(respawn)
+        reset();
+}
+
+bool ChimpMobile::setMaxJumps(const int max)
+{
+    if(max < 0)
+        return false;
+    maxJumps = max;
+    return true;
+}
+
+bool ChimpMobile::setScriptBehavior(const std::string& script)
+{
+    struct stat buffer;
+    if(   stat(script.c_str(), &buffer) == 0
+       && ( script.substr(script.size()-4, 4) == ".lua" || script.substr(script.size()-5, 5) == ".luac" ))
+    {
+        scriptBehavior = script;
+        return true;
+    }
+    return false;
+}
+
+bool ChimpMobile::setScriptInit(const std::string& script)
+{
+    struct stat buffer;
+    if(   stat(script.c_str(), &buffer) == 0
+       && ( script.substr(script.size()-4, 4) == ".lua" || script.substr(script.size()-5, 5) == ".luac" ))
+    {
+        scriptInit = script;
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -374,7 +463,8 @@ void ChimpMobile::runScript(std::string& script, lua_State* const luast)
         return;
     }
     
-    if(lua_pcall(luast, 0, LUA_MULTRET, 0) != LUA_OK)
+    //if(lua_pcall(luast, 0, LUA_MULTRET, 0) != LUA_OK)
+    if(lua_pcall(luast, 0, 0, 0) != LUA_OK)
     {
         std::cout << lua_tostring(luast, -1) << std::endl;
         lua_pop(luast, 1);

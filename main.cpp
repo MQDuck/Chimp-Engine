@@ -52,8 +52,6 @@ inline void axisMotion(SDL_Event& event, chimp::ChimpGame& game);
 
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
 
-static Uint32 resetTimer(Uint32 interval, void* const game);
-
 int main(const int argc, char** const argv)
 {
     SDL_Window* window;
@@ -182,10 +180,10 @@ int main(const int argc, char** const argv)
         game.render();
         drawHUD(game, renderer, font, healthTex);
         SDL_RenderPresent(renderer);
-        if( game.getPlayer()->getHealth() <= 0 && game.getPlayer()->isActive() )
+        if(game.getPlayer()->getHealth() <= 0)
         {
-            game.getPlayer()->deactivate();
-            SDL_AddTimer(GAME_OVER_TIME, resetTimer, &game);
+            SDL_Delay(GAME_OVER_TIME);
+            game.reset();
         }
         /*{
             SDL_Delay(INVULNERABLE_TIME);
@@ -363,15 +361,6 @@ bool loadChimpTextures(chimp::TileMap& tiles, std::map<std::string, SDL_Texture*
         }
     }
 }*/
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-static Uint32 resetTimer(Uint32 interval, void* const game)
-{
-    ((chimp::ChimpGame*)game)->reset();
-    return 0;
-}
-#pragma GCC diagnostic pop
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed)
 {
