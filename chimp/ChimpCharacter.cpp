@@ -153,7 +153,7 @@ bool ChimpCharacter::setMaxHealth(const int heal)
  * @param screen Current window for this Character's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time)
+void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {    
     if(active && vulnerable)
         for(const ObjectPointer& obj : objects)
@@ -181,7 +181,7 @@ void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, lua_St
             }
         }
     
-    ChimpMobile::update(objects, game, luast, time);
+    ChimpMobile::update(objects, game, time);
     
     if(coord.y > SCREEN_HEIGHT + height)
         health = 0;

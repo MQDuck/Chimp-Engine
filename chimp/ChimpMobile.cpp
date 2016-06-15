@@ -76,10 +76,11 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
  * 
  * @param screen Current window for this Object's game layer.
  */
-void ChimpMobile::initialize(const IntBox &screen)
+void ChimpMobile::initialize(const ChimpGame& game)
 {
     coord = coordInitial;
-    ChimpObject::initialize(screen);
+    ChimpObject::initialize(game);
+    runScript(scriptInit, game.getLuaState());
 }
 
 /**
@@ -190,11 +191,6 @@ void ChimpMobile::sprint() { sprinting = true; }
  */
 void ChimpMobile::stopSprinting() { sprinting = false; }
 
-/*void ChimpMobile::activate()
-{
-    ChimpObject::activate();
-}*/
-
 /**
  * @brief ChimpMobile::reset()
  * 
@@ -226,13 +222,25 @@ bool ChimpMobile::setMaxJumps(const int max)
     return true;
 }
 
-bool ChimpMobile::setBehavior(const std::string& behav)
+bool ChimpMobile::setScriptBehavior(const std::string& script)
 {
     struct stat buffer;
-    if(   stat(behav.c_str(), &buffer) == 0
-       && ( behav.substr(behav.size()-4, 4) == ".lua" || behav.substr(behav.size()-5, 5) == ".luac" ))
+    if(   stat(script.c_str(), &buffer) == 0
+       && ( script.substr(script.size()-4, 4) == ".lua" || script.substr(script.size()-5, 5) == ".luac" ))
     {
-        behavior = behav;
+        scriptBehavior = script;
+        return true;
+    }
+    return false;
+}
+
+bool ChimpMobile::setScriptInit(const std::string& script)
+{
+    struct stat buffer;
+    if(   stat(script.c_str(), &buffer) == 0
+       && ( script.substr(script.size()-4, 4) == ".lua" || script.substr(script.size()-5, 5) == ".luac" ))
+    {
+        scriptInit = script;
         return true;
     }
     return false;
@@ -247,9 +255,9 @@ bool ChimpMobile::setBehavior(const std::string& behav)
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time)
+void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {
-    ChimpObject::update(objects, game, luast, time);
+    ChimpObject::update(objects, game, time);
     
     if(!active)
         return;
@@ -261,8 +269,7 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, lua_State
     else
         velocityX *= stop_factor;
     
-    if(!behavior.empty())
-        runLua(behavior, luast);
+    runScript(scriptBehavior, game.getLuaState());
     
     if( !runningLeft && !runningRight && approxZeroF(velocityX) )
         velocityX = 0;
@@ -349,6 +356,30 @@ void ChimpMobile::setResistanceY(const float resistance)
 {
     resistance_y = resistance;
     approx_zero_y = GRAVITY / resistance_y * APPROX_ZERO_Y_FACTOR; // i.e. half terminal Y velocity
+}
+
+void ChimpMobile::runScript(std::string& script, lua_State* const luast)
+{
+    static const int LUA_OK = 0;
+    
+    if(script.empty())
+        return;   
+    
+    ChimpGame::setCurrentObject(this); 
+    
+    if(luaL_loadfile(luast, script.c_str()) != LUA_OK)
+    {
+        std::cout << lua_tostring(luast, -1) << std::endl;
+        lua_pop(luast, 1);
+        return;
+    }
+    
+    if(lua_pcall(luast, 0, LUA_MULTRET, 0) != LUA_OK)
+    {
+        std::cout << lua_tostring(luast, -1) << std::endl;
+        lua_pop(luast, 1);
+        return;
+    }
 }
 
 } // namespace chimp

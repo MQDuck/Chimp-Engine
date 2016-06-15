@@ -651,6 +651,7 @@ void setupLua(lua_State* const state)
     lua_register(state, "setVelocityX", setVelocityX);
     lua_register(state, "getVelocityY", getVelocityY);
     lua_register(state, "setVelocityY", setVelocityY);
+    lua_register(state, "runLeft", runLeft);
     lua_register(state, "runRight", runRight);
     lua_register(state, "stopRunningRight", stopRunningRight);
     lua_register(state, "stopRunningLeft", stopRunningLeft);

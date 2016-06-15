@@ -65,9 +65,9 @@ ChimpObject::ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const i
  * 
  * @param screen Current window for this Object's game layer.
  */
-void ChimpObject::initialize(const IntBox& screen)
+void ChimpObject::initialize(const ChimpGame& game)
 {
-    if(onScreen(screen))
+    if( onScreen(game.getMidWindow()) )
         activate();
 }
 
@@ -82,7 +82,7 @@ void ChimpObject::initialize(const IntBox& screen)
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-void ChimpObject::update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time)
+void ChimpObject::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {
     if(active)
     {

@@ -21,8 +21,7 @@ SOURCES += main.cpp \
     chimp/ChimpMobile.cpp \
     chimp/ChimpObject.cpp \
     chimp/loadLevel.cpp \
-    chimp/ChimpLuaInterface.cpp \
-    runlua.cpp
+    chimp/ChimpLuaInterface.cpp
 
 HEADERS += \
     cleanup.h \
@@ -35,5 +34,4 @@ HEADERS += \
     chimp/ChimpStructs.h \
     chimp/ChimpTile.h \
     chimp/loadLevel.h \
-    chimp/ChimpLuaInterface.h \
-    runlua.h
+    chimp/ChimpLuaInterface.h

@@ -61,7 +61,7 @@ public:
                 const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpObject() {}
     
-    virtual void initialize(const IntBox& screen);
+    virtual void initialize(const ChimpGame& game);
     
     inline float getX() const { return coord.x; }
     inline void setX(const float x) { coord.x = x; }
@@ -112,7 +112,7 @@ public:
     inline bool touches(const ChimpObject& other) const;
     inline bool touchesAtBottom(const ChimpObject& other) const;
     
-    virtual void update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time);
+    virtual void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
     virtual void render(const IntBox& screen);
     virtual void reset() {}
     
@@ -168,8 +168,10 @@ public:
     virtual void setRespawn(const bool pd) {}
     virtual int getMaxJumps() const { return 0; }
     virtual bool setMaxJumps(const int max) { return true; }
-    virtual std::string getBehavior() const { return ""; }
-    virtual bool setBehavior(const std::string& behav) { return false; }
+    virtual std::string getScriptBehavior() const { return ""; }
+    virtual bool setScriptBehavior(const std::string& behav) { return false; }
+    virtual std::string getScriptInit() const { return ""; }
+    virtual bool setScriptInit(const std::string& behav) { return false; }
     virtual void jump() {}
     virtual void stopJumping() {}
     virtual void sprint() {}

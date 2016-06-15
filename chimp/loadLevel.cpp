@@ -237,17 +237,6 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
         if(getBool(tag->Attribute("bottom"), tf))
             obj.setBoundBottom(tf);
     }
-    if( (tag = objXML->FirstChildElement("run")) )
-    {
-        std::string run;
-        if(getString(tag->GetText(), run))
-        {
-            if(run == "left")
-                obj.runLeft();
-            else if(run == "right")
-                obj.runRight();
-        }
-    }
     if( (tag = objXML->FirstChildElement("stopfactor")) )
     {
         float factor;
@@ -272,12 +261,6 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
         int max;
         if(tag->QueryIntText(&max) == XML_SUCCESS)
             obj.setMaxJumps(max);
-    }
-    if( (tag = objXML->FirstChildElement("behavior")) )
-    {
-        std::string behavior;
-        if(getString(tag->GetText(), behavior))
-            obj.setBehavior(behavior);
     }
     
     for(tag = objXML->FirstChildElement("faction"); tag; tag = tag->NextSiblingElement("faction"))
@@ -373,6 +356,17 @@ void  loadObject(XMLElement* const objXML, ChimpObject& obj)
                 else if(mode == "scale")
                     obj.setResistanceY(obj.getResistanceY() * resistance);
             }
+        }
+    }
+    for(tag = objXML->FirstChildElement("script"); tag; tag = tag->NextSiblingElement("script"))
+    {
+        std::string type, script;
+        if(getString(tag->Attribute("type"), type) && getString(tag->GetText(), script))
+        {
+            if(type == "behavior")
+                obj.setScriptBehavior(script);
+            else if(type == "init")
+                obj.setScriptInit(script);
         }
     }
 }

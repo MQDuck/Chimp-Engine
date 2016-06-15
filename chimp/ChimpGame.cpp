@@ -83,10 +83,12 @@ bool ChimpGame::setWorldBox(const int l, const int r, const int t, const int b)
 
 bool ChimpGame::setRenderer(SDL_Renderer* const rend)
 {
-    if(rend == nullptr)
-        return false;
-    renderer = rend;
-    return true;
+   if(rend)
+    {
+        renderer = rend;
+        return true;
+    }
+    return false;
 }
 
 float ChimpGame::getScrollFactor(const Layer lay) const
@@ -239,34 +241,24 @@ void ChimpGame::initialize()
     foreWindow = midWindow;
     
     for(auto& obj : background)
-        obj->initialize(midWindow);
+        obj->initialize(*this);
     for(auto& obj : middle)
-        obj->initialize(midWindow);
+        obj->initialize(*this);
     for(auto& obj : foreground)
-        obj->initialize(midWindow);
+        obj->initialize(*this);
     
-    player->initialize(midWindow);
+    player->initialize(*this);
 }
 
 void ChimpGame::update(const Uint32 time)
 {
     for(auto& obj : background)
-    {
-        currentObj = &*obj;
-        obj->update(background, *this, luast, time);
-    }
+        obj->update(background, *this, time);
     for(auto& obj : middle)
-    {
-        currentObj = &*obj;
-        obj->update(middle, *this, luast, time);
-    }
-    currentObj = player;
-    player->update(middle, *this, luast, time);
+        obj->update(middle, *this, time);
+    player->update(middle, *this, time);
     for(auto& obj : foreground)
-    {
-        currentObj = &*obj;
-        obj->update(foreground, *this, luast, time);
-    }
+        obj->update(foreground, *this, time);
     
     /*SDL_Thread* threadBack = SDL_CreateThread(updateThreadBack, "back update thread", this);
     SDL_Thread* threadMid  = SDL_CreateThread(updateThreadMid, "mid update thread",  this);

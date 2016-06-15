@@ -78,9 +78,11 @@ public:
     const IntBox& getMidWindow() const { return midWindow; }
     const IntBox& getBackWindow() const { return backWindow; }
     const IntBox& getForeWindow() const { return foreWindow; }
+    inline lua_State* getLuaState() const { return luast; }
     
-    static ChimpGame* getGame() { return self; }
-    static ChimpObject* getCurrentObject() { return currentObj; }
+    inline static ChimpGame* getGame() { return self; }
+    inline static ChimpObject* getCurrentObject() { return currentObj; }
+    inline static void setCurrentObject(ChimpObject* const obj) { currentObj = obj; }
     
     void pushObj(const Layer layr, const ChimpTile& til, const int x = 0, const int y = 0, const int tilesX = 1,
                  const int tilesY = 1);

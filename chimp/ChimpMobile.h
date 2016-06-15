@@ -34,7 +34,7 @@ protected:
          respawn;
     ChimpObject* platform; // pointer to Object this Mobile is standing on, null if none
     Coordinate coordInitial;
-    std::string behavior;
+    std::string scriptInit, scriptBehavior;
     int maxJumps; // maximum number of jumps before landing
     int numJumps; // current number of jumps since last standing
 
@@ -47,7 +47,7 @@ public:
                 const int tilesX = 1, const int tilesY = 1, Faction frnds = FACTION_VOID, Faction enms = FACTION_VOID);
     virtual ~ChimpMobile() {}
 
-    void initialize(const IntBox& screen);
+    void initialize(const ChimpGame& game);
     
     virtual void runRight();
     virtual void runLeft();
@@ -102,18 +102,21 @@ public:
     void setRespawn(const bool pd) { respawn = pd; }
     int getMaxJumps() const { return maxJumps; }
     bool setMaxJumps(const int max);
-    std::string getBehavior() const { return behavior; }
-    bool setBehavior(const std::string& behav);
+    std::string getScriptBehavior() const { return scriptBehavior; }
+    bool setScriptBehavior(const std::string& behav);
+    std::string getScriptInit() const { return scriptInit; }
+    bool setScriptInit(const std::string& behav);
 
     bool hasPlatform() const { return platform; }
 
-    virtual void update(const ObjectVector& objects, ChimpGame& game, lua_State* luast, const Uint32 time);
+    virtual void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
     
     //ChimpMobile& operator=(const ChimpMobile& rhs);
     
 protected:
     void accelerateRight();
     void accelerateLeft();
+    void runScript(std::string& script, lua_State* const luast);
 };
 
 } // namespace chimp
