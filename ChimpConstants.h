@@ -4,7 +4,7 @@
 #include <string>
 #include <SDL2/SDL.h>
 
-static const int
+static constexpr int
     SCREEN_WIDTH               = 1200,
     SCREEN_HEIGHT              = 690,
     ACTIVE_ZONE                = 750,   // Mobiles activate when this far from the screen.
@@ -19,24 +19,25 @@ static const int
     PIXELS_PER_FRAME_Y         = 30,   // for jump animation    
     HEALTH                     = 1,    // default maximum health for Characters
     DAMAGE                     = 10,   // default damage dealt
-    MAX_JUMPS                  = 1;    // default maximum number of Mobile jumps before landing
+    MAX_JUMPS                  = 1,    // default maximum number of Mobile jumps before landing
+    MS_PER_ACCEL               = 17;   // miliseconds between accelerate() calls
 
 static const Uint32
     TIME_PER_FRAME             = 600;  // for idle animation
                                  
-static const float
-    RUN_IMPULSE                = 2.5,   // magnitude of x impulse given when mobile begins running with x velocity near zero
-    RUN_ACCEL                  = 0.4,   // magnitude of base x acceleration while running
-    JUMP_IMPULSE               = -20.0, // y impulse given when mobile jumpes from standing position
-    MULTI_JUMP_IMPULSE         = -15.0,
-    JUMP_ACCEL                 = -1.5,  // player y acceleration caused by holding the jump button before falling
-    GRAVITY                    = 1.6,   // this is added to y acceleration when not standing
+static constexpr float
+    RUN_IMPULSE                = 2.5 / MS_PER_ACCEL,   // magnitude of x impulse given when mobile begins running with x velocity near zero
+    RUN_ACCEL                  = 0.4 / MS_PER_ACCEL,   // magnitude of base x acceleration while running
+    JUMP_IMPULSE               = -20.0 / MS_PER_ACCEL, // y impulse given when mobile jumpes from standing position
+    MULTI_JUMP_IMPULSE         = -15.0 / MS_PER_ACCEL,
+    JUMP_ACCEL                 = -1.5 / MS_PER_ACCEL,  // player y acceleration caused by holding the jump button before falling
+    GRAVITY                    = 1.6 / MS_PER_ACCEL,   // this is added to y acceleration when not standing
     STOP_FACTOR                = 0.9,   // x velocity scales by this when not running
     SPRINT_FACTOR              = 2.0,   // x acceleration scales by this when sprinting
     RESISTANCE_X               = 0.05,  // x acceleration is reduced by the product of this and x velocity
     RESISTANCE_Y               = 0.1,   // y acceleration is reduced by the product of this and y velocity
     APPROX_ZERO_Y_FACTOR       = 1.0,
-    DAMAGE_VELOCITY            = 20.0;  // when a character takes damage from an object, it gains velocity equal to this radially from object's center
+    DAMAGE_VELOCITY            = 20.0 / MS_PER_ACCEL;  // when a character takes damage from an object, it gains velocity equal to this radially from object's center
 
 static const std::string
     TEXTURE_DELIMITER          = ";",

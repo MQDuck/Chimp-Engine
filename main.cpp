@@ -74,7 +74,7 @@ int main(const int argc, char** const argv)
         SDL_Quit();
         return 1;
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if(renderer == nullptr)
     {
         logSDLError(std::cout, "CreateRenderer");
@@ -174,6 +174,7 @@ int main(const int argc, char** const argv)
         SDL_RenderClear(renderer);
         
         timeNow = SDL_GetTicks();
+        std::cout << timeNow - timeLast << std::endl;
         game.update(timeNow - timeLast);
         timeLast = timeNow;
         

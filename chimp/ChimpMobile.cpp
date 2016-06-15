@@ -307,7 +307,7 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     
     if(platform)
     {
-        coord.x += platform->getVelocityX();
+        coord.x += platform->getVelocityX() * time;// * 0.06;
         coord.y = platform->collisionTop() - height + tile.collisionBox.b;
     }
     if( !jumping && (!platform || !touchesAtBottom(*platform)) )
@@ -325,8 +325,8 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
             }
     }
     
-    coord.x += velocityX;
-    coord.y += velocityY;
+    coord.x += velocityX * time;// * 0.06;
+    coord.y += velocityY * time;// * 0.06;
     
     if(boundLeft && collisionLeft() < game.getWorldLeft())
     {
@@ -355,16 +355,16 @@ void ChimpMobile::accelerate()
     if(runningRight)
     {
         if(sprinting && velocityX > -approx_zero_float)
-            velocityX += run_accel*sprint_factor - velocityX*resistance_x;
+            velocityX += run_accel*sprint_factor/**0.06*/ - velocityX*resistance_x;
         else
-            velocityX += run_accel - velocityX*resistance_x;
+            velocityX += run_accel/**0.06*/ - velocityX*resistance_x;
     }
     else if(runningLeft)
     {
         if(sprinting && velocityX < approx_zero_float)
-            velocityX += -run_accel*sprint_factor - velocityX*resistance_x;
+            velocityX += -run_accel*sprint_factor/**0.06*/ - velocityX*resistance_x;
         else
-            velocityX += -run_accel - velocityX * resistance_x;
+            velocityX += -run_accel/**0.06*/ - velocityX * resistance_x;
     }
     else
         velocityX *= stop_factor;
@@ -374,7 +374,7 @@ void ChimpMobile::accelerate()
     if(platform)
         velocityY = 0;
     else
-        velocityY += accelerationY - velocityY * resistance_y;
+        velocityY += accelerationY/**0.06*/ - velocityY * resistance_y;
 }
 
 /**
@@ -444,7 +444,7 @@ void ChimpMobile::setRunImpulse(const float impulse)
 void ChimpMobile::setResistanceY(const float resistance)
 {
     resistance_y = resistance;
-    approx_zero_y = GRAVITY / resistance_y * APPROX_ZERO_Y_FACTOR; // i.e. half terminal Y velocity
+    approx_zero_y = GRAVITY * MS_PER_ACCEL / resistance_y * APPROX_ZERO_Y_FACTOR;
 }
 
 void ChimpMobile::runScript(std::string& script, lua_State* const luast)

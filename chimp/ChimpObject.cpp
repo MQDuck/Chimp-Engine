@@ -52,7 +52,7 @@ ChimpObject::ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const i
     damageBox.b = true;
     
     approx_zero_float = RUN_IMPULSE / 4.0;
-    approx_zero_y = int( ceil(GRAVITY / RESISTANCE_Y * APPROX_ZERO_Y_FACTOR) );
+    approx_zero_y = 0;
     flip = SDL_FLIP_NONE;
     active = false;
 }

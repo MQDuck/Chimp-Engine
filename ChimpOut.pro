@@ -7,6 +7,7 @@ LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -ltinyxml2 -llua
 
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
+QMAKE_CXXFLAGS_RELEASE += -O3 -mtune=generic
 
 CONFIG += link_pkgconfig
 PKGCONFIG += x11

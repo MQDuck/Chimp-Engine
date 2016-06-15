@@ -251,6 +251,8 @@ void ChimpGame::initialize()
 
 void ChimpGame::update(const Uint32 time)
 {
+    static Uint32 accelTime = 0;
+    
     for(auto& obj : background)
         obj->update(background, *this, time);
     for(auto& obj : middle)
@@ -259,13 +261,18 @@ void ChimpGame::update(const Uint32 time)
     for(auto& obj : foreground)
         obj->update(foreground, *this, time);
     
-    for(auto& obj : background)
-        obj->accelerate();
-    for(auto& obj : middle)
-        obj->accelerate();
-    player->accelerate();
-    for(auto& obj : foreground)
-        obj->accelerate();
+    accelTime += time;
+    if(accelTime >= MS_PER_ACCEL)
+    {
+        accelTime -= MS_PER_ACCEL;
+        for(auto& obj : background)
+            obj->accelerate();
+        for(auto& obj : middle)
+            obj->accelerate();
+        player->accelerate();
+        for(auto& obj : foreground)
+            obj->accelerate();
+    }
     
     /*SDL_Thread* threadBack = SDL_CreateThread(updateThreadBack, "back update thread", this);
     SDL_Thread* threadMid  = SDL_CreateThread(updateThreadMid, "mid update thread",  this);
