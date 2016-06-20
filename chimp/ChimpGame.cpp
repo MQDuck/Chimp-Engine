@@ -25,11 +25,13 @@ namespace chimp
 
 ChimpGame* ChimpGame::self;
 ChimpObject* ChimpGame::currentObj;
+ChimpCharacter* ChimpGame::player;
 
 ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
                      ChimpCharacter* plyr)
-    : renderer(rend), player(plyr), windowWidth(winWidth), windowHeight(winHeight)
+    : renderer(rend), windowWidth(winWidth), windowHeight(winHeight)
 {
+    player = plyr;
     scroll_factor_back = 1.0;
     scroll_factor_fore = 1.0;
     luast = luaL_newstate();
@@ -351,6 +353,489 @@ void ChimpGame::reset()
     
     initialize();
 }
+
+tinyxml2::XMLError ChimpGame::loadLevel(const std::string& levelFile)
+{
+    tinyxml2::XMLDocument levelXML;
+    tinyxml2::XMLError loadFileResult;
+    tinyxml2::XMLNode* level;
+    tinyxml2::XMLElement* objXML;
+    tinyxml2::XMLElement* tag;
+    
+    loadFileResult = levelXML.LoadFile(levelFile.c_str());
+    if(loadFileResult != tinyxml2::XML_SUCCESS)
+        return loadFileResult;
+    level = levelXML.FirstChildElement("chimplevel");
+    if(!level)
+        return tinyxml2::XML_ERROR_FILE_READ_ERROR;
+    
+    if( !loadTextures(levelXML, textures, renderer) || !loadTiles(levelXML, textures, tiles) )
+        return tinyxml2::XML_NO_TEXT_NODE;
+    
+    loadWorldBox(level->FirstChildElement("edges"));
+    if( (tag = level->FirstChildElement("scrollfactor")) )
+    {
+        float factor;
+        if(tag->QueryFloatAttribute("background", &factor) == tinyxml2::XML_SUCCESS)
+            setScrollFactor(BACK, factor);
+        if(tag->QueryFloatAttribute("foreground", &factor) == tinyxml2::XML_SUCCESS)
+            setScrollFactor(FORE, factor);
+    }
+    
+    for( objXML = level->FirstChildElement("object"); objXML; objXML = objXML->NextSiblingElement("object") )
+    {
+        std::string type;
+        if(getString(objXML->Attribute("type"), type))
+        {
+            if(type == "player")
+            {
+                TileVec runtiles, jumptiles, idletiles;
+                if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+                {
+                    player = new ChimpCharacter(renderer, runtiles, jumptiles, idletiles);
+                    loadObject(objXML, *player);
+                }
+            }
+            else if(type == "character")
+            {
+                TileVec runtiles, jumptiles, idletiles;
+                std::string tile;
+                if(loadAllAnimations(objXML, idletiles, runtiles, jumptiles, tiles))
+                {
+                    Layer layer = getLayer(objXML);
+                    pushChar(layer, runtiles, jumptiles, idletiles);
+                    loadObject(objXML, getObjBack(layer));
+                }
+                else if(getString(objXML->FirstChildElement("tile")->GetText(), tile))
+                {
+                    Layer layer = getLayer(objXML);
+                    pushChar(layer, tiles[tile]);
+                    loadObject(objXML, getObjBack(layer));
+                }
+            }
+            else if(type == "object")
+            {
+                std::string tile;
+                if(getString(objXML->FirstChildElement("tile")->GetText(), tile))
+                {
+                    Layer layer = getLayer(objXML);
+                    pushObj(layer, tiles[tile]);
+                    loadObject(objXML, getObjBack(layer));
+                }   
+            }
+        }
+    }
+    
+    return tinyxml2::XML_SUCCESS;
+}
+
+Layer ChimpGame::getLayer(const tinyxml2::XMLElement *objXML)
+{
+    std::string layer;
+    if(getString(objXML->Attribute("layer"), layer))
+    {
+        if(layer == "background")
+            return BACK;
+        else if(layer == "foreground")
+            return FORE;
+    }
+    return MID;
+}
+
+bool ChimpGame::getBool(const char* const boolStr, bool& result)
+{
+    if(!boolStr)
+        return false;
+    if(strcmp(boolStr, "true") == 0)
+    {
+        result = true;
+        return true;
+    }
+    if(strcmp(boolStr, "false") == 0)
+    {
+        result = false;
+        return true;
+    }
+    return false;
+}
+
+bool ChimpGame::getString(const char* const cStr, std::string& str)
+{
+    if(cStr)
+    {
+        str = cStr;
+        return true;
+    }
+    return false;
+}
+
+std::string ChimpGame::getMode(const tinyxml2::XMLElement* const tag)
+{
+    std::string mode;
+    return getString(tag->Attribute("mode"), mode) ? mode : "absolute";
+}
+
+void ChimpGame::loadWorldBox(const tinyxml2::XMLElement* const edges)
+{
+    int wbLeft = 0;
+    int wbRight = SCREEN_WIDTH;
+    int wbTop = 0;
+    int wbBottom = SCREEN_HEIGHT;
+    if(edges)
+    {
+        int val;
+        if(edges->QueryIntAttribute("left", &val) == tinyxml2::XML_SUCCESS)
+            wbLeft = val;
+        if(edges->QueryIntAttribute("right", &val) == tinyxml2::XML_SUCCESS)
+            wbRight = val;
+        if(edges->QueryIntAttribute("top", &val) == tinyxml2::XML_SUCCESS)
+            wbTop = val;
+        if(edges->QueryIntAttribute("bottom", &val) == tinyxml2::XML_SUCCESS)
+            wbBottom = val;
+    }
+    setWorldBox(wbLeft, wbRight, wbTop, wbBottom);
+}
+
+bool ChimpGame::loadAllAnimations(tinyxml2::XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles, TileVec& jumptiles,
+                       TileMap& tiles)
+{
+    loadAnimation(objXML, "idle", idletiles, tiles);
+    if(idletiles.empty())
+        return false;
+    loadAnimation(objXML, "run", runtiles, tiles);
+    if(runtiles.empty())
+        runtiles = idletiles;
+    loadAnimation(objXML, "jump", jumptiles, tiles);
+    if(jumptiles.empty())
+        jumptiles = idletiles;
+    return true;
+}
+
+void ChimpGame::loadAnimation(tinyxml2::XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles)
+{
+    std::string animation;
+    for( tinyxml2::XMLElement* tag = objXML->FirstChildElement("tile"); tag; tag = tag->NextSiblingElement("tile") )
+        if(getString(tag->Attribute("animation"), animation) && anim == animation)
+            tilvec.push_back( tiles[tag->GetText()] );
+}
+
+void ChimpGame::loadObject(tinyxml2::XMLElement* const objXML, ChimpObject& obj)
+{
+    tinyxml2::XMLElement* tag;
+    
+    if( (tag = objXML->FirstChildElement("position")) )
+    {
+        int pos;
+        if(tag->QueryIntAttribute("x", &pos) == tinyxml2::XML_SUCCESS)
+            obj.setInitialX(pos);
+        if(tag->QueryIntAttribute("y", &pos) == tinyxml2::XML_SUCCESS)
+            obj.setInitialY(SCREEN_HEIGHT - pos - obj.height);
+    }
+    if( (tag = objXML->FirstChildElement("tiles")) )
+    {
+        int tiles;
+        if(tag->QueryIntAttribute("x", &tiles) == tinyxml2::XML_SUCCESS)
+            obj.setTilesX(tiles);
+        if(tag->QueryIntAttribute("y", &tiles) == tinyxml2::XML_SUCCESS)
+            obj.setTilesY(tiles);
+    }
+    if( (tag = objXML->FirstChildElement("maxhealth")) )
+    {
+        int health;
+        if(tag->QueryIntText(&health) == tinyxml2::XML_SUCCESS)
+        {
+            obj.setMaxHealth(health);
+        }
+    }
+    if( (tag = objXML->FirstChildElement("respawn")) )
+    {
+        bool respawn;
+        if(getBool(tag->GetText(), respawn))
+            obj.setRespawn(respawn);
+    }
+    if( (tag = objXML->FirstChildElement("damage")) )
+    {
+        bool tf;
+        if(getBool(tag->Attribute("left"), tf))
+            obj.setDamageLeft(tf);
+        if(getBool(tag->Attribute("right"), tf))
+            obj.setDamageRight(tf);
+        if(getBool(tag->Attribute("top"), tf))
+            obj.setDamageTop(tf);
+        if(getBool(tag->Attribute("bottom"), tf))
+            obj.setDamageBottom(tf);
+    }
+    if( (tag = objXML->FirstChildElement("bounded")) )
+    {
+        bool tf;
+        if(getBool(tag->Attribute("left"), tf))
+            obj.setBoundLeft(tf);
+        if(getBool(tag->Attribute("right"), tf))
+            obj.setBoundRight(tf);
+        if(getBool(tag->Attribute("top"), tf))
+            obj.setBoundTop(tf);
+        if(getBool(tag->Attribute("bottom"), tf))
+            obj.setBoundBottom(tf);
+    }
+    if( (tag = objXML->FirstChildElement("stopfactor")) )
+    {
+        float factor;
+        std::string mode;
+        if(tag->QueryFloatText(&factor) == tinyxml2::XML_SUCCESS)
+        {
+            mode = getMode(tag);
+            if(mode == "absolute")
+                obj.setStopFactor(factor);
+            else if(mode == "scale")
+                obj.setStopFactor(obj.getStopFactor() * factor);
+        }
+    }
+    if( (tag = objXML->FirstChildElement("sprintfactor")) )
+    {
+        float factor;
+        if(tag->QueryFloatText(&factor) == tinyxml2::XML_SUCCESS)
+            obj.setSprintFactor(factor);
+    }
+    if( (tag = objXML->FirstChildElement("maxjumps")) )
+    {
+        int max;
+        if(tag->QueryIntText(&max) == tinyxml2::XML_SUCCESS)
+            obj.setMaxJumps(max);
+    }
+    
+    for(tag = objXML->FirstChildElement("faction"); tag; tag = tag->NextSiblingElement("faction"))
+    {
+        std::string type, factionStr;
+        if(getString(tag->Attribute("type"), type) && getString(tag->GetText(), factionStr))
+        {
+            Faction faction;
+            if(factionStr == "player")
+                faction = FACTION_PLAYER;
+            else if(factionStr == "baddies")
+                faction = FACTION_BADDIES;
+            else
+                continue;
+            
+            if(type == "friend")
+                obj.addFriend(faction);
+            else if(type == "enemy")
+                obj.addEnemy(faction);
+        }
+    }
+    for(tag = objXML->FirstChildElement("acceleration"); tag; tag = tag->NextSiblingElement("acceleration"))
+    {
+        float accel;
+        std::string type, mode;
+        if(tag->QueryFloatText(&accel) == tinyxml2::XML_SUCCESS && getString(tag->Attribute("type"), type))
+        {
+            mode = getMode(tag);
+            if(type == "run")
+            {
+                if(mode == "absolute")
+                    obj.setRunAccel(accel);
+                else if(mode == "scale")
+                    obj.setRunAccel(obj.getRunAccel() * accel);
+            }
+            else if(type == "jump")
+            {
+                if(mode == "absolute")
+                    obj.setJumpAccel(accel);
+                else if(mode == "scale")
+                    obj.setJumpAccel(obj.getJumpAccel() * accel);
+            }
+        }
+    }
+    for(tag = objXML->FirstChildElement("impulse"); tag; tag = tag->NextSiblingElement("impulse"))
+    {
+        float impulse;
+        std::string type, mode;
+        if(tag->QueryFloatText(&impulse) == tinyxml2::XML_SUCCESS && getString(tag->Attribute("type"), type))
+        {
+            mode = getMode(tag);
+            if(type == "run")
+            {
+                if(mode == "absolute")
+                    obj.setRunImpulse(impulse);
+                else if(mode == "scale")
+                    obj.setRunImpulse(obj.getRunImpulse() * impulse);
+            }
+            else if(type == "jump")
+            {
+                if(mode == "absolute")
+                    obj.setJumpImpulse(impulse);
+                else if(mode == "scale")
+                    obj.setJumpImpulse(obj.getRunImpulse() * impulse);
+            }
+            else if(type == "multijump")
+            {
+                if(mode == "absolute")
+                    obj.setMultiJumpImpulse(impulse);
+                else if(mode == "scale")
+                    obj.setMultiJumpImpulse(obj.getMultiJumpImpulse() * impulse);
+            }
+        }
+    }
+    for(tag = objXML->FirstChildElement("resistance"); tag; tag = tag->NextSiblingElement("resistance"))
+    {
+        float resistance;
+        std::string type, mode;
+        if(tag->QueryFloatText(&resistance) == tinyxml2::XML_SUCCESS && getString(tag->Attribute("type"), type))
+        {
+            mode = getMode(tag);
+            if(type == "run")
+            {
+                if(mode == "absolute")
+                    obj.setResistanceX(resistance);
+                else if(mode == "scale")
+                    obj.setResistanceX(obj.getResistanceX() * resistance);
+            }
+            else if(type == "jump")
+            {
+                if(mode == "absolute")
+                    obj.setResistanceY(resistance);
+                else if(mode == "scale")
+                    obj.setResistanceY(obj.getResistanceY() * resistance);
+            }
+        }
+    }
+    for(tag = objXML->FirstChildElement("script"); tag; tag = tag->NextSiblingElement("script"))
+    {
+        std::string type, script;
+        if(getString(tag->Attribute("type"), type) && getString(tag->GetText(), script))
+        {
+            if(type == "behavior")
+                obj.setScriptBehavior(script);
+            else if(type == "init")
+                obj.setScriptInit(script);
+        }
+    }
+}
+
+bool ChimpGame::loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textures, SDL_Renderer* const renderer)
+{
+    for(tinyxml2::XMLElement* texture = levelXML.FirstChildElement("chimptexture");
+        texture;
+        texture = texture->NextSiblingElement("chimptexture"))
+    {
+        std::string texName, texFile;
+                
+        if(!getString(texture->Attribute("name"), texName))
+        {
+            std::cout << "Error: chimptexture tag without name attribute" << std::endl;
+            return false;
+        }
+        if(!getString(texture->Attribute("file"), texFile))
+        {
+            std::cout << "Error: texture tag without file attribute" << std::endl;
+            return false;
+        }
+        SDL_Texture* tex = IMG_LoadTexture(renderer, (ASSETS_PATH + texFile).c_str());
+        if(!tex)
+        {
+            std::cout << "Error loading texture file: " << SDL_GetError() << std::endl;
+            return false;
+        }
+        textures[texName] = tex;
+    }
+    
+    return true;
+}
+
+bool ChimpGame::loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures, TileMap& tiles)
+{
+    for(tinyxml2::XMLElement* tile = levelXML.FirstChildElement("chimptile");
+        tile;
+        tile = tile->NextSiblingElement("chimptile"))
+    {
+        std::string tileName, texName;
+        tinyxml2::XMLElement* tag;
+        int x, y, width, height, widthStretched, heightStretched,
+            left   = 0,
+            right  = 0,
+            top    = 0,
+            bottom = 0;
+        
+        if(!getString(tile->Attribute("name"), tileName))
+        {
+            std::cout << "Error: chimptile tag without name attribute" << std::endl;
+            return false;
+        }
+        
+        if( !(tag = tile->FirstChildElement("texture")) )
+        {
+            std::cout << "Error: chimptile tag without texture child" << std::endl;
+            return false;
+        }
+        if(!getString(tag->Attribute("name"), texName))
+        {
+            std::cout << "Error: chimptile texture child without name attribute" << std::endl;
+            return false;
+        }
+        if(textures.find(texName) == textures.end())
+        {
+            std::cout << "Error: no texture named \"" << texName << "\" found" << std::endl;
+            return false;
+        }
+        if(tag->QueryIntAttribute("x", &x) != tinyxml2::XML_SUCCESS)
+        {
+            std::cout << "Error: chimptile texture child without x attribute" << std::endl;
+            return false;
+        }
+        if(tag->QueryIntAttribute("y", &y) != tinyxml2::XML_SUCCESS)
+        {
+            std::cout << "Error: chimptile texture child without y attribute" << std::endl;
+            return false;
+        }
+        if(tag->QueryIntAttribute("width", &width) != tinyxml2::XML_SUCCESS)
+        {
+            std::cout << "Error: chimptile texture child without width attribute" << std::endl;
+            return false;
+        }
+        if(tag->QueryIntAttribute("height", &height) != tinyxml2::XML_SUCCESS)
+        {
+            std::cout << "Error: chimptile texture child without height attribute" << std::endl;
+            return false;
+        }
+        
+        if( (tag = tile->FirstChildElement("stretch")) )
+        {
+            if(tag->QueryIntAttribute("width", &widthStretched) != tinyxml2::XML_SUCCESS)
+                widthStretched = width;
+            if(tag->QueryIntAttribute("height", &heightStretched) != tinyxml2::XML_SUCCESS)
+                heightStretched = height;
+        }
+        else
+        {
+            widthStretched = width;
+            heightStretched = height;
+        }
+        
+        if( (tag = tile->FirstChildElement("collision")) )
+        {
+            tag->QueryIntAttribute("left", &left);
+            tag->QueryIntAttribute("right", &right);
+            tag->QueryIntAttribute("top", &top);
+            tag->QueryIntAttribute("bottom", &bottom);
+        }
+        
+        SDL_Rect texRect, drRect;
+        IntBox colBox;
+        texRect.x = x;
+        texRect.y = y;
+        texRect.w = width;
+        texRect.h = height;
+        drRect.w = widthStretched;
+        drRect.h = heightStretched;
+        colBox.l = left;
+        colBox.r = right;
+        colBox.t = top;
+        colBox.b = bottom;
+        tiles[tileName] = ChimpTile(textures[texName], texRect, drRect, colBox);
+    }
+    
+    return true;
+}
+
 
 
 

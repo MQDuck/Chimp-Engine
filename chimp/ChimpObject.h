@@ -177,6 +177,8 @@ public:
     virtual void stopJumping() {}
     virtual void sprint() {}
     virtual void stopSprinting() {}
+    virtual float getTerminalVelocityRun() { return 0.0; }
+    virtual float getTerminalVelocityFall() { return 0.0; }
     #pragma GCC diagnostic pop
     
 protected:

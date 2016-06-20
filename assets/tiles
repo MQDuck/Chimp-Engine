@@ -16,10 +16,10 @@
 # b:       distance from y+h to hitbox Bottom y-coordinate
 # comment: tile index and description
 
-#tex; x;  y;   w;   h;  sw;  sh;   l;   r;   t;   b; comment
+#tex;                                   x;  y;   w;   h;  sw;  sh;   l;   r;   t;   b; comment
 ;player;player;                         0;  0;  68;  97;  68;  97;  17;  21;  12;   2; #0 player
 ;platform;platform;                     0;  0;  20;  10;  20;  10;   0;   0;   0;   0; #1 platform
-;baddie;baddie;                         0;  0;  68;  45;  68;  45;   2;   2;   1;   1; #2 baddie
+;baddie;baddie;                         0;  0;  68;  45;  68;  45;   8;   8;   1;   1; #2 baddie
 ;fire;fire;                             0;  0; 512; 512; 512; 512;   0;   0;   0;   0; #3 fire
 ;MiniK;water;                         256; 72;  32;  56;  32;  56;   0;   0;   0;   0; #4 water
 ;tree;tree;                             0;  0; 156; 134; 156; 134;   0;   0;   0;   0; #5 tree
@@ -27,7 +27,7 @@
 ;top ground left cliff;spritessheet;    0;  0; 256; 256; 256; 256;  90;   0; 115;   0; #6 top ground left cliff
 ;top ground;spritessheet;             256;  0; 256; 256; 256; 256;   0;   0; 115;   0; #7 top ground
 ;top ground right cliff;spritessheet; 512;  0; 256; 256; 256; 256;   0;  90; 115;   0; #8 top ground right cliff
-;left island;spritessheet;             0;768; 256; 256; 256; 256;  90;   0; 115;   0; #9 left island
+;left island;spritessheet;              0;768; 256; 256; 256; 256;  90;   0; 115;   0; #9 left island
 ;mid island;spritessheet;             256;768; 256; 256; 256; 256;   0;   0; 115;   0; #10 mid island
 ;right island;spritessheet;           512;768; 256; 256; 256; 256;   0;  90; 115;   0; #11 right island
 

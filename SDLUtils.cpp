@@ -18,7 +18,7 @@ void logSDLError(std::ostream& os, const std::string& msg)
 */
 SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 {
-	SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
+	SDL_Texture* texture = IMG_LoadTexture(ren, file.c_str());
 	if (texture == nullptr)
 		logSDLError(std::cout, "LoadTexture");
 	return texture;

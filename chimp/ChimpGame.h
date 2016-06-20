@@ -22,6 +22,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <tinyxml2.h>
 #include <lua.hpp>
 #include "ChimpConstants.h"
 #include "ChimpTile.h"
@@ -34,13 +35,19 @@
 namespace chimp
 {
 
+typedef std::map<std::string, SDL_Texture*> TextureMap;
+typedef std::map<std::string, ChimpTile> TileMap;
 enum Layer { BACK, MID, FORE };
 
 class ChimpGame
 {
+public:
+    TextureMap textures;
+    TileMap tiles;
+    
 private:
     SDL_Renderer* renderer;
-    ChimpCharacter* player;
+    static ChimpCharacter* player;
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
     unsigned int windowWidth, windowHeight;
@@ -55,7 +62,6 @@ public:
               ChimpCharacter* plyr = nullptr);
     ~ChimpGame() { if(player) delete player; }
     
-    ChimpCharacter*& getPlayer() { return player; }
     ChimpObject& getObj(Layer lay, size_t in);
     ChimpObject& getObjBack(Layer lay);
     bool setWorldBox(const int l, const int r, const int t, const int b);
@@ -80,6 +86,7 @@ public:
     const IntBox& getForeWindow() const { return foreWindow; }
     inline lua_State* getLuaState() const { return luast; }
     
+    inline static ChimpCharacter*& getPlayer() { return player; }
     inline static ChimpGame* getGame() { return self; }
     inline static ChimpObject* getCurrentObject() { return currentObj; }
     inline static void setCurrentObject(ChimpObject* const obj) { currentObj = obj; }
@@ -103,7 +110,20 @@ public:
     void render();
     void reset();
     
+    tinyxml2::XMLError loadLevel(const std::string& levelFile);
+    
 private:
+    bool loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textures, SDL_Renderer* const renderer);
+    bool loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures, TileMap& tiles);
+    Layer getLayer(const tinyxml2::XMLElement* objXML);
+    bool getBool(const char* const boolStr, bool& result);
+    bool getString(const char* const cStr, std::string& str);
+    std::string getMode(const tinyxml2::XMLElement* const tag);
+    void loadWorldBox(const tinyxml2::XMLElement* const edges);
+    bool loadAllAnimations(tinyxml2::XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles,
+                           TileVec& jumptiles, TileMap& tiles);
+    void loadAnimation(tinyxml2::XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles);
+    void loadObject(tinyxml2::XMLElement* const objXML, ChimpObject& obj);
     /*void updateBack();
     void updateMid();
     void updateFore();

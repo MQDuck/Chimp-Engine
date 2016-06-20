@@ -26,7 +26,7 @@ static const Uint32
     TIME_PER_FRAME             = 600;  // for idle animation
                                  
 static constexpr float
-    RUN_IMPULSE                = 2.5 / MS_PER_ACCEL,   // magnitude of x impulse given when mobile begins running with x velocity near zero
+    RUN_IMPULSE                = 0.0,   // magnitude of x impulse given when mobile begins running with x velocity near zero
     RUN_ACCEL                  = 0.4 / MS_PER_ACCEL,   // magnitude of base x acceleration while running
     JUMP_IMPULSE               = -20.0 / MS_PER_ACCEL, // y impulse given when mobile jumpes from standing position
     MULTI_JUMP_IMPULSE         = -15.0 / MS_PER_ACCEL,

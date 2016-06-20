@@ -37,11 +37,8 @@
 #include "chimp/ChimpCharacter.h"
 #include "chimp/ChimpTile.h"
 #include "chimp/ChimpStructs.h"
-#include "chimp/loadLevel.h"
 #include "SDLUtils.h"
 
-bool loadChimpTextures(chimp::TileMap& tiles, std::map<std::string, SDL_Texture*>& textures,
-                       SDL_Renderer* const renderer);
 //void addController(int id);
 
 inline void keyDown(SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -58,9 +55,6 @@ int main(const int argc, char** const argv)
     SDL_Renderer* renderer;
     TTF_Font* font;
     std::vector<SDL_GameController*> controllers;
-    //std::vector<SDL_Texture*> textures;
-    std::map<std::string, SDL_Texture*> textures;
-    chimp::TileMap tiles;
     
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER) < 0)
     {
@@ -104,12 +98,6 @@ int main(const int argc, char** const argv)
         SDL_Quit();
         return 1;
     }
-    if( !loadChimpTextures(tiles, textures, renderer) )
-    {
-        cleanup(window, renderer, font, &textures);
-        SDL_Quit();
-        return 1;
-    }
     if(SDL_GameControllerAddMappingsFromFile( CONTROLLER_MAP_FILE.c_str() ) == -1)
         logSDLError(std::cout, "GameControllerAddMappingsFromFile");
     for(int i = 0; i < SDL_NumJoysticks(); ++i)
@@ -132,10 +120,10 @@ int main(const int argc, char** const argv)
         if(levelFile[0] != '/')
             levelFile = ASSETS_PATH + levelFile;
     }
-    if(chimp::loadLevel(levelFile, tiles, renderer, game) != tinyxml2::XML_SUCCESS)
+    if(game.loadLevel(levelFile) != tinyxml2::XML_SUCCESS)
     {
         std::cout << "Couldn't load level file \"" << levelFile << "\"." << std::endl;
-        cleanup(window, renderer, font, &textures);
+        cleanup(window, renderer, font);
         SDL_Quit();
         return 1;
     }
@@ -174,7 +162,10 @@ int main(const int argc, char** const argv)
         SDL_RenderClear(renderer);
         
         timeNow = SDL_GetTicks();
-        std::cout << timeNow - timeLast << std::endl;
+        /*static double numframes = 0;
+        ++numframes;
+        std::cout << "FPS current: " << 1000 / float(timeNow-timeLast)
+                  << "\tFPS average: " << 1000 * numframes / SDL_GetTicks() << std::endl;*/
         game.update(timeNow - timeLast);
         timeLast = timeNow;
         
@@ -192,163 +183,10 @@ int main(const int argc, char** const argv)
         }*/
     }
     
-    cleanup(window, renderer, font, &textures);
+    cleanup(window, renderer, font);
     
     return 0;
 }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-compare"
-bool loadChimpTextures(chimp::TileMap& tiles, std::map<std::string, SDL_Texture*>& textures,
-                       SDL_Renderer* const renderer)
-{
-    std::string line;
-    int sub1, sub2;
-    int count;
-    bool countLoaded;
-    
-    // Load Textures
-    std::ifstream textureData(TEXTURES_FILE);
-    if( !textureData.is_open() )
-    {
-        std::cout << "Couldn't open texture data file." << std::endl;
-        return false;
-    }
-    countLoaded = false;
-    while(!countLoaded)
-    {
-        std::getline(textureData, line);
-        sub1 = line.find(TEXTURE_DELIMITER);
-        if(sub1 == std::string::npos)
-            continue;
-        sub2 = line.find(TEXTURE_COMMENT);
-        if(sub2 != std::string::npos && sub2 < sub1)
-            continue;
-        
-        ++sub1;
-        sub2 = line.find(";", sub1);
-        count = std::stoi( line.substr(sub1, sub2-sub1) );
-        countLoaded = true;
-    }
-    for(int i = 0; i < count; ++i)
-    {
-        std::getline(textureData, line);
-        sub1 = line.find(TEXTURE_DELIMITER);
-        if(sub1 == std::string::npos)
-        {
-            --i;
-            continue;
-        }
-        sub2 = line.find(TEXTURE_COMMENT);
-        if(sub2 != std::string::npos && sub2 < sub1)
-            continue;
-        ++sub1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        const std::string texfile = ASSETS_PATH + line.substr(sub1, sub2-sub1);
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        const std::string texname = line.substr(sub1, sub2-sub1);
-        textures[texname] = loadTexture(texfile, renderer);
-        
-        if(textures[texname] == nullptr)
-            return false;
-    }
-    textureData.close();
-    
-    // Load Tiles
-    std::ifstream tileData(TILES_FILE);
-    if( !tileData.is_open() )
-    {
-        std::cout << "Couldn't open tile data file." << std::endl;
-        return false;
-    }
-    countLoaded = false;
-    while(!countLoaded)
-    {
-        std::getline(tileData, line);
-        sub1 = line.find(TEXTURE_DELIMITER);
-        if(sub1 == std::string::npos)
-            continue;
-        sub2 = line.find(TEXTURE_COMMENT);
-        if(sub2 != std::string::npos && sub2 < sub1)
-            continue;
-        
-        ++sub1;
-        sub2 = line.find(";", sub1);
-        count = std::stoi( line.substr(sub1, sub2-sub1) );
-        countLoaded = true;
-    }
-    for(int i = 0; i < count; ++i)
-    {
-        std::getline(tileData, line);
-        sub1 = line.find(TEXTURE_DELIMITER);
-        if(sub1 == std::string::npos)
-        {
-            --i;
-            continue;
-        }
-        sub2 = line.find(TEXTURE_COMMENT);
-        if(sub2 != std::string::npos && sub2 < sub1)
-        {
-            --i;
-            continue;
-        }
-        
-        ++sub1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        const std::string tilename = line.substr(sub1, sub2-sub1);
-        
-        tiles[tilename] = chimp::ChimpTile();
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].texture = textures[line.substr(sub1, sub2-sub1)];
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].textureRect.x = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].textureRect.y = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].textureRect.w = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].textureRect.h = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].drawRect.w = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].drawRect.h = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].collisionBox.l = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].collisionBox.r = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].collisionBox.t = std::stoi( line.substr(sub1, sub2-sub1) );
-        
-        sub1 = sub2 + 1;
-        sub2 = line.find(TEXTURE_DELIMITER, sub1);
-        tiles[tilename].collisionBox.b = std::stoi( line.substr(sub1, sub2-sub1) );
-    }
-    tileData.close();
-    
-    return true;
-}
-#pragma GCC diagnostic pop
 
 /*void addController(int id)
 {

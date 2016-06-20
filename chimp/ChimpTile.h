@@ -13,7 +13,7 @@ struct ChimpTile
     SDL_Rect textureRect, drawRect;
     IntBox collisionBox;
     
-    ChimpTile(SDL_Texture* tex, const SDL_Rect& texRect, SDL_Rect& drRect, const Box<int>& colRect)
+    ChimpTile(SDL_Texture* tex, const SDL_Rect& texRect, SDL_Rect& drRect, const IntBox& colRect)
         : texture(tex), textureRect(texRect), drawRect(drRect), collisionBox(colRect) {}
     ChimpTile() {}
 };

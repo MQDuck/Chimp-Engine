@@ -41,7 +41,6 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
 {
     coordInitial.x = coord.x;
     coordInitial.y = coord.y;
-    accelerationY = GRAVITY;
     velocityX = 0;
     //velocityY = accelerationY;
     velocityY = 0;
@@ -55,17 +54,18 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
     platform = nullptr;
     respawn = true;
     jumping = false;
-    maxJumps = MAX_JUMPS;
     numJumps = 0;
     
+    setMaxJumps(MAX_JUMPS);
     setRunImpulse(RUN_IMPULSE);
-    run_accel = RUN_ACCEL;
-    jump_impulse = JUMP_IMPULSE;
-    multi_jump_impulse = MULTI_JUMP_IMPULSE;
-    jump_accel = JUMP_ACCEL;
-    stop_factor = STOP_FACTOR;
-    sprint_factor = SPRINT_FACTOR;
-    resistance_x = RESISTANCE_X;
+    setRunAccel(RUN_ACCEL);
+    setAccelerationY(GRAVITY);
+    setJumpImpulse(JUMP_IMPULSE);
+    setMultiJumpImpulse(MULTI_JUMP_IMPULSE);
+    setJumpAccel(JUMP_ACCEL);
+    setStopFactor(STOP_FACTOR);
+    setSprintFactor(SPRINT_FACTOR);
+    setResistanceX(RESISTANCE_X);
     setResistanceY(RESISTANCE_Y);
 }
 
@@ -307,7 +307,7 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     
     if(platform)
     {
-        coord.x += platform->getVelocityX() * time;// * 0.06;
+        coord.x += platform->getVelocityX() * time;
         coord.y = platform->collisionTop() - height + tile.collisionBox.b;
     }
     if( !jumping && (!platform || !touchesAtBottom(*platform)) )
@@ -325,8 +325,8 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
             }
     }
     
-    coord.x += velocityX * time;// * 0.06;
-    coord.y += velocityY * time;// * 0.06;
+    coord.x += velocityX * time;
+    coord.y += velocityY * time;
     
     if(boundLeft && collisionLeft() < game.getWorldLeft())
     {
@@ -355,16 +355,16 @@ void ChimpMobile::accelerate()
     if(runningRight)
     {
         if(sprinting && velocityX > -approx_zero_float)
-            velocityX += run_accel*sprint_factor/**0.06*/ - velocityX*resistance_x;
+            velocityX += run_accel*sprint_factor - velocityX*resistance_x;
         else
-            velocityX += run_accel/**0.06*/ - velocityX*resistance_x;
+            velocityX += run_accel - velocityX*resistance_x;
     }
     else if(runningLeft)
     {
         if(sprinting && velocityX < approx_zero_float)
-            velocityX += -run_accel*sprint_factor/**0.06*/ - velocityX*resistance_x;
+            velocityX += -run_accel*sprint_factor - velocityX*resistance_x;
         else
-            velocityX += -run_accel/**0.06*/ - velocityX * resistance_x;
+            velocityX += -run_accel - velocityX * resistance_x;
     }
     else
         velocityX *= stop_factor;
@@ -374,7 +374,7 @@ void ChimpMobile::accelerate()
     if(platform)
         velocityY = 0;
     else
-        velocityY += accelerationY/**0.06*/ - velocityY * resistance_y;
+        velocityY += accelerationY - velocityY * resistance_y;
 }
 
 /**
@@ -428,10 +428,10 @@ bool ChimpMobile::setScriptInit(const std::string& script)
  * 
  * @param impulse Value for run_impulse.
  */
-void ChimpMobile::setRunImpulse(const float impulse)
+void ChimpMobile::setRunAccel(const float accel)
 {
-    run_impulse = impulse;
-    approx_zero_float = run_impulse / 4.0;
+    run_accel = accel;
+    approx_zero_float = run_accel / 4.0;
 }
 
 /**

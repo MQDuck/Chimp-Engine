@@ -21,7 +21,6 @@ SOURCES += main.cpp \
     chimp/ChimpGame.cpp \
     chimp/ChimpMobile.cpp \
     chimp/ChimpObject.cpp \
-    chimp/loadLevel.cpp \
     chimp/ChimpLuaInterface.cpp
 
 HEADERS += \
@@ -34,5 +33,4 @@ HEADERS += \
     chimp/ChimpObject.h \
     chimp/ChimpStructs.h \
     chimp/ChimpTile.h \
-    chimp/loadLevel.h \
     chimp/ChimpLuaInterface.h

@@ -71,9 +71,9 @@ public:
     float getVelocityY() const { return velocityY; }
     void setVelocityY(const float velocity) { velocityY = velocity; }
     float getRunImpulse() const { return run_impulse; }
-    void setRunImpulse(const float impulse);
+    void setRunImpulse(const float impulse) { run_impulse = impulse; }
     float getRunAccel() const { return run_accel; }
-    void setRunAccel(const float accel) { run_accel = accel; }
+    void setRunAccel(const float accel);
     float getJumpImpulse() const { return jump_impulse; }
     void setJumpImpulse(const float impulse) { jump_impulse = impulse; }
     float getMultiJumpImpulse() const { return multi_jump_impulse; }
@@ -108,6 +108,8 @@ public:
     bool setScriptBehavior(const std::string& behav);
     std::string getScriptInit() const { return scriptInit; }
     bool setScriptInit(const std::string& behav);
+    float getTerminalVelocityRun() { return run_accel * MS_PER_ACCEL / resistance_x; }
+    float getTerminalVelocityFall() { return GRAVITY * MS_PER_ACCEL / resistance_y; }
 
     bool hasPlatform() const { return platform; }
     
