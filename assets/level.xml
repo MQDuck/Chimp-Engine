@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<chimptexture name="baddie" file="baddie.png"/>
+<chimptexture name="spritesheet" file="_Spritesheet.png"/>
+<chimptexture name="background" file="Background.png"/>
+<chimptexture name="monkey" file="monkey.png"/>
+
+<chimptile name="monkey run 1">
+    <texture name="monkey" x="0" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey run 2">
+    <texture name="monkey" x="256" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey run 3">
+    <texture name="monkey" x="512" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey run 4">
+    <texture name="monkey" x="768" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey run 5">
+    <texture name="monkey" x="1024" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey run 6">
+    <texture name="monkey" x="1280" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey run 7">
+    <texture name="monkey" x="1536" y="0" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 1">
+    <texture name="monkey" x="0" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 2">
+    <texture name="monkey" x="256" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 3">
+    <texture name="monkey" x="512" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 4">
+    <texture name="monkey" x="768" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 5">
+    <texture name="monkey" x="1024" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 6">
+    <texture name="monkey" x="1280" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey jump 7">
+    <texture name="monkey" x="1536" y="256" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey idle 1">
+    <texture name="monkey" x="0" y="512" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="monkey idle 2">
+    <texture name="monkey" x="256" y="512" width="256" height="256"/>
+    <collision left="86" right="62" top="50" bottom="40"/>
+</chimptile>
+<chimptile name="baddie">
+    <texture name="baddie" x="0" y="0" width="68" height="45"/>
+    <collision left="8" right="8" top="1" bottom="1"/>
+</chimptile>
+<chimptile name="background">
+    <texture name="background" x="0" y="0" width="3400" height="2400"/>
+    <stretch width="1333" height="800"/>
+    <collision left="3400" right="3400" top="2400" bottom="2400"/>
+</chimptile>
+<chimptile name="top ground">
+    <texture name="spritesheet" x="256" y="0" width="256" height="256"/>
+    <collision left="0" right="0" top="115" bottom="0"/>
+</chimptile>
+<chimptile name="top ground right cliff">
+    <texture name="spritesheet" x="512" y="0" width="256" height="256"/>
+    <collision left="0" right="90" top="115" bottom="0"/>
+</chimptile>
+<chimptile name="mid island">
+    <texture name="spritesheet" x="256" y="768" width="256" height="256"/>
+    <collision left="0" right="0" top="115" bottom="0"/>
+</chimptile>
+<chimptile name="left island">
+    <texture name="spritesheet" x="0" y="768" width="256" height="256"/>
+    <collision left="90" right="0" top="115" bottom="0"/>
+</chimptile>
+<chimptile name="green bush">
+    <texture name="spritesheet" x="1024" y="768" width="256" height="256"/>
+    <stretch width="512" height="512"/>
+    <collision left="0" right="0" top="0" bottom="0"/>
+</chimptile>
+
+<chimplevel>
+    <edges right="2400" left="-600" bottom="690" top="-103"/>
+    <scrollfactor background="0.1" foreground="1.25"/>
+    <object layer="middle" type="player">
+        <tile animation="run">monkey run 1</tile>
+        <tile animation="run">monkey run 2</tile>
+        <tile animation="run">monkey run 3</tile>
+        <tile animation="run">monkey run 4</tile>
+        <tile animation="run">monkey run 5</tile>
+        <tile animation="run">monkey run 6</tile>
+        <tile animation="run">monkey run 7</tile>
+        <tile animation="jump">monkey jump 1</tile>
+        <tile animation="jump">monkey jump 2</tile>
+        <tile animation="jump">monkey jump 3</tile>
+        <tile animation="jump">monkey jump 4</tile>
+        <tile animation="jump">monkey jump 5</tile>
+        <tile animation="jump">monkey jump 6</tile>
+        <tile animation="jump">monkey jump 7</tile>
+        <tile animation="idle">monkey idle 1</tile>
+        <tile animation="idle">monkey idle 1</tile>
+        <tile animation="idle">monkey idle 2</tile>
+        <position x="600" y="290"/>
+        <maxhealth>100</maxhealth>
+        <faction type="friend">player</faction>
+        <faction type="enemy">baddies</faction>
+        <bounded right="true" left="true"/>
+        <respawn>false</respawn>
+        <maxjumps>2</maxjumps>
+    </object>
+    <object layer="middle" type="character">
+        <tile>baddie</tile>
+        <position x="-600" y="160"/>
+        <faction type="friend">baddies</faction>
+        <faction type="enemy">player</faction>
+        <damage top="false"/>
+        <acceleration mode="scale" type="run">0.5</acceleration>
+        <script type="behavior">assets/jumper_behavior.lua</script>
+        <script type="init">assets/jumper_init.lua</script>
+    </object>
+    <object layer="background" type="object">
+        <tile>background</tile>
+        <position x="-600" y="0"/>
+        <tiles x="5" y="1"/>
+    </object>
+    <object layer="middle" type="object">
+        <tile>top ground</tile>
+        <position x="-600" y="0"/>
+        <tiles x="8" y="1"/>
+    </object>
+    <object layer="middle" type="object">
+        <tile>top ground right cliff</tile>
+        <position x="1448" y="0"/>
+    </object>
+    <object layer="middle" type="object">
+        <tile>mid island</tile>
+        <position x="1888" y="384"/>
+        <tiles x="2" y="1"/>
+    </object>
+    <object layer="middle" type="object">
+        <tile>left island</tile>
+        <position x="1632" y="384"/>
+    </object>
+    <object layer="foreground" type="object">
+        <tile>green bush</tile>
+    </object>
+</chimplevel>
