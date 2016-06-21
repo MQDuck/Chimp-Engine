@@ -35,6 +35,7 @@ struct Box
 };
 
 typedef Box<int> IntBox;
+typedef Box<bool> BoolBox;
 
 } // namespace chimp
 

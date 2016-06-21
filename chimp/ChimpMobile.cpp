@@ -47,10 +47,10 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
     runningRight = false;
     runningLeft = false;
     sprinting = false;
-    boundLeft = false;
-    boundRight = false;
-    boundTop = false;
-    boundBottom = false;
+    boundBox.l = false;
+    boundBox.r = false;
+    boundBox.t = false;
+    boundBox.b = false;
     platform = nullptr;
     respawn = true;
     jumping = false;
@@ -217,85 +217,6 @@ void ChimpMobile::reset()
  * @param screen Current window for this Object's game layer.
  * @param world Game world boundaries object.
  */
-/*void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
-{
-    ChimpObject::update(objects, game, time);
-    
-    if(!active)
-        return;
-    
-    if(runningRight)
-        accelerateRight();
-    else if(runningLeft)
-        accelerateLeft();
-    else
-        velocityX *= stop_factor;
-    
-    runScript(scriptBehavior, game.getLuaState());
-    
-    if( !runningLeft && !runningRight && approxZeroF(velocityX) )
-        velocityX = 0;
-    
-    if(velocityY > 0)
-        accelerationY = GRAVITY;
-    
-    if( platform && collisionBottom() > platform->collisionTop() )
-        coord.y -= collisionBottom() - platform->collisionTop();
-    if( platform && collisionBottom() < platform->collisionTop() )
-        coord.y += collisionBottom() - platform->collisionTop();
-    
-    if( velocityY > 0 || ( platform && !touchesAtBottom(*platform)) )
-    {
-        accelerationY = GRAVITY;
-        platform = nullptr;
-        for(const ObjectPointer& obj : objects)
-        {
-            if(   obj->isActive()
-               && platform != &*obj //necessary?
-               && ( !(friends & obj->getEnemies()) || !obj->getDamageTop() )
-               && touchesAtBottom(*obj) )
-            {
-                accelerationY = 0;
-                velocityY = 0;
-                coord.y = obj->collisionTop() - height + tile.collisionBox.b;
-                numJumps = 0;
-                platform = &*obj;
-                break;
-            }
-        }
-    }
-    velocityY += accelerationY - velocityY * resistance_y;
-    
-    coord.x += velocityX;
-    coord.y += velocityY;
-    if(platform)
-    {
-        coord.x += platform->getVelocityX();
-        coord.y = platform->collisionTop() - height + tile.collisionBox.b;
-    }
-    
-    if(boundLeft && collisionLeft() < game.getWorldLeft())
-    {
-        velocityX = 0;
-        coord.x = game.getWorldLeft() - tile.collisionBox.l;
-    }
-    else if(boundRight && collisionRight() > game.getWorldRight())
-    {
-        velocityX = 0;
-        coord.x = game.getWorldRight() - width + tile.collisionBox.r;
-    }
-    else if(boundTop && collisionTop() < game.getWorldTop())
-    {
-        velocityY = 0;
-        coord.y = game.getWorldTop() - tile.collisionBox.r;
-    }
-    else if(boundBottom && collisionBottom() > game.getWorldBottom())
-    {
-        velocityY = 0;
-        coord.y = game.getWorldBottom() - height + tile.collisionBox.b;
-    }
-}*/
-
 void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {
     ChimpObject::update(objects, game, time);
@@ -312,6 +233,8 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     }
     if( !jumping && (!platform || !touchesAtBottom(*platform)) )
     {
+        if(platform)
+            numJumps = 1;
         platform = nullptr;
         for(const ObjectPointer& obj : objects)
             if(   obj->isActive()
@@ -328,22 +251,22 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     coord.x += velocityX * time;
     coord.y += velocityY * time;
     
-    if(boundLeft && collisionLeft() < game.getWorldLeft())
+    if(boundBox.l && collisionLeft() < game.getWorldLeft())
     {
         velocityX = 0;
         coord.x = game.getWorldLeft() - tile.collisionBox.l;
     }
-    else if(boundRight && collisionRight() > game.getWorldRight())
+    else if(boundBox.r && collisionRight() > game.getWorldRight())
     {
         velocityX = 0;
         coord.x = game.getWorldRight() - width + tile.collisionBox.r;
     }
-    else if(boundTop && collisionTop() < game.getWorldTop())
+    else if(boundBox.t && collisionTop() < game.getWorldTop())
     {
         velocityY = 0;
         coord.y = game.getWorldTop() - tile.collisionBox.r;
     }
-    else if(boundBottom && collisionBottom() > game.getWorldBottom())
+    else if(boundBox.b && collisionBottom() > game.getWorldBottom())
     {
         velocityY = 0;
         coord.y = game.getWorldBottom() - height + tile.collisionBox.b;

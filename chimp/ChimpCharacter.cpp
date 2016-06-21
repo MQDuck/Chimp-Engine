@@ -166,7 +166,7 @@ void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const 
     if(active && vulnerable)
         for(const ObjectPointer& obj : objects)
         {
-            if((!obj->getDamageTop() && touchesAtBottom(*obj)) || &*obj == platform)
+            if(!obj->isActive() || (!obj->getDamageTop() && touchesAtBottom(*obj)) || &*obj == platform)
                 continue;
             if( touches(*obj) && (friends & obj->getEnemies()) )
             {

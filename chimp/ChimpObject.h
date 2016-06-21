@@ -54,7 +54,7 @@ protected:
     
 public: // make private/protected
     int width, height;
-    Box<bool> damageBox;
+    BoolBox damageBox;
     
 public:
     ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const int pX = 0, const int pY = 0,

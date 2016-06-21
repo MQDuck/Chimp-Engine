@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
 <chimptexture name="baddie" file="baddie.png"/>
-<chimptexture name="spritesheet" file="_Spritesheet.png"/>
-<chimptexture name="background" file="Background.png"/>
+<chimptexture name="spritesheet" file="terrain.png"/>
+<chimptexture name="background" file="background.png"/>
 <chimptexture name="monkey" file="monkey.png"/>
 
 <chimptile name="monkey run 1">
@@ -76,7 +76,6 @@
 <chimptile name="background">
     <texture name="background" x="0" y="0" width="3400" height="2400"/>
     <stretch width="1333" height="800"/>
-    <collision left="3400" right="3400" top="2400" bottom="2400"/>
 </chimptile>
 <chimptile name="top ground">
     <texture name="spritesheet" x="256" y="0" width="256" height="256"/>
@@ -97,7 +96,6 @@
 <chimptile name="green bush">
     <texture name="spritesheet" x="1024" y="768" width="256" height="256"/>
     <stretch width="512" height="512"/>
-    <collision left="0" right="0" top="0" bottom="0"/>
 </chimptile>
 
 <chimplevel>

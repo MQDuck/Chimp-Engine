@@ -41,12 +41,10 @@ enum Layer { BACK, MID, FORE };
 
 class ChimpGame
 {
-public:
-    TextureMap textures;
-    TileMap tiles;
-    
 private:
     SDL_Renderer* renderer;
+    TextureMap textures;
+    TileMap tiles;
     static ChimpCharacter* player;
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
@@ -60,7 +58,7 @@ private:
 public:
     ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
               ChimpCharacter* plyr = nullptr);
-    ~ChimpGame() { if(player) delete player; }
+    ~ChimpGame();
     
     ChimpObject& getObj(Layer lay, size_t in);
     ChimpObject& getObjBack(Layer lay);

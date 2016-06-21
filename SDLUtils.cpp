@@ -1,4 +1,5 @@
 #include "SDLUtils.h"
+#include <SDL2/SDL_image.h>
 
 /**
 * Log an SDL error with some error message to the output stream of our choice

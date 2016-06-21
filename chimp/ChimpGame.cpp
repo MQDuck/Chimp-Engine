@@ -18,6 +18,7 @@
 */
 
 #include "ChimpGame.h"
+#include <SDL2/SDL_image.h>
 #include "ChimpLuaInterface.h"
 
 namespace chimp
@@ -39,17 +40,25 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, cons
     self = this;
 }
 
-ChimpObject& ChimpGame::getObj(Layer lay, size_t in)
+ChimpGame::~ChimpGame()
+{
+    if(player)
+        delete player;
+    for(auto& tex : textures)
+        SDL_DestroyTexture(tex.second);
+}
+
+ChimpObject& ChimpGame::getObj(Layer lay, size_t index)
 {
     switch(lay)
     {
     case BACK:
-        return *background[in];
+        return *background[index];
     case FORE:
-        return *foreground[in];
+        return *foreground[index];
     case MID:
     default:
-        return *middle[in];
+        return *middle[index];
     }
 }
 

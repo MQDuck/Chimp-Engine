@@ -30,8 +30,8 @@ namespace chimp
 class ChimpMobile : public ChimpObject
 {
 protected:
-    bool runningRight, runningLeft, sprinting, boundLeft, boundRight, boundTop, boundBottom,
-         respawn, jumping;
+    bool runningRight, runningLeft, sprinting, respawn, jumping;
+    BoolBox boundBox;
     ChimpObject* platform; // pointer to Object this Mobile is standing on, null if none
     Coordinate coordInitial;
     std::string scriptInit, scriptBehavior;
@@ -54,7 +54,6 @@ public:
     virtual void stopRunningRight();
     virtual void stopRunningLeft();
     virtual void stopRunning();
-    //virtual void activate();
     virtual void deactivate();
     virtual void jump();
     void stopJumping();
@@ -92,14 +91,14 @@ public:
     void setInitialX(const float x) { coordInitial.x = x; }
     float getInitialY() const { return coordInitial.y; }
     void setInitialY(const float y) { coordInitial.y = y; }
-    bool getBoundLeft() const { return boundLeft; }
-    void setBoundLeft(bool b) { boundLeft = b; }
-    bool getBoundRight() const { return boundRight; }
-    void setBoundRight(bool b) { boundRight = b; }
-    bool getBoundTop() const { return boundTop; }
-    void setBoundTop(bool b) { boundTop = b; }
-    bool getBoundBottom() const { return boundBottom; }
-    void setBoundBottom(bool b) { boundBottom = b; }
+    bool getBoundLeft() const { return boundBox.l; }
+    void setBoundLeft(bool b) { boundBox.l = b; }
+    bool getBoundRight() const { return boundBox.r; }
+    void setBoundRight(bool b) { boundBox.r = b; }
+    bool getBoundTop() const { return boundBox.t; }
+    void setBoundTop(bool b) { boundBox.t = b; }
+    bool getBoundBottom() const { return boundBox.b; }
+    void setBoundBottom(bool b) { boundBox.b = b; }
     bool getRespawn() const { return respawn; }
     void setRespawn(const bool pd) { respawn = pd; }
     int getMaxJumps() const { return maxJumps; }
@@ -110,10 +109,7 @@ public:
     bool setScriptInit(const std::string& behav);
     float getTerminalVelocityRun() { return run_accel * MS_PER_ACCEL / resistance_x; }
     float getTerminalVelocityFall() { return GRAVITY * MS_PER_ACCEL / resistance_y; }
-
     bool hasPlatform() const { return platform; }
-    
-    //ChimpMobile& operator=(const ChimpMobile& rhs);
     
 protected:
     void accelerateRight();
