@@ -60,13 +60,6 @@ inline void cleanup<SDL_Surface>(SDL_Surface* surface)
 }
 
 template<>
-inline void cleanup<SDL_Joystick>(SDL_Joystick* joystick)
-{
-    if(joystick)
-        SDL_JoystickClose(joystick);
-}
-
-template<>
 inline void cleanup<SDL_GameController>(SDL_GameController* controller)
 {
     if(controller)
@@ -86,6 +79,13 @@ inline void cleanup<std::map<std::string, SDL_Texture*>>(std::map<std::string, S
     for(auto& tex : *textures)
         cleanup(tex.second);
 }
+
+/*template<>
+inline void cleanup<std::vector<SDL_GameController*>(std::vector<SDL_GameController*>* controllers)
+{
+    for(SDL_GameController* contrl : *controllers)
+        cleanup(contrl);
+}*/
 
 #endif
 

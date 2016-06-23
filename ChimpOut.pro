@@ -16,7 +16,6 @@ DESTDIR = $$PWD
 TARGET = ChimpOut
 
 SOURCES += main.cpp \
-    SDLUtils.cpp \
     chimp/ChimpCharacter.cpp \
     chimp/ChimpGame.cpp \
     chimp/ChimpMobile.cpp \
@@ -25,7 +24,6 @@ SOURCES += main.cpp \
 
 HEADERS += \
     cleanup.h \
-    SDLUtils.h \
     ChimpConstants.h \
     chimp/ChimpCharacter.h \
     chimp/ChimpGame.h \

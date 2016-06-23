@@ -19,6 +19,7 @@
 
 #include "ChimpGame.h"
 #include <SDL2/SDL_image.h>
+#include <iostream>
 #include "ChimpLuaInterface.h"
 
 namespace chimp
@@ -285,14 +286,6 @@ void ChimpGame::update(const Uint32 time)
             obj->accelerate();
     }
     
-    /*SDL_Thread* threadBack = SDL_CreateThread(updateThreadBack, "back update thread", this);
-    SDL_Thread* threadMid  = SDL_CreateThread(updateThreadMid, "mid update thread",  this);
-    SDL_Thread* threadFore = SDL_CreateThread(updateThreadFore, "fore update thread", this);
-    SDL_WaitThread(threadBack, nullptr);
-    SDL_WaitThread(threadMid,  nullptr);
-    SDL_WaitThread(threadFore, nullptr);
-    player->update(middle, midWindow, worldBox);*/
-    
     if(player->getX() + player->getWidth() > midWindow.r - FOLLOW_ZONE_X && midWindow.r < worldBox.r)
         translateWindowX(player->getX() + player->getWidth() + FOLLOW_ZONE_X - midWindow.r);
     else if(player->getX() - midWindow.l < FOLLOW_ZONE_X && midWindow.l > worldBox.l)
@@ -302,42 +295,6 @@ void ChimpGame::update(const Uint32 time)
     else if(player->getY() + player->getHeight() > midWindow.b - FOLLOW_ZONE_Y && midWindow.b < worldBox.b)
         translateWindowY(player->getY() + player->getHeight() + FOLLOW_ZONE_Y - midWindow.b);
 }
-
-/*void ChimpGame::updateBack()
-{
-    for(auto& obj : background)
-        obj->update(background, midWindow, worldBox);
-}
-
-void ChimpGame::updateMid()
-{
-    for(auto& obj : middle)
-        obj->update(middle, midWindow, worldBox);
-}
-
-void ChimpGame::updateFore()
-{
-    for(auto& obj : foreground)
-        obj->update(foreground, midWindow, worldBox);
-}
-
-int ChimpGame::updateThreadBack(void* game)
-{
-    ((ChimpGame*)game)->updateBack();
-    return 0;
-}
-
-int ChimpGame::updateThreadMid(void* game)
-{
-    ((ChimpGame*)game)->updateMid();
-    return 0;
-}
-
-int ChimpGame::updateThreadFore(void* game)
-{
-    ((ChimpGame*)game)->updateFore();
-    return 0;
-}*/
 
 void ChimpGame::render()
 {
@@ -538,7 +495,7 @@ void ChimpGame::loadObject(tinyxml2::XMLElement* const objXML, ChimpObject& obj)
         if(tag->QueryIntAttribute("x", &pos) == tinyxml2::XML_SUCCESS)
             obj.setInitialX(pos);
         if(tag->QueryIntAttribute("y", &pos) == tinyxml2::XML_SUCCESS)
-            obj.setInitialY(SCREEN_HEIGHT - pos - obj.height);
+            obj.setInitialY(SCREEN_HEIGHT - pos - obj.getHeight());
     }
     if( (tag = objXML->FirstChildElement("tiles")) )
     {

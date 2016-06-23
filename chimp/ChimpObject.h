@@ -24,7 +24,6 @@
 #include <memory>
 #include <vector>
 #include <lua.hpp>
-#include "SDLUtils.h"
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "ChimpTile.h"
@@ -51,8 +50,6 @@ protected:
     SDL_RendererFlip flip;
     int friends, enemies;
     bool active;
-    
-public: // make private/protected
     int width, height;
     BoolBox damageBox;
     

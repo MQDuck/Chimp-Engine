@@ -30,7 +30,6 @@
 #include "ChimpMobile.h"
 #include "ChimpCharacter.h"
 #include "cleanup.h"
-#include "SDLUtils.h"
 
 namespace chimp
 {
@@ -122,12 +121,6 @@ private:
                            TileVec& jumptiles, TileMap& tiles);
     void loadAnimation(tinyxml2::XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles);
     void loadObject(tinyxml2::XMLElement* const objXML, ChimpObject& obj);
-    /*void updateBack();
-    void updateMid();
-    void updateFore();
-    static int updateThreadBack(void* game);
-    static int updateThreadMid(void* game);
-    static int updateThreadFore(void* game);*/
 };
 
 } // namespace chimp

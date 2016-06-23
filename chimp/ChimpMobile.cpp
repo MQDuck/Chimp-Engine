@@ -18,6 +18,7 @@
 */
 
 #include "ChimpMobile.h"
+#include <iostream>
 #include "ChimpGame.h"
 #include "sys/stat.h"
 
