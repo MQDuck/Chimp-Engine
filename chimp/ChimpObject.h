@@ -21,6 +21,7 @@
 #define CHIMPOBJECT_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <memory>
 #include <vector>
 #include <lua.hpp>
@@ -170,12 +171,14 @@ public:
     virtual bool setScriptBehavior(const std::string& behav) { return false; }
     virtual std::string getScriptInit() const { return ""; }
     virtual bool setScriptInit(const std::string& behav) { return false; }
-    virtual void jump() {}
+    virtual void jump(ChimpGame& game) {}
     virtual void stopJumping() {}
     virtual void sprint() {}
     virtual void stopSprinting() {}
     virtual float getTerminalVelocityRun() { return 0.0; }
     virtual float getTerminalVelocityFall() { return 0.0; }
+    virtual void setSoundJump(Mix_Chunk* const sound) {}
+    virtual void setSoundMultijump(Mix_Chunk* const sound) {}
     #pragma GCC diagnostic pop
     
 protected:

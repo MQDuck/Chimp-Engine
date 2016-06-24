@@ -22,6 +22,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_gamecontroller.h>
+#include <SDL2/SDL_mixer.h>
 #include <string>
 #include <tinyxml2.h>
 #include <lua.hpp>
@@ -74,7 +75,7 @@ int main(const int argc, char** const argv)
         SDL_Quit();
         return 1;
     }
-    if( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG )
+    if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG)
     {
         std::cout << "IMG_Init error: " << SDL_GetError() << std::endl;
         cleanup(window, renderer);
@@ -92,6 +93,13 @@ int main(const int argc, char** const argv)
     if(font == nullptr)
     {
         std::cout << "TTF_OpenFont error: " << SDL_GetError() << std::endl;
+        cleanup(window, renderer, font);
+        SDL_Quit();
+        return 1;
+    }
+    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        std::cout << "Mix_OpenAudio error: " << SDL_GetError() << std::endl;
         cleanup(window, renderer, font);
         SDL_Quit();
         return 1;
@@ -182,7 +190,7 @@ int main(const int argc, char** const argv)
     }
     
     cleanup(window, renderer, font);
-    
+    SDL_Quit();    
     return 0;
 }
 
@@ -206,7 +214,7 @@ inline void keyDown(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJum
     case SDLK_SPACE:
         if(!keyJumpPressed)
         {
-            game.getPlayer()->jump();
+            game.getPlayer()->jump(game);
             keyJumpPressed = true;
         }
         break;
@@ -241,7 +249,7 @@ inline void buttonDown(const SDL_Event& event, chimp::ChimpGame& game, bool& key
 {
     if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A && !keyJumpPressed)
     {
-        game.getPlayer()->jump();
+        game.getPlayer()->jump(game);
         keyJumpPressed = true;
     }
     else if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)

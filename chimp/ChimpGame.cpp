@@ -39,6 +39,7 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, cons
     luast = luaL_newstate();
     setupLua(luast);
     self = this;
+    music = nullptr;
 }
 
 ChimpGame::~ChimpGame()
@@ -47,6 +48,10 @@ ChimpGame::~ChimpGame()
         delete player;
     for(auto& tex : textures)
         SDL_DestroyTexture(tex.second);
+    for(auto& snd : sounds)
+        Mix_FreeChunk(snd.second);
+    for(auto& mus : musics)
+        Mix_FreeMusic(mus.second);
 }
 
 ChimpObject& ChimpGame::getObj(Layer lay, size_t index)
@@ -130,6 +135,21 @@ bool ChimpGame::setScrollFactor(const Layer lay, const float factor)
     default:
         return false;
     }
+}
+
+bool ChimpGame::setMusic(const std::string& mus)
+{
+    if(mus == "")
+    {
+        music = nullptr;
+        return true;
+    }
+    else if(musics.find(mus) != musics.end())
+    {
+        music = musics[mus];
+        return true;
+    }
+    return false;
 }
 
 void ChimpGame::pushObj(const Layer layr, const ChimpTile& til, const int x, const int y, const int tilesX,
@@ -257,8 +277,10 @@ void ChimpGame::initialize()
         obj->initialize(*this);
     for(auto& obj : foreground)
         obj->initialize(*this);
-    
     player->initialize(*this);
+    
+    if(music)
+        Mix_PlayMusic(music, -1);
 }
 
 void ChimpGame::update(const Uint32 time)
@@ -335,7 +357,9 @@ tinyxml2::XMLError ChimpGame::loadLevel(const std::string& levelFile)
     if(!level)
         return tinyxml2::XML_ERROR_FILE_READ_ERROR;
     
-    if( !loadTextures(levelXML, textures, renderer) || !loadTiles(levelXML, textures, tiles) )
+    if(   !loadTextures(levelXML, textures, renderer)
+       || !loadTiles(levelXML, textures, tiles)
+       || !loadSounds(levelXML, sounds, musics) )
         return tinyxml2::XML_NO_TEXT_NODE;
     
     loadWorldBox(level->FirstChildElement("edges"));
@@ -346,6 +370,12 @@ tinyxml2::XMLError ChimpGame::loadLevel(const std::string& levelFile)
             setScrollFactor(BACK, factor);
         if(tag->QueryFloatAttribute("foreground", &factor) == tinyxml2::XML_SUCCESS)
             setScrollFactor(FORE, factor);
+    }
+    if( (tag = level->FirstChildElement("music")) )
+    {
+        std::string name;
+        if(getString(tag->GetText(), name))
+            setMusic(name);
     }
     
     for( objXML = level->FirstChildElement("object"); objXML; objXML = objXML->NextSiblingElement("object") )
@@ -462,8 +492,8 @@ void ChimpGame::loadWorldBox(const tinyxml2::XMLElement* const edges)
     setWorldBox(wbLeft, wbRight, wbTop, wbBottom);
 }
 
-bool ChimpGame::loadAllAnimations(tinyxml2::XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles, TileVec& jumptiles,
-                       TileMap& tiles)
+bool ChimpGame::loadAllAnimations(tinyxml2::XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles,
+                                  TileVec& jumptiles, TileMap& tiles)
 {
     loadAnimation(objXML, "idle", idletiles, tiles);
     if(idletiles.empty())
@@ -675,6 +705,19 @@ void ChimpGame::loadObject(tinyxml2::XMLElement* const objXML, ChimpObject& obj)
                 obj.setScriptInit(script);
         }
     }
+    for(tag = objXML->FirstChildElement("sound"); tag; tag = tag->NextSiblingElement("sound"))
+    {
+        std::string sound, type;
+        if(   getString(tag->Attribute("type"), type)
+           && getString(tag->GetText(), sound)
+           && sounds.find(sound) != sounds.end())
+        {
+            if(type == "jump")
+                obj.setSoundJump(sounds[sound]);
+            else if(type == "multijump")
+                obj.setSoundMultijump(sounds[sound]);
+        }
+    }
 }
 
 bool ChimpGame::loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textures, SDL_Renderer* const renderer)
@@ -797,6 +840,57 @@ bool ChimpGame::loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures,
         colBox.t = top;
         colBox.b = bottom;
         tiles[tileName] = ChimpTile(textures[texName], texRect, drRect, colBox);
+    }
+    
+    return true;
+}
+
+bool ChimpGame::loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, MusicMap& musics)
+{
+    for(tinyxml2::XMLElement* sound = levelXML.FirstChildElement("chimpsound");
+        sound;
+        sound = sound->NextSiblingElement("chimpsound"))
+    {
+        std::string name, file;
+        if(!getString(sound->Attribute("name"), name))
+        {
+            std::cout << "Error: chimpsound tag without name attribute" << std::endl;
+            return false;
+        }
+        if(!getString(sound->Attribute("file"), file))
+        {
+            std::cout << "Error: chimpsound tag without file attribute" << std::endl;
+            return false;
+        }
+        
+        if( !(sounds[name] = Mix_LoadWAV((ASSETS_PATH + file).c_str())) )
+        {
+            std::cout << "Mix_LoadWAV error: " << SDL_GetError() << std::endl;
+            return false;
+        }
+    }
+    
+    for(tinyxml2::XMLElement* music = levelXML.FirstChildElement("chimpmusic");
+        music;
+        music = music->NextSiblingElement("chimpmusic"))
+    {
+        std::string name, file;
+        if(!getString(music->Attribute("name"), name))
+        {
+            std::cout << "Error: chimpmusic tag without name attribute" << std::endl;
+            return false;
+        }
+        if(!getString(music->Attribute("file"), file))
+        {
+            std::cout << "Error: chimpmusic tag without file attribute" << std::endl;
+            return false;
+        }
+        
+        if( !(musics[name] = Mix_LoadMUS((ASSETS_PATH + file).c_str())) )
+        {
+            std::cout << "Mix_LoadMUS error: " << SDL_GetError() << std::endl;
+            return false;
+        }
     }
     
     return true;

@@ -21,6 +21,7 @@
 #define CHIMPGAME_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <vector>
 #include <tinyxml2.h>
 #include <lua.hpp>
@@ -36,6 +37,8 @@ namespace chimp
 
 typedef std::map<std::string, SDL_Texture*> TextureMap;
 typedef std::map<std::string, ChimpTile> TileMap;
+typedef std::map<std::string, Mix_Chunk*> SoundMap;
+typedef std::map<std::string, Mix_Music*> MusicMap;
 enum Layer { BACK, MID, FORE };
 
 class ChimpGame
@@ -44,12 +47,16 @@ private:
     SDL_Renderer* renderer;
     TextureMap textures;
     TileMap tiles;
+    SoundMap sounds;
+    MusicMap musics;
+    
     static ChimpCharacter* player;
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
     unsigned int windowWidth, windowHeight;
     float scroll_factor_back, scroll_factor_fore;
     lua_State* luast;
+    Mix_Music* music;
     
     static ChimpGame* self;
     static ChimpObject* currentObj;
@@ -62,26 +69,27 @@ public:
     ChimpObject& getObj(Layer lay, size_t in);
     ChimpObject& getObjBack(Layer lay);
     bool setWorldBox(const int l, const int r, const int t, const int b);
-    int getWorldLeft() const { return worldBox.l; }
-    int getWorldRight() const { return worldBox.r; }
-    int getWorldTop() const { return worldBox.t; }
-    int getWorldBottom() const { return worldBox.b; }
-    int getMidWindowLeft() const { return midWindow.l; }
-    int getMidWindowRight() const { return midWindow.r; }
-    int getMidWindowTop() const { return midWindow.t; }
-    int getMidWindowBottom() const { return midWindow.b; }
+    inline int getWorldLeft() const { return worldBox.l; }
+    inline int getWorldRight() const { return worldBox.r; }
+    inline int getWorldTop() const { return worldBox.t; }
+    inline int getWorldBottom() const { return worldBox.b; }
+    inline int getMidWindowLeft() const { return midWindow.l; }
+    inline int getMidWindowRight() const { return midWindow.r; }
+    inline int getMidWindowTop() const { return midWindow.t; }
+    inline int getMidWindowBottom() const { return midWindow.b; }
     SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
-    unsigned int getWindowWidth() const { return windowWidth; }
-    void setWindowWidth(const unsigned int winWidth) { windowWidth = winWidth; }
-    unsigned int getWindowHeight() { return windowHeight; }
-    void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
+    inline unsigned int getWindowWidth() const { return windowWidth; }
+    inline void setWindowWidth(const unsigned int winWidth) { windowWidth = winWidth; }
+    inline unsigned int getWindowHeight() { return windowHeight; }
+    inline void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
-    const IntBox& getMidWindow() const { return midWindow; }
-    const IntBox& getBackWindow() const { return backWindow; }
-    const IntBox& getForeWindow() const { return foreWindow; }
+    inline const IntBox& getMidWindow() const { return midWindow; }
+    inline const IntBox& getBackWindow() const { return backWindow; }
+    inline const IntBox& getForeWindow() const { return foreWindow; }
     inline lua_State* getLuaState() const { return luast; }
+    bool setMusic(const std::string& mus);
     
     inline static ChimpCharacter*& getPlayer() { return player; }
     inline static ChimpGame* getGame() { return self; }
@@ -112,6 +120,7 @@ public:
 private:
     bool loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textures, SDL_Renderer* const renderer);
     bool loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures, TileMap& tiles);
+    bool loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, MusicMap& musics);
     Layer getLayer(const tinyxml2::XMLElement* objXML);
     bool getBool(const char* const boolStr, bool& result);
     bool getString(const char* const cStr, std::string& str);

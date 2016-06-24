@@ -55,7 +55,7 @@ public:
     virtual void stopRunningLeft();
     virtual void stopRunning();
     virtual void deactivate();
-    virtual void jump();
+    virtual void jump(ChimpGame& game);
     void stopJumping();
     void sprint();
     void stopSprinting();
@@ -112,8 +112,6 @@ public:
     bool hasPlatform() const { return platform; }
     
 protected:
-    void accelerateRight();
-    void accelerateLeft();
     void runScript(std::string& script, lua_State* const luast);
 };
 

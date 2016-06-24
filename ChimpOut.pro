@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += c++11
 CONFIG -= app_bundle
 CONFIG -= qt
-LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -ltinyxml2 -llua
+LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -ltinyxml2 -llua
 #LIBS += -lSDL2 -ldl -lpthread
 
 QMAKE_CXXFLAGS_DEBUG += -pg

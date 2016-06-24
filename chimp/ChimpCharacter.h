@@ -21,11 +21,14 @@
 #define CHIMPCHARACTER_H
 
 #include <vector>
+#include <SDL2/SDL_mixer.h>
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
 
 namespace chimp
 {
+
+class ChimpGame;
 
 typedef std::vector<ChimpTile> TileVec;
     
@@ -38,6 +41,8 @@ protected:
     TileVec tilesRun, tilesJump, tilesIdle;
     Coordinate moveStart;
     int maxHealth, health;
+    Mix_Chunk* soundJump;
+    Mix_Chunk* soundMultijump;
     
 public:
     ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
@@ -51,15 +56,17 @@ public:
     inline bool getVulnerable() const { return vulnerable; }
     inline void setVulnerable(const bool vul) { vulnerable = vul; }
     inline TileVec& getTilesIdle() { return tilesIdle; }
-    inline bool setTilesIdle(const TileVec& vec);// { tilesIdle = vec; }
+    inline bool setTilesIdle(const TileVec& vec);
     inline TileVec& getTilesRun() { return tilesRun; }
-    inline bool setTilesRun(const TileVec& vec);// { tilesRun = vec; }
+    inline bool setTilesRun(const TileVec& vec);
     inline TileVec& getTilesJump() { return tilesJump; }
-    inline bool setTilesJump(const TileVec& vec);// { tilesJump = vec; }
+    inline bool setTilesJump(const TileVec& vec);
+    inline void setSoundJump(Mix_Chunk* const sound) { soundJump = sound; }
+    inline void setSoundMultijump(Mix_Chunk* const sound) { soundMultijump = sound; }
     
     void runRight();
     void runLeft();
-    void jump();
+    void jump(ChimpGame& game);
     void reset();
     
     #pragma GCC diagnostic push
@@ -78,6 +85,9 @@ public:
     
     void update(const ObjectVector& objects, ChimpGame& game, const Uint32 time);
     void render(const IntBox& screen);
+    
+protected:
+    int getVolume(const ChimpGame& game);
 };
 
 } // namespace chimp

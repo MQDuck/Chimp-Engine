@@ -657,7 +657,7 @@ int setMaxJumps(lua_State* const state)
 
 int jump(lua_State* const state)
 {
-    ChimpGame::getCurrentObject()->jump();
+    ChimpGame::getCurrentObject()->jump(*ChimpGame::getGame());
     return 0;
 }
 
@@ -1133,7 +1133,7 @@ int playerSetMaxJumps(lua_State* const state)
 
 int playerJump(lua_State* const state)
 {
-    ChimpGame::getPlayer()->jump();
+    ChimpGame::getPlayer()->jump(*ChimpGame::getGame());
     return 0;
 }
 

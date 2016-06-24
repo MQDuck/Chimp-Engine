@@ -98,9 +98,15 @@
     <stretch width="512" height="512"/>
 </chimptile>
 
+<chimpsound name="monkey jump" file="monkey jump.wav"/>
+<chimpsound name="monkey multijump" file="monkey multijump.wav"/>
+<chimpsound name="baddie jump" file="baddie jump.wav"/>
+<chimpmusic name="step step step" file="step step step.ogg"/>
+
 <chimplevel>
     <edges right="2400" left="-600" bottom="690" top="-103"/>
     <scrollfactor background="0.1" foreground="1.25"/>
+    <music>step step step</music>
     <object layer="middle" type="player">
         <tile animation="run">monkey run 1</tile>
         <tile animation="run">monkey run 2</tile>
@@ -126,6 +132,8 @@
         <bounded right="true" left="true"/>
         <respawn>false</respawn>
         <maxjumps>2</maxjumps>
+        <sound type="jump">monkey jump</sound>
+        <sound type="multijump">monkey multijump</sound>
     </object>
     <object layer="middle" type="character">
         <tile>baddie</tile>
@@ -136,6 +144,7 @@
         <acceleration mode="scale" type="run">0.5</acceleration>
         <script type="behavior">assets/jumper_behavior.lua</script>
         <script type="init">assets/jumper_init.lua</script>
+        <sound type="jump">baddie jump</sound>
     </object>
     <object layer="background" type="object">
         <tile>background</tile>

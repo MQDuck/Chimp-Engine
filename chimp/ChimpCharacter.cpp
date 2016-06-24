@@ -19,9 +19,12 @@
 
 #include <cmath>
 #include "ChimpCharacter.h"
+#include "ChimpGame.h"
 
 namespace chimp
 {
+
+class ChimpGame;
 
 /**
  * @brief ChimpCharacter::ChimpCharacter()
@@ -37,15 +40,17 @@ namespace chimp
  * @param enms Factions which the Object can deal damage to.
  * @param maxH Charcter's maximum health
  */
-ChimpCharacter::ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp, const TileVec& tilIdl,
-                               const int pX, const int pY, const int tilesX, const int tilesY, Faction frnds,
-                               Faction enms, const int maxH)
+ChimpCharacter::ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp,
+                               const TileVec& tilIdl, const int pX, const int pY, const int tilesX, const int tilesY,
+                               Faction frnds, Faction enms, const int maxH)
     : ChimpMobile(rend, tilIdl[0], pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
       tilesIdle(tilIdl), maxHealth(maxH)
 {
     health = maxHealth;
     vulnerable = true;
     idleTime = 0;
+    soundJump = nullptr;
+    soundMultijump = nullptr;
 }
 
 void ChimpCharacter::initialize(const ChimpGame& game)
@@ -117,7 +122,7 @@ void ChimpCharacter::runLeft()
  * 
  * Called when a Character tries to jump.
  */
-void ChimpCharacter::jump()
+void ChimpCharacter::jump(ChimpGame& game)
 {
     idleTime = 0;
     if(platform)
@@ -125,8 +130,15 @@ void ChimpCharacter::jump()
         moveStart.x = coord.x;
         tile = tilesJump[0];
         tileIndex = 0;
+        if(soundJump)
+        {
+            Mix_VolumeChunk(soundJump, getVolume(game));
+            Mix_PlayChannel(-1, soundJump, 0);
+        }
     }
-    ChimpMobile::jump();
+    else if(soundMultijump && numJumps < maxJumps)
+        Mix_PlayChannel(-1, soundMultijump, 0);
+    ChimpMobile::jump(game);
 }
 
 /**
@@ -247,7 +259,35 @@ void ChimpCharacter::render(const IntBox& screen)
         ChimpMobile::render(screen);
 }
 
+int ChimpCharacter::getVolume(const ChimpGame& game)
+{
+    float vol = 128,
+          left = game.getMidWindowLeft() - collisionRight(),
+          right = collisionLeft() - game.getMidWindowRight(),
+          top = game.getMidWindowTop() - collisionBottom(),
+          bottom = collisionTop() - game.getMidWindowBottom();
+    
+    if(left > 0)
+        vol *= (ACTIVE_ZONE - left) / ACTIVE_ZONE;
+    else if(right > 0)
+        vol *= (ACTIVE_ZONE - right) / ACTIVE_ZONE;
+    if(vol < 0)
+        return 0;
+    if(top > 0)
+        vol *= (ACTIVE_ZONE - top) / ACTIVE_ZONE;
+    else if(bottom > 0)
+        vol *= (ACTIVE_ZONE - bottom) / ACTIVE_ZONE;
+    if(vol < 0)
+        return 0;
+    return (int)vol;
+}
+
 } // namespace chimp
+
+
+
+
+
 
 
 

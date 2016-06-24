@@ -122,38 +122,12 @@ void ChimpMobile::stopRunning()
 }
 
 /**
- * @brief ChimpMobile::accelerateRight()
- * 
- * Called by update() while the Mobile is running right.
- */
-/*void ChimpMobile::accelerateRight()
-{
-    if(sprinting && velocityX > -approx_zero_float)
-        velocityX += run_accel*sprint_factor - velocityX*resistance_x;
-    else
-        velocityX += run_accel - velocityX*resistance_x;
-}*/
-
-/**
- * @brief ChimpMobile::accelerateLeft()
- * 
- * Called by update() while the Mobile is running left.
- */
-/*void ChimpMobile::accelerateLeft()
-{
-    if(sprinting && velocityX < approx_zero_float)
-        velocityX += -run_accel*sprint_factor - velocityX*resistance_x;
-    else
-        velocityX += -run_accel - velocityX * resistance_x;
-}*/
-
-/**
  * @brief ChimpMobile::jump()
  * 
  * Called when a Mobile tries to jump. Mobiles can double jump. If the Mobile is not standing on a platform and has
  * already double jumped, this method does nothing.
  */
-void ChimpMobile::jump()
+void ChimpMobile::jump(ChimpGame& game)
 {
     if(numJumps < maxJumps)
     {
