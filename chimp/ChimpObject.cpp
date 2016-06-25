@@ -43,7 +43,6 @@ ChimpObject::ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const i
     setTilesY(tilesY);
     coord.x = pX;
     coord.y = SCREEN_HEIGHT - pY - height;
-    //coord.y = pY;
     center.x = (tile.collisionBox.l + width - tile.collisionBox.r) / 2.0;
     center.y = (tile.collisionBox.r + height - tile.collisionBox.b) / 2.0;
     damageBox.l = true;
@@ -65,11 +64,14 @@ ChimpObject::ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const i
  * 
  * @param screen Current window for this Object's game layer.
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void ChimpObject::initialize(const ChimpGame& game)
 {
     if( onScreen(game.getMidWindow()) )
         activate();
 }
+#pragma GCC diagnostic pop
 
 bool ChimpObject::touches(const ChimpObject &other) const
 {
@@ -102,18 +104,18 @@ void ChimpObject::update(const ObjectVector& objects, ChimpGame& game, const Uin
 {
     if(active)
     {
-        if(   coord.x+width < game.getMidWindowLeft() - INACTIVE_ZONE
-           || coord.x > game.getMidWindowRight() + INACTIVE_ZONE
-           || coord.y > game.getMidWindowBottom() + INACTIVE_ZONE
-           || coord.y+height < game.getMidWindowTop() - INACTIVE_ZONE)
+        if(   coord.x+width < game.getMidWindowLeft() - game.getInactiveZone()
+           || coord.x > game.getMidWindowRight() + game.getInactiveZone()
+           || coord.y > game.getMidWindowBottom() + game.getInactiveZone()
+           || coord.y+height < game.getMidWindowTop() - game.getInactiveZone())
             deactivate();
     }
     else
     {
-        if(   coord.x <= game.getMidWindowRight() + ACTIVE_ZONE
-           && coord.y+height >= game.getMidWindowTop() - ACTIVE_ZONE
-           && coord.x+width >= game.getMidWindowLeft() - ACTIVE_ZONE
-           && coord.y <= game.getMidWindowBottom() + ACTIVE_ZONE
+        if(   coord.x <= game.getMidWindowRight() + game.getActiveZone()
+           && coord.y+height >= game.getMidWindowTop() - game.getActiveZone()
+           && coord.x+width >= game.getMidWindowLeft() - game.getActiveZone()
+           && coord.y <= game.getMidWindowBottom() + game.getActiveZone()
            && !onScreen(game.getMidWindow()) )
             activate();
     }
@@ -131,12 +133,11 @@ void ChimpObject::render(const IntBox& screen)
 {
     if(!active)
         return;
-    // It remains to be seen if not rounding ever makes a perceivable difference. Perhaps while standing on an edge?
     for(int x = 0; x < width; x += tile.drawRect.w)
         for(int y = 0; y < height; y += tile.drawRect.h)
         {
-            tile.drawRect.x = std::round(coord.x + x - screen.l);
-            tile.drawRect.y = std::round(coord.y + y - screen.t);
+            tile.drawRect.x = coord.x + x - screen.l;
+            tile.drawRect.y = coord.y + y - screen.t;
             SDL_RenderCopyEx(renderer, tile.texture, &tile.textureRect, &tile.drawRect, 0, NULL, flip);
         }
 }

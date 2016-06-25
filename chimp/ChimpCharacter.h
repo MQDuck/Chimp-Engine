@@ -87,7 +87,7 @@ public:
     void render(const IntBox& screen);
     
 protected:
-    int getVolume(const ChimpGame& game);
+    inline void playSound(Mix_Chunk* const sound, const ChimpGame& game) const;
 };
 
 } // namespace chimp

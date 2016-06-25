@@ -127,6 +127,8 @@ void ChimpMobile::stopRunning()
  * Called when a Mobile tries to jump. Mobiles can double jump. If the Mobile is not standing on a platform and has
  * already double jumped, this method does nothing.
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void ChimpMobile::jump(ChimpGame& game)
 {
     if(numJumps < maxJumps)
@@ -141,6 +143,7 @@ void ChimpMobile::jump(ChimpGame& game)
         ++numJumps;
     }
 }
+#pragma GCC diagnostic pop
 
 /**
  * @brief ChimpMobile::stopJumping

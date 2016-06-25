@@ -18,6 +18,7 @@
 */
 
 #include <cmath>
+#include <iostream>
 #include "ChimpCharacter.h"
 #include "ChimpGame.h"
 
@@ -131,13 +132,10 @@ void ChimpCharacter::jump(ChimpGame& game)
         tile = tilesJump[0];
         tileIndex = 0;
         if(soundJump)
-        {
-            Mix_VolumeChunk(soundJump, getVolume(game));
-            Mix_PlayChannel(-1, soundJump, 0);
-        }
+            playSound(soundJump, game);
     }
     else if(soundMultijump && numJumps < maxJumps)
-        Mix_PlayChannel(-1, soundMultijump, 0);
+        playSound(soundMultijump, game);
     ChimpMobile::jump(game);
 }
 
@@ -259,27 +257,44 @@ void ChimpCharacter::render(const IntBox& screen)
         ChimpMobile::render(screen);
 }
 
-int ChimpCharacter::getVolume(const ChimpGame& game)
+void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) const
 {
-    float vol = 128,
-          left = game.getMidWindowLeft() - collisionRight(),
-          right = collisionLeft() - game.getMidWindowRight(),
-          top = game.getMidWindowTop() - collisionBottom(),
-          bottom = collisionTop() - game.getMidWindowBottom();
+    float left = game.getMidWindowLeft() - collisionRight();
+    float right = collisionLeft() - game.getMidWindowRight();
+    float top = game.getMidWindowTop() - collisionBottom();
+    float bottom = collisionTop() - game.getMidWindowBottom();
     
-    if(left > 0)
-        vol *= (ACTIVE_ZONE - left) / ACTIVE_ZONE;
-    else if(right > 0)
-        vol *= (ACTIVE_ZONE - right) / ACTIVE_ZONE;
-    if(vol < 0)
-        return 0;
-    if(top > 0)
-        vol *= (ACTIVE_ZONE - top) / ACTIVE_ZONE;
-    else if(bottom > 0)
-        vol *= (ACTIVE_ZONE - bottom) / ACTIVE_ZONE;
-    if(vol < 0)
-        return 0;
-    return (int)vol;
+    float horiz = left > right ? left : right;
+    float vert = top > bottom ? top : bottom;
+    
+    if(horiz > 0)
+    {
+        if(vert > 0)
+        {
+            float volume = 128.0 * (game.getActiveZone() - sqrt(horiz*horiz + vert*vert)) / game.getActiveZone();
+            if(volume < 0)
+                return;
+            Mix_VolumeChunk(sound, (int)volume);
+        }
+        else
+        {
+            float volume = 128.0 * (game.getActiveZone() - horiz) / game.getActiveZone();
+            if(volume < 0)
+                return;
+            Mix_VolumeChunk(sound, (int)volume);
+        }
+    }
+    else if(vert > 0)
+    {
+        float volume = (128.0 * (game.getActiveZone() - vert) / game.getActiveZone());
+        if(volume < 0)
+            return;
+        Mix_VolumeChunk(sound, (int)volume);
+    }
+    else
+        Mix_VolumeChunk(sound, 128);
+    
+    Mix_PlayChannel(-1, sound, 0);
 }
 
 } // namespace chimp

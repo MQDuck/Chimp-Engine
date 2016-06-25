@@ -36,6 +36,8 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, cons
     player = plyr;
     scroll_factor_back = 1.0;
     scroll_factor_fore = 1.0;
+    activeZone = ACTIVE_ZONE;
+    inactiveZone = INACTIVE_ZONE;
     luast = luaL_newstate();
     setupLua(luast);
     self = this;
@@ -135,6 +137,22 @@ bool ChimpGame::setScrollFactor(const Layer lay, const float factor)
     default:
         return false;
     }
+}
+
+bool ChimpGame::setActiveZone(const int zone)
+{
+    if(zone < 0)
+        return false;
+    activeZone = zone;
+    return true;
+}
+
+bool ChimpGame::setInactiveZone(const int zone)
+{
+    if(zone < 0)
+        return false;
+    inactiveZone = zone;
+    return true;
 }
 
 bool ChimpGame::setMusic(const std::string& mus)
@@ -376,6 +394,18 @@ tinyxml2::XMLError ChimpGame::loadLevel(const std::string& levelFile)
         std::string name;
         if(getString(tag->GetText(), name))
             setMusic(name);
+    }
+    if( (tag = level->FirstChildElement("activezone")) )
+    {
+        int zone;
+        if(tag->QueryIntText(&zone) == tinyxml2::XML_SUCCESS)
+            setActiveZone(zone);
+    }
+    if( (tag = level->FirstChildElement("inactivezone")) )
+    {
+        int zone;
+        if(tag->QueryIntText(&zone) == tinyxml2::XML_SUCCESS)
+            setInactiveZone(zone);
     }
     
     for( objXML = level->FirstChildElement("object"); objXML; objXML = objXML->NextSiblingElement("object") )

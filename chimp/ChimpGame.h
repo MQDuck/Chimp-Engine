@@ -54,9 +54,11 @@ private:
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
     unsigned int windowWidth, windowHeight;
-    float scroll_factor_back, scroll_factor_fore;
     lua_State* luast;
     Mix_Music* music;
+    
+    int activeZone, inactiveZone;
+    float scroll_factor_back, scroll_factor_fore;
     
     static ChimpGame* self;
     static ChimpObject* currentObj;
@@ -85,6 +87,10 @@ public:
     inline void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
+    inline int getActiveZone() const { return activeZone; }
+    bool setActiveZone(const int zone);
+    inline int getInactiveZone() const { return inactiveZone; }
+    bool setInactiveZone(const int zone);
     inline const IntBox& getMidWindow() const { return midWindow; }
     inline const IntBox& getBackWindow() const { return backWindow; }
     inline const IntBox& getForeWindow() const { return foreWindow; }
