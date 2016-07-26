@@ -127,14 +127,14 @@ private:
     bool loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textures, SDL_Renderer* const renderer);
     bool loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures, TileMap& tiles);
     bool loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, MusicMap& musics);
-    Layer getLayer(const tinyxml2::XMLElement* objXML);
-    bool getBool(const char* const boolStr, bool& result);
-    bool getString(const char* const cStr, std::string& str);
-    std::string getMode(const tinyxml2::XMLElement* const tag);
+    /*static Layer getLayer(const tinyxml2::XMLElement* objXML);
+    static bool getBool(const char* const boolStr, bool& result);
+    static bool getString(const char* const cStr, std::string& str);
+    static std::string getMode(const tinyxml2::XMLElement* const tag);*/
     void loadWorldBox(const tinyxml2::XMLElement* const edges);
     bool loadAllAnimations(tinyxml2::XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles,
                            TileVec& jumptiles, TileMap& tiles);
-    void loadAnimation(tinyxml2::XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles);
+    static void loadAnimation(tinyxml2::XMLElement* const objXML, std::string anim, TileVec& tilvec, TileMap& tiles);
     void loadObject(tinyxml2::XMLElement* const objXML, ChimpObject& obj);
 };
 

@@ -29,6 +29,55 @@ ChimpGame* ChimpGame::self;
 ChimpObject* ChimpGame::currentObj;
 ChimpCharacter* ChimpGame::player;
 
+namespace // helper functions for level loading
+{
+    bool getString(const char* const cStr, std::string& str)
+    {
+        if(cStr)
+        {
+            str = cStr;
+            return true;
+        }
+        return false;
+    }
+    
+    Layer getLayer(const tinyxml2::XMLElement *objXML)
+    {
+        std::string layer;
+        if(getString(objXML->Attribute("layer"), layer))
+        {
+            if(layer == "background")
+                return BACK;
+            else if(layer == "foreground")
+                return FORE;
+        }
+        return MID;
+    }
+    
+    bool getBool(const char* const boolStr, bool& result)
+    {
+        if(!boolStr)
+            return false;
+        if(strcmp(boolStr, "true") == 0)
+        {
+            result = true;
+            return true;
+        }
+        if(strcmp(boolStr, "false") == 0)
+        {
+            result = false;
+            return true;
+        }
+        return false;
+    }
+    
+    std::string getMode(const tinyxml2::XMLElement* const tag)
+    {
+        std::string mode;
+        return getString(tag->Attribute("mode"), mode) ? mode : "absolute";
+    }
+}
+
 ChimpGame::ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
                      ChimpCharacter* plyr)
     : renderer(rend), windowWidth(winWidth), windowHeight(winHeight)
@@ -453,52 +502,6 @@ tinyxml2::XMLError ChimpGame::loadLevel(const std::string& levelFile)
     }
     
     return tinyxml2::XML_SUCCESS;
-}
-
-Layer ChimpGame::getLayer(const tinyxml2::XMLElement *objXML)
-{
-    std::string layer;
-    if(getString(objXML->Attribute("layer"), layer))
-    {
-        if(layer == "background")
-            return BACK;
-        else if(layer == "foreground")
-            return FORE;
-    }
-    return MID;
-}
-
-bool ChimpGame::getBool(const char* const boolStr, bool& result)
-{
-    if(!boolStr)
-        return false;
-    if(strcmp(boolStr, "true") == 0)
-    {
-        result = true;
-        return true;
-    }
-    if(strcmp(boolStr, "false") == 0)
-    {
-        result = false;
-        return true;
-    }
-    return false;
-}
-
-bool ChimpGame::getString(const char* const cStr, std::string& str)
-{
-    if(cStr)
-    {
-        str = cStr;
-        return true;
-    }
-    return false;
-}
-
-std::string ChimpGame::getMode(const tinyxml2::XMLElement* const tag)
-{
-    std::string mode;
-    return getString(tag->Attribute("mode"), mode) ? mode : "absolute";
 }
 
 void ChimpGame::loadWorldBox(const tinyxml2::XMLElement* const edges)
@@ -926,26 +929,35 @@ bool ChimpGame::loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, Mu
     return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 } // namespace chimp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
