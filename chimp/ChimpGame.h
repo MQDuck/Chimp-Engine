@@ -53,7 +53,7 @@ private:
     static ChimpCharacter* player;
     ObjectVector background, middle, foreground;
     IntBox midWindow, backWindow, foreWindow, worldBox;
-    unsigned int windowWidth, windowHeight;
+    int windowWidth, windowHeight;
     lua_State* luast;
     Mix_Music* music;
     
@@ -64,7 +64,7 @@ private:
     static ChimpObject* currentObj;
     
 public:
-    ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
+    ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
               ChimpCharacter* plyr = nullptr);
     ~ChimpGame();
     
@@ -81,10 +81,10 @@ public:
     inline int getMidWindowBottom() const { return midWindow.b; }
     SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
-    inline unsigned int getWindowWidth() const { return windowWidth; }
-    inline void setWindowWidth(const unsigned int winWidth) { windowWidth = winWidth; }
-    inline unsigned int getWindowHeight() { return windowHeight; }
-    inline void setWindowHeight(const unsigned int winHeight) { windowHeight = winHeight; }
+    inline int getWindowWidth() const { return windowWidth; }
+    inline void setWindowWidth(const int winWidth) { windowWidth = winWidth; }
+    inline int getWindowHeight() { return windowHeight; }
+    inline void setWindowHeight(const int winHeight) { windowHeight = winHeight; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
     inline int getActiveZone() const { return activeZone; }

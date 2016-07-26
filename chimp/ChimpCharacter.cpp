@@ -60,7 +60,7 @@ void ChimpCharacter::initialize(const ChimpGame& game)
     ChimpMobile::initialize(game);
 }
 
-bool ChimpCharacter::setTilesIdle(const TileVec &vec)
+bool ChimpCharacter::setTilesIdle(const TileVec& vec)
 {
     if(vec.empty())
         return false;
@@ -68,7 +68,7 @@ bool ChimpCharacter::setTilesIdle(const TileVec &vec)
     return true;
 }
 
-bool ChimpCharacter::setTilesRun(const TileVec &vec)
+bool ChimpCharacter::setTilesRun(const TileVec& vec)
 {
     if(vec.empty())
         return false;
@@ -76,7 +76,7 @@ bool ChimpCharacter::setTilesRun(const TileVec &vec)
     return true;
 }
 
-bool ChimpCharacter::setTilesJump(const TileVec &vec)
+bool ChimpCharacter::setTilesJump(const TileVec& vec)
 {
     if(vec.empty())
         return false;
@@ -170,7 +170,7 @@ bool ChimpCharacter::setMaxHealth(const int heal)
  * @param world Game world boundaries object.
  */
 void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
-{    
+{
     ChimpMobile::update(objects, game, time);
     
     if(active && vulnerable)
@@ -239,7 +239,7 @@ void ChimpCharacter::render(const IntBox& screen)
             tile = tilesIdle[tileIndex];
             idleTime = time;
         }
-        else if( (time - idleTime) / TIME_PER_FRAME )
+        else if( (time - idleTime) / TIME_PER_IDLE )
         {
             tileIndex = (tileIndex+1) % tilesIdle.size();
             tile = tilesIdle[tileIndex];
@@ -247,14 +247,14 @@ void ChimpCharacter::render(const IntBox& screen)
         }
     }
     
-    if(!vulnerable)
+    if(vulnerable)
+        ChimpMobile::render(screen);
+    else
     {
         SDL_SetTextureColorMod(tile.texture, 255, 0, 0);
         ChimpMobile::render(screen);
         SDL_SetTextureColorMod(tile.texture, 255, 255, 255);
     }
-    else
-        ChimpMobile::render(screen);
 }
 
 void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) const

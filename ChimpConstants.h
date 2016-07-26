@@ -23,7 +23,7 @@ static constexpr int
     MS_PER_ACCEL               = 17;   // miliseconds between accelerate() calls
 
 static const Uint32
-    TIME_PER_FRAME             = 600;  // for idle animation
+    TIME_PER_IDLE              = 600;  // miliseconds per idle animation frame
                                  
 static constexpr float
     RUN_IMPULSE                = 0.0,   // magnitude of x impulse given when mobile begins running with x velocity near zero

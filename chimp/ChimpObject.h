@@ -71,10 +71,10 @@ public:
     virtual void setInitialY(const float y) { setY(y); }
     inline float getCenterX() const { return coord.x + center.x; }
     inline float getCenterY() const { return coord.y + center.y; }
-    inline unsigned int getTilesX() const { return width / tile.drawRect.w; }
-    inline void setTilesX(const unsigned int tilesX) { width = tile.drawRect.w*tilesX; }
-    inline unsigned int getTilesY() const { return height / tile.drawRect.h; }
-    inline void setTilesY(const unsigned int tilesY) { height = tile.drawRect.h*tilesY; }
+    inline int getTilesX() const { return width / tile.drawRect.w; }
+    inline void setTilesX(const int tilesX) { width = tile.drawRect.w*tilesX; }
+    inline int getTilesY() const { return height / tile.drawRect.h; }
+    inline void setTilesY(const int tilesY) { height = tile.drawRect.h*tilesY; }
     inline int getWidth() const { return width; }
     inline int getHeight() const { return height; }
     inline int getTexRectW() const { return tile.textureRect.w; }

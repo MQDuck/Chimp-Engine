@@ -29,7 +29,7 @@ ChimpGame* ChimpGame::self;
 ChimpObject* ChimpGame::currentObj;
 ChimpCharacter* ChimpGame::player;
 
-ChimpGame::ChimpGame(SDL_Renderer* const rend, const unsigned int winWidth, const unsigned int winHeight,
+ChimpGame::ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
                      ChimpCharacter* plyr)
     : renderer(rend), windowWidth(winWidth), windowHeight(winHeight)
 {
