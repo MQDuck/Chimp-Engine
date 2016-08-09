@@ -180,12 +180,16 @@ void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const 
                 continue;
             if( touches(*obj) && (friends & obj->getEnemies()) )
             {
-                float x = getCenterX() - obj->getCenterX();
+                /*float x = getCenterX() - obj->getCenterX();
                 float y = getCenterY() - obj->getCenterY();
-                float invMag = 1.0 / std::sqrt(x*x + y*y);
+                float invMag = 1.0f / std::sqrtf(x*x + y*y);
                 
                 velocityX = DAMAGE_VELOCITY * x * invMag;
-                velocityY = DAMAGE_VELOCITY * y * invMag;
+                velocityY = DAMAGE_VELOCITY * y * invMag;*/
+                
+                const float angle = std::atan2(getCenterY() - obj->getCenterY(), getCenterX() - obj->getCenterX());
+                velocityX = DAMAGE_VELOCITY * std::cos(angle);
+                velocityY = DAMAGE_VELOCITY * std::sin(angle);
                 
                 health -= DAMAGE;
                 

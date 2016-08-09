@@ -17,12 +17,12 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_gamecontroller.h>
 #include <SDL2/SDL_mixer.h>
+#include <iostream>
 #include <string>
 #include <tinyxml2.h>
 #include <lua.hpp>
@@ -34,6 +34,8 @@
 #include "chimp/ChimpCharacter.h"
 #include "chimp/ChimpTile.h"
 #include "chimp/ChimpStructs.h"
+
+//#include <chrono>
 
 inline void addController(const int id, std::vector<SDL_GameController*>& controllers);
 inline void keyDown(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -130,6 +132,7 @@ int main(const int argc, char** const argv)
         SDL_Quit();
         return 1;
     }
+    
     game.initialize();
     
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

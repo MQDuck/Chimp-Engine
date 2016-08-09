@@ -23,6 +23,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <vector>
+#include <map>
 #include <tinyxml2.h>
 #include <lua.hpp>
 #include "ChimpConstants.h"

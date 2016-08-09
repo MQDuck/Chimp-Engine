@@ -184,7 +184,7 @@ public:
 protected:
     inline bool approxZeroF(const float f) const { return f > -approx_zero_float && f < approx_zero_float; }
     inline bool validateFactions(const int facs) // false if facs contains a bit not corresponding to any faction
-        { return( !((facs|FACTION_PLAYER|FACTION_BADDIES) - FACTION_PLAYER - FACTION_BADDIES) ); }
+        { return !((facs|FACTION_PLAYER|FACTION_BADDIES) - FACTION_PLAYER - FACTION_BADDIES); }
 };
 
 } // namespace chimp
