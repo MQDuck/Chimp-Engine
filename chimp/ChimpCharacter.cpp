@@ -202,15 +202,12 @@ void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const 
                 }
             }
         }
-    
-    if(coord.y > SCREEN_HEIGHT + height)
-        health = 0;
 }
 
 /**
  * @brief ChimpCharacter::render()
  * 
- * Calls ChimpMobile::update(). Animates this Character by cycling through the appropriate ChimpTile vector.
+ * Calls ChimpMobile::render(). Animates this Character by cycling through the appropriate ChimpTile vector.
  * 
  * @param screen Current window for this Character's game layer.
  */
@@ -243,7 +240,7 @@ void ChimpCharacter::render(const IntBox& screen)
             tile = tilesIdle[tileIndex];
             idleTime = time;
         }
-        else if( (time - idleTime) / TIME_PER_IDLE )
+        else if((time - idleTime) / TIME_PER_IDLE)
         {
             tileIndex = (tileIndex+1) % tilesIdle.size();
             tile = tilesIdle[tileIndex];
@@ -275,14 +272,14 @@ void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) co
     {
         if(vert > 0)
         {
-            float volume = 128.0 * (game.getActiveZone() - sqrt(horiz*horiz + vert*vert)) / game.getActiveZone();
+            float volume = 128.0f * (game.getActiveZone() - std::sqrt(horiz*horiz + vert*vert)) / game.getActiveZone();
             if(volume < 0)
                 return;
             Mix_VolumeChunk(sound, (int)volume);
         }
         else
         {
-            float volume = 128.0 * (game.getActiveZone() - horiz) / game.getActiveZone();
+            float volume = 128.0f * (game.getActiveZone() - horiz) / game.getActiveZone();
             if(volume < 0)
                 return;
             Mix_VolumeChunk(sound, (int)volume);
@@ -290,7 +287,7 @@ void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) co
     }
     else if(vert > 0)
     {
-        float volume = (128.0 * (game.getActiveZone() - vert) / game.getActiveZone());
+        float volume = (128.0f * (game.getActiveZone() - vert) / game.getActiveZone());
         if(volume < 0)
             return;
         Mix_VolumeChunk(sound, (int)volume);

@@ -181,15 +181,11 @@ int main(const int argc, char** const argv)
         game.render();
         drawHUD(game, renderer, font, healthTex);
         SDL_RenderPresent(renderer);
-        if(game.getPlayer()->getHealth() <= 0)
+        if(!game.getPlayer()->isActive())
         {
             SDL_Delay(GAME_OVER_TIME);
             game.reset();
         }
-        /*{
-            SDL_Delay(INVULNERABLE_TIME);
-            game.reset();
-        }*/
     }
     
     cleanup(window, renderer, font);
@@ -326,9 +322,7 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL
 
 SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color color,
                         SDL_Renderer* const renderer)
-{	
-	//We need to first render to a surface as that's what TTF_RenderText
-	//returns, then load that surface into a texture
+{
 	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), color);
 	if (surf == nullptr)
     {
@@ -338,7 +332,6 @@ SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color co
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
 	if (texture == nullptr)
         std::cout << "CreateTexture error: " << SDL_GetError() << std::endl;
-	//Clean up the surface
 	SDL_FreeSurface(surf);
 	return texture;
 }
@@ -358,12 +351,11 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
         gameOverY = (SCREEN_HEIGHT - gameOverY) >> 1;
     }
     
-    if( oldHealth != game.getPlayer()->getHealth() )
+    if(oldHealth != game.getPlayer()->getHealth())
     {
         SDL_DestroyTexture(currentHealthTex);
         oldHealth = game.getPlayer()->getHealth();
-        std::string healthString = std::to_string(oldHealth); // Cannot be combined with the line below, apparently
-        currentHealthTex = renderText(healthString, font, FONT_COLOR, renderer);
+        currentHealthTex = renderText(std::to_string(oldHealth), font, FONT_COLOR, renderer);
         SDL_QueryTexture(healthTex, nullptr, nullptr, &w1, &h);
         SDL_QueryTexture(currentHealthTex, nullptr, nullptr, &w2, &h);
     }
@@ -371,7 +363,7 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
     x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);
-    if(game.getPlayer()->getHealth() <= 0)
+    if(!game.getPlayer()->isActive())
         renderTexture(gameOverTex, renderer, gameOverX, gameOverY);
 }
 
