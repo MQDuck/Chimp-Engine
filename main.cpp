@@ -35,8 +35,6 @@
 #include "chimp/ChimpTile.h"
 #include "chimp/ChimpStructs.h"
 
-//#include <chrono>
-
 inline void addController(const int id, std::vector<SDL_GameController*>& controllers);
 inline void keyDown(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void keyUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -45,12 +43,13 @@ inline void buttonUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJu
 inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game);
 
 inline void controllerAdded(const SDL_Event& event, std::vector<SDL_GameController*>& controllers);
-void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip = nullptr);
+void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const int x, const int y,
+                   const SDL_Rect* const clip = nullptr);
 SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer);
-void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
+void drawHUD(const chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* const font);
 
-int main(const int argc, char** const argv)
+int main(const int argc, const char* const * const argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -59,34 +58,34 @@ int main(const int argc, char** const argv)
     
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER) < 0)
     {
-        std::cout << "SDL_Init error: " << SDL_GetError() << std::endl;
+        std::cerr << "SDL_Init error: " << SDL_GetError() << std::endl;
         return 1;
     }
     window = SDL_CreateWindow("Chimp Out!", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(window == nullptr)
     {
-        std::cout << "CreateWindow error: " << SDL_GetError() << std::endl;
+        std::cerr << "CreateWindow error: " << SDL_GetError() << std::endl;
         SDL_Quit();
         return 1;
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if(renderer == nullptr)
     {
-        std::cout << "CreateRenderer error: " << SDL_GetError() << std::endl;
+        std::cerr << "CreateRenderer error: " << SDL_GetError() << std::endl;
         cleanup(window);
         SDL_Quit();
         return 1;
     }
     if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG)
     {
-        std::cout << "IMG_Init error: " << SDL_GetError() << std::endl;
+        std::cerr << "IMG_Init error: " << SDL_GetError() << std::endl;
         cleanup(window, renderer);
         SDL_Quit();
         return 1;
     }
     if(TTF_Init() != 0)
     {
-        std::cout << "TTF_Init error: " << SDL_GetError() << std::endl;
+        std::cerr << "TTF_Init error: " << SDL_GetError() << std::endl;
         cleanup(window, renderer);
         SDL_Quit();
         return 1;
@@ -94,29 +93,28 @@ int main(const int argc, char** const argv)
     font = TTF_OpenFont( (ASSETS_PATH + FONT_FILE).c_str(), FONT_SIZE );
     if(font == nullptr)
     {
-        std::cout << "TTF_OpenFont error: " << SDL_GetError() << std::endl;
+        std::cerr << "TTF_OpenFont error: " << SDL_GetError() << std::endl;
         cleanup(window, renderer, font);
         SDL_Quit();
         return 1;
     }
     if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
     {
-        std::cout << "Mix_OpenAudio error: " << SDL_GetError() << std::endl;
+        std::cerr << "Mix_OpenAudio error: " << SDL_GetError() << std::endl;
         cleanup(window, renderer, font);
         SDL_Quit();
         return 1;
     }
     if(SDL_GameControllerAddMappingsFromFile(CONTROLLER_MAP_FILE.c_str()) == -1)
-        std::cout << "GameControllerAddMappingsFromFile error: " << SDL_GetError() << std::endl;
+        std::cerr << "GameControllerAddMappingsFromFile error: " << SDL_GetError() << std::endl;
     for(int i = 0; i < SDL_NumJoysticks(); ++i)
         addController(i, controllers);
     
     SDL_Event event;
-    bool quit = false;
+    bool runGame = true;
     bool keyJumpPressed = false;
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
-    Uint32 timeLast, timeNow;
+    decltype(SDL_GetTicks()) timeLast, timeNow;
     std::string levelFile = ASSETS_PATH + DEFAULT_LEVEL;
     
     if(argc > 1)
@@ -127,7 +125,7 @@ int main(const int argc, char** const argv)
     }
     if(game.loadLevel(levelFile) != tinyxml2::XML_SUCCESS)
     {
-        std::cout << "Couldn't load level file \"" << levelFile << "\"." << std::endl;
+        std::cerr << "Couldn't load level file \"" << levelFile << "\"." << std::endl;
         cleanup(window, renderer, font);
         SDL_Quit();
         return 1;
@@ -138,14 +136,14 @@ int main(const int argc, char** const argv)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
     timeLast = SDL_GetTicks();
-    while(!quit)
+    while(runGame)
     {
         while(SDL_PollEvent(&event))
         {
             switch(event.type)
             {
             case SDL_QUIT:
-                quit = true;
+                runGame = false;
                 continue;
             case SDL_KEYDOWN:
                 keyDown(event, game, keyJumpPressed);
@@ -168,7 +166,7 @@ int main(const int argc, char** const argv)
             }
         }
         
-        SDL_RenderClear(renderer);
+        //SDL_RenderClear(renderer); // Not necessary so long as the background layer is filled. Is that a reasonable requirement for every level?
         
         timeNow = SDL_GetTicks();
         /*static double numframes = 0;
@@ -179,7 +177,7 @@ int main(const int argc, char** const argv)
         timeLast = timeNow;
         
         game.render();
-        drawHUD(game, renderer, font, healthTex);
+        drawHUD(game, renderer, font);
         SDL_RenderPresent(renderer);
         if(!game.getPlayer()->isActive())
         {
@@ -289,7 +287,7 @@ SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 {
 	SDL_Texture* texture = IMG_LoadTexture(ren, file.c_str());
 	if (texture == nullptr)
-		std::cout << "LoadTexture error: " << SDL_GetError() << std::endl;
+		std::cerr << "LoadTexture error: " << SDL_GetError() << std::endl;
 	return texture;
 }
 
@@ -305,7 +303,8 @@ SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip)
+void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const int x, const int y,
+                   const SDL_Rect* const clip)
 {
 	SDL_Rect dst;
 	dst.x = x;
@@ -317,45 +316,45 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL
 	}
 	else
 		SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-    SDL_RenderCopy(rend, tex, clip, &dst);
+    SDL_RenderCopy(renderer, tex, clip, &dst);
 }
 
-SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color color,
+SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer)
 {
 	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), color);
 	if (surf == nullptr)
     {
-		std::cout << "TTF_RenderText error: " << SDL_GetError() << std::endl;
+		std::cerr << "TTF_RenderText error: " << SDL_GetError() << std::endl;
 		return nullptr;
 	}
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
 	if (texture == nullptr)
-        std::cout << "CreateTexture error: " << SDL_GetError() << std::endl;
+        std::cerr << "CreateTexture error: " << SDL_GetError() << std::endl;
 	SDL_FreeSurface(surf);
 	return texture;
 }
 
-void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex)
+void drawHUD(const chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* const font)
 {
-    static int oldHealth = -1, w1, w2, h, x;
-    static SDL_Texture* currentHealthTex = nullptr;
-    static SDL_Texture* gameOverTex = nullptr;
+    static int health = -1, w1, w2, h, x;
     static int gameOverX, gameOverY;
-    
-    if(!gameOverTex)
+    static SDL_Texture* currentHealthTex;
+    static SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
+    static SDL_Texture* gameOverTex = [renderer, font]()
     {
-        gameOverTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
-        SDL_QueryTexture(gameOverTex, nullptr, nullptr, &gameOverX, &gameOverY);
+        SDL_Texture* goTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
+        SDL_QueryTexture(goTex, nullptr, nullptr, &gameOverX, &gameOverY);
         gameOverX = (SCREEN_WIDTH - gameOverX) >> 1;
         gameOverY = (SCREEN_HEIGHT - gameOverY) >> 1;
-    }
+        return goTex;
+    }();
     
-    if(oldHealth != game.getPlayer()->getHealth())
+    if(health != game.getPlayer()->getHealth())
     {
+        health = game.getPlayer()->getHealth();
         SDL_DestroyTexture(currentHealthTex);
-        oldHealth = game.getPlayer()->getHealth();
-        currentHealthTex = renderText(std::to_string(oldHealth), font, FONT_COLOR, renderer);
+        currentHealthTex = renderText(std::to_string(health), font, FONT_COLOR, renderer);
         SDL_QueryTexture(healthTex, nullptr, nullptr, &w1, &h);
         SDL_QueryTexture(currentHealthTex, nullptr, nullptr, &w2, &h);
     }

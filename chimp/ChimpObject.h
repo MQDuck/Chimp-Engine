@@ -122,34 +122,34 @@ public:
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"
-    virtual float getAccelerationY() const { return 0; }
+    virtual float getAccelerationY() const { return 0.0; }
     virtual void setAccelerationY(const float accel) {}
-    virtual float getVelocityX() const { return 0; }
+    virtual float getVelocityX() const { return 0.0; }
     virtual void setVelocityX(const float velocity) {}
-    virtual float getVelocityY() const { return 0; }
+    virtual float getVelocityY() const { return 0.0; }
     virtual void setVelocityY(const float velocity) {}
     virtual void runRight() {}
     virtual void runLeft() {}
     virtual void stopRunningRight() {}
     virtual void stopRunningLeft() {}
     virtual void stopRunning() {}
-    virtual float getRunImpulse() const { return 0; }
+    virtual float getRunImpulse() const { return 0.0; }
     virtual void setRunImpulse(const float impulse) {}
-    virtual float getRunAccel() const { return 0; }
+    virtual float getRunAccel() const { return 0.0; }
     virtual void setRunAccel(const float accel) {}
-    virtual float getJumpImpulse() const { return 0; }
+    virtual float getJumpImpulse() const { return 0.0; }
     virtual void setJumpImpulse(const float impulse) {}
-    virtual float getMultiJumpImpulse() const { return 0; }
+    virtual float getMultiJumpImpulse() const { return 0.0; }
     virtual void setMultiJumpImpulse(const float fraction) {}
-    virtual float getJumpAccel() const { return 0; }
+    virtual float getJumpAccel() const { return 0.0; }
     virtual void setJumpAccel(const float accel) {}
-    virtual float getStopFactor() const { return 0; }
+    virtual float getStopFactor() const { return 0.0; }
     virtual void setStopFactor(const float factor) {}
-    virtual float getSprintFactor() const { return 0; }
+    virtual float getSprintFactor() const { return 0.0; }
     virtual void setSprintFactor(const float factor) {}
-    virtual float getResistanceX() const { return 0; }
+    virtual float getResistanceX() const { return 0.0; }
     virtual void setResistanceX(const float resistance) {}
-    virtual float getResistanceY() const { return 0; }
+    virtual float getResistanceY() const { return 0.0; }
     virtual void setResistanceY(const float resistance) {}
     virtual int getHealth() const { return 0; }
     virtual void setHealth(const int heal) {}

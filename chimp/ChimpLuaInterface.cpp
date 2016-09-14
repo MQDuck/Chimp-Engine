@@ -1,6 +1,7 @@
 #include "ChimpLuaInterface.h"
 #include "ChimpGame.h"
 #include "ChimpObject.h"
+#include <lua.hpp>
 
 namespace chimp
 {

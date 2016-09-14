@@ -763,18 +763,18 @@ bool ChimpGame::loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textur
                 
         if(!getString(texture->Attribute("name"), texName))
         {
-            std::cout << "Error: chimptexture tag without name attribute" << std::endl;
+            std::cerr << "Error: chimptexture tag without name attribute" << std::endl;
             return false;
         }
         if(!getString(texture->Attribute("file"), texFile))
         {
-            std::cout << "Error: texture tag without file attribute" << std::endl;
+            std::cerr << "Error: texture tag without file attribute" << std::endl;
             return false;
         }
         SDL_Texture* tex = IMG_LoadTexture(renderer, (ASSETS_PATH + texFile).c_str());
         if(!tex)
         {
-            std::cout << "Error loading texture file: " << SDL_GetError() << std::endl;
+            std::cerr << "Error loading texture file: " << SDL_GetError() << std::endl;
             return false;
         }
         textures[texName] = tex;
@@ -799,43 +799,43 @@ bool ChimpGame::loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures,
         
         if(!getString(tile->Attribute("name"), tileName))
         {
-            std::cout << "Error: chimptile tag without name attribute" << std::endl;
+            std::cerr << "Error: chimptile tag without name attribute" << std::endl;
             return false;
         }
         
         if( !(tag = tile->FirstChildElement("texture")) )
         {
-            std::cout << "Error: chimptile tag without texture child" << std::endl;
+            std::cerr << "Error: chimptile tag without texture child" << std::endl;
             return false;
         }
         if(!getString(tag->Attribute("name"), texName))
         {
-            std::cout << "Error: chimptile texture child without name attribute" << std::endl;
+            std::cerr << "Error: chimptile texture child without name attribute" << std::endl;
             return false;
         }
         if(textures.find(texName) == textures.end())
         {
-            std::cout << "Error: no texture named \"" << texName << "\" found" << std::endl;
+            std::cerr << "Error: no texture named \"" << texName << "\" found" << std::endl;
             return false;
         }
         if(tag->QueryIntAttribute("x", &x) != tinyxml2::XML_SUCCESS)
         {
-            std::cout << "Error: chimptile texture child without x attribute" << std::endl;
+            std::cerr << "Error: chimptile texture child without x attribute" << std::endl;
             return false;
         }
         if(tag->QueryIntAttribute("y", &y) != tinyxml2::XML_SUCCESS)
         {
-            std::cout << "Error: chimptile texture child without y attribute" << std::endl;
+            std::cerr << "Error: chimptile texture child without y attribute" << std::endl;
             return false;
         }
         if(tag->QueryIntAttribute("width", &width) != tinyxml2::XML_SUCCESS)
         {
-            std::cout << "Error: chimptile texture child without width attribute" << std::endl;
+            std::cerr << "Error: chimptile texture child without width attribute" << std::endl;
             return false;
         }
         if(tag->QueryIntAttribute("height", &height) != tinyxml2::XML_SUCCESS)
         {
-            std::cout << "Error: chimptile texture child without height attribute" << std::endl;
+            std::cerr << "Error: chimptile texture child without height attribute" << std::endl;
             return false;
         }
         
@@ -887,18 +887,18 @@ bool ChimpGame::loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, Mu
         std::string name, file;
         if(!getString(sound->Attribute("name"), name))
         {
-            std::cout << "Error: chimpsound tag without name attribute" << std::endl;
+            std::cerr << "Error: chimpsound tag without name attribute" << std::endl;
             return false;
         }
         if(!getString(sound->Attribute("file"), file))
         {
-            std::cout << "Error: chimpsound tag without file attribute" << std::endl;
+            std::cerr << "Error: chimpsound tag without file attribute" << std::endl;
             return false;
         }
         
         if( !(sounds[name] = Mix_LoadWAV((ASSETS_PATH + file).c_str())) )
         {
-            std::cout << "Mix_LoadWAV error: " << SDL_GetError() << std::endl;
+            std::cerr << "Mix_LoadWAV error: " << SDL_GetError() << std::endl;
             return false;
         }
     }
@@ -910,18 +910,18 @@ bool ChimpGame::loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, Mu
         std::string name, file;
         if(!getString(music->Attribute("name"), name))
         {
-            std::cout << "Error: chimpmusic tag without name attribute" << std::endl;
+            std::cerr << "Error: chimpmusic tag without name attribute" << std::endl;
             return false;
         }
         if(!getString(music->Attribute("file"), file))
         {
-            std::cout << "Error: chimpmusic tag without file attribute" << std::endl;
+            std::cerr << "Error: chimpmusic tag without file attribute" << std::endl;
             return false;
         }
         
         if( !(musics[name] = Mix_LoadMUS((ASSETS_PATH + file).c_str())) )
         {
-            std::cout << "Mix_LoadMUS error: " << SDL_GetError() << std::endl;
+            std::cerr << "Mix_LoadMUS error: " << SDL_GetError() << std::endl;
             return false;
         }
     }

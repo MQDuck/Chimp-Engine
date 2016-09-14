@@ -21,6 +21,7 @@
 #include <iostream>
 #include "ChimpGame.h"
 #include "sys/stat.h"
+#include <lua.hpp>
 
 namespace chimp
 {
@@ -350,8 +351,6 @@ void ChimpMobile::setResistanceY(const float resistance)
 
 void ChimpMobile::runScript(std::string& script, lua_State* const luast)
 {
-    static const int LUA_OK = 0;
-    
     if(script.empty())
         return;   
     
@@ -359,7 +358,7 @@ void ChimpMobile::runScript(std::string& script, lua_State* const luast)
     
     if(luaL_loadfile(luast, script.c_str()) != LUA_OK)
     {
-        std::cout << lua_tostring(luast, -1) << std::endl;
+        std::cerr << "Error loading lua file " << lua_tostring(luast, -1) << std::endl;
         lua_pop(luast, 1);
         return;
     }
@@ -367,7 +366,7 @@ void ChimpMobile::runScript(std::string& script, lua_State* const luast)
     //if(lua_pcall(luast, 0, LUA_MULTRET, 0) != LUA_OK)
     if(lua_pcall(luast, 0, 0, 0) != LUA_OK)
     {
-        std::cout << lua_tostring(luast, -1) << std::endl;
+        std::cerr << "Error calling lua file " << lua_tostring(luast, -1) << std::endl;
         lua_pop(luast, 1);
         return;
     }
