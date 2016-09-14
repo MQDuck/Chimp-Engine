@@ -18,10 +18,18 @@
 */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_gamecontroller.h>
+#if defined __gnu_linux__
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_gamecontroller.h>
 #include <SDL2/SDL_mixer.h>
+#endif
+#if defined __APPLE__ && defined __MACH__
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2_mixer/SDL_mixer.h>
+#endif
+
 #include <iostream>
 #include <string>
 #include <tinyxml2.h>
@@ -35,6 +43,8 @@
 #include "chimp/ChimpTile.h"
 #include "chimp/ChimpStructs.h"
 
+//#include <chrono>
+
 inline void addController(const int id, std::vector<SDL_GameController*>& controllers);
 inline void keyDown(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void keyUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -43,13 +53,12 @@ inline void buttonUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJu
 inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game);
 
 inline void controllerAdded(const SDL_Event& event, std::vector<SDL_GameController*>& controllers);
-void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const int x, const int y,
-                   const SDL_Rect* const clip = nullptr);
+void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip = nullptr);
 SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer);
-void drawHUD(const chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* const font);
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
 
-int main(const int argc, const char* const * const argv)
+int main(const int argc, char** const argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -111,10 +120,11 @@ int main(const int argc, const char* const * const argv)
         addController(i, controllers);
     
     SDL_Event event;
-    bool runGame = true;
+    bool quit = false;
     bool keyJumpPressed = false;
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    decltype(SDL_GetTicks()) timeLast, timeNow;
+    SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
+    Uint32 timeLast, timeNow;
     std::string levelFile = ASSETS_PATH + DEFAULT_LEVEL;
     
     if(argc > 1)
@@ -136,14 +146,14 @@ int main(const int argc, const char* const * const argv)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
     timeLast = SDL_GetTicks();
-    while(runGame)
+    while(!quit)
     {
         while(SDL_PollEvent(&event))
         {
             switch(event.type)
             {
             case SDL_QUIT:
-                runGame = false;
+                quit = true;
                 continue;
             case SDL_KEYDOWN:
                 keyDown(event, game, keyJumpPressed);
@@ -166,7 +176,7 @@ int main(const int argc, const char* const * const argv)
             }
         }
         
-        //SDL_RenderClear(renderer); // Not necessary so long as the background layer is filled. Is that a reasonable requirement for every level?
+        SDL_RenderClear(renderer);
         
         timeNow = SDL_GetTicks();
         /*static double numframes = 0;
@@ -177,7 +187,7 @@ int main(const int argc, const char* const * const argv)
         timeLast = timeNow;
         
         game.render();
-        drawHUD(game, renderer, font);
+        drawHUD(game, renderer, font, healthTex);
         SDL_RenderPresent(renderer);
         if(!game.getPlayer()->isActive())
         {
@@ -303,8 +313,7 @@ SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const int x, const int y,
-                   const SDL_Rect* const clip)
+void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip)
 {
 	SDL_Rect dst;
 	dst.x = x;
@@ -316,10 +325,10 @@ void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const i
 	}
 	else
 		SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-    SDL_RenderCopy(renderer, tex, clip, &dst);
+    SDL_RenderCopy(rend, tex, clip, &dst);
 }
 
-SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
+SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color color,
                         SDL_Renderer* const renderer)
 {
 	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), color);
@@ -335,26 +344,26 @@ SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const 
 	return texture;
 }
 
-void drawHUD(const chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* const font)
+void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex)
 {
-    static int health = -1, w1, w2, h, x;
+    static int oldHealth = -1, w1, w2, h, x;
+    static SDL_Texture* currentHealthTex = nullptr;
+    static SDL_Texture* gameOverTex = nullptr;
     static int gameOverX, gameOverY;
-    static SDL_Texture* currentHealthTex;
-    static SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
-    static SDL_Texture* gameOverTex = [renderer, font]()
+    
+    if(!gameOverTex)
     {
-        SDL_Texture* goTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
-        SDL_QueryTexture(goTex, nullptr, nullptr, &gameOverX, &gameOverY);
+        gameOverTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
+        SDL_QueryTexture(gameOverTex, nullptr, nullptr, &gameOverX, &gameOverY);
         gameOverX = (SCREEN_WIDTH - gameOverX) >> 1;
         gameOverY = (SCREEN_HEIGHT - gameOverY) >> 1;
-        return goTex;
-    }();
+    }
     
-    if(health != game.getPlayer()->getHealth())
+    if(oldHealth != game.getPlayer()->getHealth())
     {
-        health = game.getPlayer()->getHealth();
         SDL_DestroyTexture(currentHealthTex);
-        currentHealthTex = renderText(std::to_string(health), font, FONT_COLOR, renderer);
+        oldHealth = game.getPlayer()->getHealth();
+        currentHealthTex = renderText(std::to_string(oldHealth), font, FONT_COLOR, renderer);
         SDL_QueryTexture(healthTex, nullptr, nullptr, &w1, &h);
         SDL_QueryTexture(currentHealthTex, nullptr, nullptr, &w2, &h);
     }
@@ -365,7 +374,6 @@ void drawHUD(const chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Fon
     if(!game.getPlayer()->isActive())
         renderTexture(gameOverTex, renderer, gameOverX, gameOverY);
 }
-
 
 
 

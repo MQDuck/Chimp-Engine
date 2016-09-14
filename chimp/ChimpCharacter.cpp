@@ -260,42 +260,47 @@ void ChimpCharacter::render(const IntBox& screen)
 
 void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) const
 {
-    float left = game.getMidWindowLeft() - collisionRight();
-    float right = collisionLeft() - game.getMidWindowRight();
-    float top = game.getMidWindowTop() - collisionBottom();
-    float bottom = collisionTop() - game.getMidWindowBottom();
-    
-    float horiz = left > right ? left : right;
-    float vert = top > bottom ? top : bottom;
+    const float left = game.getMidWindowLeft() - collisionRight();
+    const float right = collisionLeft() - game.getMidWindowRight();
+    const float top = game.getMidWindowTop() - collisionBottom();
+    const float bottom = collisionTop() - game.getMidWindowBottom();
+    const float horiz = left > right ? left : right;
+    const float vert = top > bottom ? top : bottom;
+    if(horiz > game.getActiveZone() || vert > game.getActiveZone())
+        return;
     
     if(horiz > 0)
     {
         if(vert > 0)
         {
-            float volume = 128.0f * (game.getActiveZone() - std::sqrt(horiz*horiz + vert*vert)) / game.getActiveZone();
+            const float volume = 128.0f * (game.getActiveZone() - std::sqrt(horiz*horiz + vert*vert)) / game.getActiveZone();
             if(volume < 0)
                 return;
             Mix_VolumeChunk(sound, (int)volume);
+            Mix_PlayChannel(-1, sound, 0);
         }
         else
         {
-            float volume = 128.0f * (game.getActiveZone() - horiz) / game.getActiveZone();
+            const float volume = 128.0f * (game.getActiveZone() - horiz) / game.getActiveZone();
             if(volume < 0)
                 return;
             Mix_VolumeChunk(sound, (int)volume);
+            Mix_PlayChannel(-1, sound, 0);
         }
     }
     else if(vert > 0)
     {
-        float volume = (128.0f * (game.getActiveZone() - vert) / game.getActiveZone());
+        const float volume = (128.0f * (game.getActiveZone() - vert) / game.getActiveZone());
         if(volume < 0)
             return;
         Mix_VolumeChunk(sound, (int)volume);
+        Mix_PlayChannel(-1, sound, 0);
     }
     else
+    {
         Mix_VolumeChunk(sound, 128);
-    
-    Mix_PlayChannel(-1, sound, 0);
+        Mix_PlayChannel(-1, sound, 0);
+    }
 }
 
 } // namespace chimp

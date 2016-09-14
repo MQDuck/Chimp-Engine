@@ -20,8 +20,13 @@
 #ifndef CHIMPGAME_H
 #define CHIMPGAME_H
 
-#include <SDL2/SDL.h>
+#if defined __gnu_linux__
 #include <SDL2/SDL_mixer.h>
+#endif
+#if defined __APPLE__ && defined __MACH__
+#include <SDL2_mixer/SDL_mixer.h>
+#endif
+
 #include <vector>
 #include <map>
 #include <tinyxml2.h>

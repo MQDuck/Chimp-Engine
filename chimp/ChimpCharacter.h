@@ -20,8 +20,14 @@
 #ifndef CHIMPCHARACTER_H
 #define CHIMPCHARACTER_H
 
-#include <vector>
+#if defined __gnu_linux__
 #include <SDL2/SDL_mixer.h>
+#endif
+#if defined __APPLE__ && defined __MACH__
+#include <SDL2_mixer/SDL_mixer.h>
+#endif
+
+#include <vector>
 #include "ChimpObject.h"
 #include "ChimpMobile.h"
 

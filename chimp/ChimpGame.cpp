@@ -17,8 +17,14 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ChimpGame.h"
+#if defined __gnu_linux__
 #include <SDL2/SDL_image.h>
+#endif
+#if defined __APPLE__ && defined __MACH__
+#include <SDL2_image/SDL_image.h>
+#endif
+
+#include "ChimpGame.h"
 #include <iostream>
 #include "ChimpLuaInterface.h"
 
