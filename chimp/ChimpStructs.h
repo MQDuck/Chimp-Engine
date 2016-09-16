@@ -31,7 +31,7 @@ struct Coordinate
 template<typename T>
 struct Box
 {
-    T l, t, r, b;
+    T l, r, t, b;
 };
 
 typedef Box<int> IntBox;

@@ -1,8 +1,8 @@
 #ifndef CHIMPCONSTANTS_H
 #define CHIMPCONSTANTS_H
 
-#include <string>
 #include <SDL2/SDL.h>
+#include <string>
 
 static constexpr int
     SCREEN_WIDTH               = 1200,

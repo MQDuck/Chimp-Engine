@@ -20,9 +20,10 @@
 #ifndef CHIMPMOBILE_H
 #define CHIMPMOBILE_H
 
-#include <vector>
 #include "ChimpObject.h"
 #include "ChimpTile.h"
+
+#include <vector>
 
 namespace chimp
 {

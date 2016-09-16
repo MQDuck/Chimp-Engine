@@ -17,23 +17,6 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_gamecontroller.h>
-#if defined __gnu_linux__
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-#endif
-#if defined __APPLE__ && defined __MACH__
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
-#include <SDL2_mixer/SDL_mixer.h>
-#endif
-
-#include <iostream>
-#include <string>
-#include <tinyxml2.h>
-#include <lua.hpp>
 #include "cleanup.h"
 #include "ChimpConstants.h"
 #include "chimp/ChimpGame.h"
@@ -43,7 +26,23 @@
 #include "chimp/ChimpTile.h"
 #include "chimp/ChimpStructs.h"
 
-//#include <chrono>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_gamecontroller.h>
+#if defined (__gnu_linux__) || defined (_WIN32)
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
+#endif
+#if defined (__APPLE__) && defined (__MACH__)
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2_mixer/SDL_mixer.h>
+#endif
+
+#include <iostream>
+#include <string>
+#include <tinyxml2.h>
+#include <lua.hpp>
 
 inline void addController(const int id, std::vector<SDL_GameController*>& controllers);
 inline void keyDown(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -53,12 +52,12 @@ inline void buttonUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJu
 inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game);
 
 inline void controllerAdded(const SDL_Event& event, std::vector<SDL_GameController*>& controllers);
-void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip = nullptr);
+void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y, SDL_Rect* clip = nullptr);
 SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer);
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
 
-int main(const int argc, char** const argv)
+int main(const int argc, const char* const * const argv)
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -116,15 +115,16 @@ int main(const int argc, char** const argv)
     }
     if(SDL_GameControllerAddMappingsFromFile(CONTROLLER_MAP_FILE.c_str()) == -1)
         std::cerr << "GameControllerAddMappingsFromFile error: " << SDL_GetError() << std::endl;
-    for(int i = 0; i < SDL_NumJoysticks(); ++i)
-        addController(i, controllers);
+    else
+        for(int i = 0; i < SDL_NumJoysticks(); ++i)
+            addController(i, controllers);
     
     SDL_Event event;
     bool quit = false;
     bool keyJumpPressed = false;
     chimp::ChimpGame game(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
-    Uint32 timeLast, timeNow;
+    decltype(SDL_GetTicks()) timeLast, timeNow;
     std::string levelFile = ASSETS_PATH + DEFAULT_LEVEL;
     
     if(argc > 1)
@@ -142,8 +142,6 @@ int main(const int argc, char** const argv)
     }
     
     game.initialize();
-    
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     
     timeLast = SDL_GetTicks();
     while(!quit)
@@ -313,7 +311,7 @@ SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL_Rect* clip)
+void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y, SDL_Rect* clip)
 {
 	SDL_Rect dst;
 	dst.x = x;
@@ -325,7 +323,7 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* const rend, int x, int y, SDL
 	}
 	else
 		SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-    SDL_RenderCopy(rend, tex, clip, &dst);
+    SDL_RenderCopy(renderer, tex, clip, &dst);
 }
 
 SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color color,
@@ -347,17 +345,16 @@ SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color co
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex)
 {
     static int oldHealth = -1, w1, w2, h, x;
-    static SDL_Texture* currentHealthTex = nullptr;
-    static SDL_Texture* gameOverTex = nullptr;
     static int gameOverX, gameOverY;
-    
-    if(!gameOverTex)
+    static SDL_Texture* currentHealthTex;
+    static SDL_Texture* gameOverTex = [renderer, font]()
     {
-        gameOverTex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
-        SDL_QueryTexture(gameOverTex, nullptr, nullptr, &gameOverX, &gameOverY);
+        SDL_Texture* tex = renderText(GAME_OVER_TEXT, font, FONT_COLOR, renderer);
+        SDL_QueryTexture(tex, nullptr, nullptr, &gameOverX, &gameOverY);
         gameOverX = (SCREEN_WIDTH - gameOverX) >> 1;
         gameOverY = (SCREEN_HEIGHT - gameOverY) >> 1;
-    }
+        return tex;
+    }();
     
     if(oldHealth != game.getPlayer()->getHealth())
     {
@@ -366,9 +363,9 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
         currentHealthTex = renderText(std::to_string(oldHealth), font, FONT_COLOR, renderer);
         SDL_QueryTexture(healthTex, nullptr, nullptr, &w1, &h);
         SDL_QueryTexture(currentHealthTex, nullptr, nullptr, &w2, &h);
+        x = (SCREEN_WIDTH>>1) - w1;
     }
     
-    x = (SCREEN_WIDTH>>1) - w1;
     renderTexture(healthTex, renderer, x, 10);
     renderTexture(currentHealthTex, renderer, x + w1, 10);
     if(!game.getPlayer()->isActive())

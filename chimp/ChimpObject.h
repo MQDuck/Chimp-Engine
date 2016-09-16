@@ -20,21 +20,22 @@
 #ifndef CHIMPOBJECT_H
 #define CHIMPOBJECT_H
 
-#if defined __gnu_linux__
+#include "cleanup.h"
+#include "ChimpConstants.h"
+#include "ChimpTile.h"
+#include "ChimpStructs.h"
+#include "ChimpStructs.h"
+
+#if defined (__gnu_linux__) || defined (_WIN32)
 #include <SDL2/SDL_mixer.h>
 #endif
-#if defined __APPLE__ && defined __MACH__
+#if defined (__APPLE__) && defined (__MACH__)
 #include <SDL2_mixer/SDL_mixer.h>
 #endif
 
 #include <memory>
 #include <vector>
 #include <lua.hpp>
-#include "cleanup.h"
-#include "ChimpConstants.h"
-#include "ChimpTile.h"
-#include "ChimpStructs.h"
-#include "ChimpStructs.h"
 
 namespace chimp
 {

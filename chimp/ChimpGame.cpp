@@ -17,14 +17,15 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if defined __gnu_linux__
+#include "ChimpGame.h"
+
+#if defined (__gnu_linux__) || defined (_WIN32)
 #include <SDL2/SDL_image.h>
 #endif
-#if defined __APPLE__ && defined __MACH__
+#if defined (__APPLE__) && defined (__MACH__)
 #include <SDL2_image/SDL_image.h>
 #endif
 
-#include "ChimpGame.h"
 #include <iostream>
 #include "ChimpLuaInterface.h"
 
@@ -866,18 +867,10 @@ bool ChimpGame::loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures,
             tag->QueryIntAttribute("bottom", &bottom);
         }
         
-        SDL_Rect texRect, drRect;
-        IntBox colBox;
-        texRect.x = x;
-        texRect.y = y;
-        texRect.w = width;
-        texRect.h = height;
+        IntBox colBox = {left, right, top, bottom};
+        SDL_Rect drRect, texRect = {x, y, width, height};
         drRect.w = widthStretched;
         drRect.h = heightStretched;
-        colBox.l = left;
-        colBox.r = right;
-        colBox.t = top;
-        colBox.b = bottom;
         tiles[tileName] = ChimpTile(textures[texName], texRect, drRect, colBox);
     }
     

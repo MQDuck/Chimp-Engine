@@ -1,8 +1,9 @@
 #ifndef CHIMPTILE_H
 #define CHIMPTILE_H
 
-#include<SDL2/SDL.h>
 #include "ChimpStructs.h"
+
+#include<SDL2/SDL.h>
 
 namespace chimp
 {

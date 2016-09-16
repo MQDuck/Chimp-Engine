@@ -1,10 +1,11 @@
 #ifndef CLEANUP_H
 #define CLEANUP_H
 
+#include "chimp/ChimpTile.h"
+
 #include <utility>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "chimp/ChimpTile.h"
 
 /*
  * Recurse through the list of arguments to clean up, cleaning up

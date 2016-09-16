@@ -20,10 +20,17 @@
 #ifndef CHIMPGAME_H
 #define CHIMPGAME_H
 
-#if defined __gnu_linux__
+#include "ChimpConstants.h"
+#include "ChimpTile.h"
+#include "ChimpObject.h"
+#include "ChimpMobile.h"
+#include "ChimpCharacter.h"
+#include "cleanup.h"
+
+#if defined (__gnu_linux__) || defined (_WIN32)
 #include <SDL2/SDL_mixer.h>
 #endif
-#if defined __APPLE__ && defined __MACH__
+#if defined (__APPLE__) && defined (__MACH__)
 #include <SDL2_mixer/SDL_mixer.h>
 #endif
 
@@ -31,12 +38,6 @@
 #include <map>
 #include <tinyxml2.h>
 #include <lua.hpp>
-#include "ChimpConstants.h"
-#include "ChimpTile.h"
-#include "ChimpObject.h"
-#include "ChimpMobile.h"
-#include "ChimpCharacter.h"
-#include "cleanup.h"
 
 namespace chimp
 {

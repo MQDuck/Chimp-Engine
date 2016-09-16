@@ -17,10 +17,11 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cmath>
-#include <iostream>
 #include "ChimpCharacter.h"
 #include "ChimpGame.h"
+
+#include <cmath>
+#include <iostream>
 
 namespace chimp
 {
