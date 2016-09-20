@@ -1,6 +1,6 @@
 ﻿/*
     Copyright 2016 Jeffrey Thomas Piercy
-  
+
     This file is part of Chimp Out!.
 
     Chimp Out! is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const 
                         SDL_Renderer* const renderer);
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
 
-int main(const int argc, const char* const * const argv)
+int main(const int argc, char** argv) // Don't mess with the signature, or else suffer "undefined reference to `SDL_main'" errors on Windows
 {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -189,7 +189,7 @@ int main(const int argc, const char* const * const argv)
     }
     
     cleanup(window, renderer, font);
-    SDL_Quit();    
+    SDL_Quit();
     return 0;
 }
 
@@ -287,10 +287,10 @@ inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game)
 */
 SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 {
-	SDL_Texture* texture = IMG_LoadTexture(ren, file.c_str());
-	if (texture == nullptr)
-		std::cerr << "LoadTexture error: " << SDL_GetError() << std::endl;
-	return texture;
+    SDL_Texture* texture = IMG_LoadTexture(ren, file.c_str());
+    if (texture == nullptr)
+        std::cerr << "LoadTexture error: " << SDL_GetError() << std::endl;
+    return texture;
 }
 
 /**
@@ -307,33 +307,33 @@ SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
 */
 void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y, SDL_Rect* clip)
 {
-	SDL_Rect dst;
-	dst.x = x;
-	dst.y = y;
-	if (clip != nullptr)
+    SDL_Rect dst;
+    dst.x = x;
+    dst.y = y;
+    if (clip != nullptr)
     {
-		dst.w = clip->w;
-		dst.h = clip->h;
-	}
-	else
-		SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
+        dst.w = clip->w;
+        dst.h = clip->h;
+    }
+    else
+        SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
     SDL_RenderCopy(renderer, tex, clip, &dst);
 }
 
 SDL_Texture* renderText(const std::string& message, TTF_Font* font, SDL_Color color,
                         SDL_Renderer* const renderer)
 {
-	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), color);
-	if (surf == nullptr)
+    SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), color);
+    if (surf == nullptr)
     {
-		std::cerr << "TTF_RenderText error: " << SDL_GetError() << std::endl;
-		return nullptr;
-	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
-	if (texture == nullptr)
+        std::cerr << "TTF_RenderText error: " << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
+    if (texture == nullptr)
         std::cerr << "CreateTexture error: " << SDL_GetError() << std::endl;
-	SDL_FreeSurface(surf);
-	return texture;
+    SDL_FreeSurface(surf);
+    return texture;
 }
 
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex)

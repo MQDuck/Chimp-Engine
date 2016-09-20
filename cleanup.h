@@ -15,10 +15,10 @@
 template<typename T, typename... Args>
 void cleanup(T* t, Args&&... args)
 {
-	//Cleanup the first item in the list
-	cleanup(t);
-	//Recurse to clean up the remaining arguments
-	cleanup(std::forward<Args>(args)...);
+    //Cleanup the first item in the list
+    cleanup(t);
+    //Recurse to clean up the remaining arguments
+    cleanup(std::forward<Args>(args)...);
 }
 
 /*
@@ -34,28 +34,28 @@ void cleanup(T* t, Args&&... args)
 template<>
 inline void cleanup<SDL_Window>(SDL_Window* window)
 {
-	if (window)
+    if (window)
         SDL_DestroyWindow(window);
 }
 
 template<>
 inline void cleanup<SDL_Renderer>(SDL_Renderer* const renderer)
 {
-	if (renderer)
+    if (renderer)
         SDL_DestroyRenderer(renderer);
 }
 
 template<>
 inline void cleanup<SDL_Texture>(SDL_Texture* texture)
 {
-	if (texture)
+    if (texture)
         SDL_DestroyTexture(texture);
 }
 
 template<>
 inline void cleanup<SDL_Surface>(SDL_Surface* surface)
 {
-	if (surface)
+    if (surface)
         SDL_FreeSurface(surface);
 }
 
