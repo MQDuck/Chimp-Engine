@@ -26,8 +26,6 @@
 namespace chimp
 {
 
-class ChimpGame;
-
 /**
  * @brief ChimpCharacter::ChimpCharacter()
  * @param tilRn Character's run ChimpTiles

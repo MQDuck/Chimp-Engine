@@ -18,13 +18,7 @@
 */
 
 #include "cleanup.h"
-#include "ChimpConstants.h"
 #include "chimp/ChimpGame.h"
-#include "chimp/ChimpObject.h"
-#include "chimp/ChimpMobile.h"
-#include "chimp/ChimpCharacter.h"
-#include "chimp/ChimpTile.h"
-#include "chimp/ChimpStructs.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_gamecontroller.h>
@@ -130,7 +124,7 @@ int main(const int argc, const char* const * const argv)
     if(argc > 1)
     {
         levelFile = argv[1];
-        if(levelFile[0] != '/')
+        if(levelFile[0] != '/' && !( levelFile[0] == '.' && (levelFile[1] == '.' || levelFile[1] == '/') )) //TODO: make windows version of this
             levelFile = ASSETS_PATH + levelFile;
     }
     if(game.loadLevel(levelFile) != tinyxml2::XML_SUCCESS)
