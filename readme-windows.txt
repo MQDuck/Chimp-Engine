@@ -8,5 +8,5 @@ the contents of the 'bin' directory to the Chimp Out! project directory, 'Chimp-
 
 http://sourceforge.net/projects/luabinaries/files/5.3.3/Windows%20Libraries/Dynamic/lua-5.3.3_Win32_dllw4_lib.zip/download
 
-Copy 'lua53.dll' to 'C:\libraries\Lua\lib'. Copy the 'include' directory to 'C:\libraries\Lua'. Copy 'cyglua53.dll' to
+Copy 'liblua53.a' to 'C:\libraries\Lua\lib'. Copy the 'include' directory to 'C:\libraries\Lua'. Copy 'lua53.dll' to
 the Chimp Out! project directory.
