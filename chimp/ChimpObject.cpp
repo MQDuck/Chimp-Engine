@@ -86,8 +86,8 @@ bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
 {
     return    collisionBottom() - approx_zero_y <= other.collisionTop()
            && collisionBottom() + approx_zero_y > other.collisionTop()
-           && collisionLeft()  <= other.collisionRight()
-           && collisionRight() >= other.collisionLeft();
+           && collisionLeft()                   <= other.collisionRight()
+           && collisionRight()                  >= other.collisionLeft();
 }
 
 #pragma GCC diagnostic push
@@ -95,7 +95,7 @@ bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
 /**
  * @brief ChimpObject::update()
  * 
- * This method should be called once every frame. Objects 
+ * This method should be called once every frame. 
  * 
  * [...]
  */
