@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     chimp/ChimpGame.cpp \
     chimp/ChimpMobile.cpp \
     chimp/ChimpObject.cpp \
-    chimp/ChimpLuaInterface.cpp
+    chimp/ChimpLuaInterface.cpp \
+    tinyxml2.cpp
 
 HEADERS += \
     cleanup.h \
@@ -27,13 +28,11 @@ HEADERS += \
     chimp/ChimpObject.h \
     chimp/ChimpStructs.h \
     chimp/ChimpTile.h \
-    chimp/ChimpLuaInterface.h
+    chimp/ChimpLuaInterface.h \
+    tinyxml2.h
 
-unix: LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -ltinyxml2 -llua
-unix: PKGCONFIG += x11
-
-win32: SOURCES += tinyxml2.cpp
-win32: HEADERS += tinyxml2.h
+linux: LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -ltinyxml2 -llua
+linux: PKGCONFIG += x11
 
 win32: LIBS += -LC:/libraries/SDL/lib/ -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
