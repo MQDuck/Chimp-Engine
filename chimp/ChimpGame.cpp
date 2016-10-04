@@ -85,9 +85,8 @@ namespace // helper functions for level loading
     }
 } // helper functions for level loading
 
-ChimpGame::ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
-                     ChimpCharacter* plyr)
-    : renderer(rend), viewWidth(winWidth), viewHeight(winHeight)
+ChimpGame::ChimpGame(SDL_Renderer* const rend, const int width, const int height,
+                     ChimpCharacter* plyr) : renderer(rend)
 {
     player = plyr;
     scroll_factor_back = 1.0;
@@ -98,6 +97,11 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const int winWidth, const int win
     setupLua(luast);
     self = this;
     music = nullptr;
+    
+    borderRight = { 0, -5000, 5000, 10000 };
+    borderBottom = { -5000, 0, 10000, 5000 };
+    setViewWidth(width);
+    setViewHeight(height);
 }
 
 ChimpGame::~ChimpGame()
@@ -163,6 +167,18 @@ bool ChimpGame::setRenderer(SDL_Renderer* const rend)
         return true;
     }
     return false;
+}
+
+void ChimpGame::setViewWidth(const int width)
+{
+    viewWidth = width;
+    borderRight.x = viewWidth;
+}
+
+void ChimpGame::setViewHeight(const int height)
+{
+    viewHeight = height;
+    borderBottom.y = viewHeight;
 }
 
 float ChimpGame::getScrollFactor(const Layer lay) const
@@ -397,9 +413,6 @@ void ChimpGame::update(Uint32 time)
 
 void ChimpGame::render()
 {
-    static const SDL_Rect borderRight = { viewWidth, -5000, 5000, 10000 };
-    static const SDL_Rect borderBottom = { -5000, viewHeight, 10000, 5000 };
-    
     for(auto& obj : background)
         obj->render(backView);
     for(auto& obj : middle)

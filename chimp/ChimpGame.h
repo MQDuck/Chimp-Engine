@@ -64,6 +64,8 @@ private:
     lua_State* luast;
     Mix_Music* music;
     
+    SDL_Rect borderRight, borderBottom;
+    
     int activeZone, inactiveZone;
     float scroll_factor_back, scroll_factor_fore;
     
@@ -71,7 +73,7 @@ private:
     static ChimpObject* currentObj;
     
 public:
-    ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
+    ChimpGame(SDL_Renderer* const rend, const int width, const int height,
               ChimpCharacter* plyr = nullptr);
     ~ChimpGame();
     
@@ -89,9 +91,9 @@ public:
     inline SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
     inline int getViewWidth() const { return viewWidth; }
-    inline void setViewWidth(const int winWidth) { viewWidth = winWidth; }
+    void setViewWidth(const int width);
     inline int getViewHeight() const { return viewHeight; }
-    inline void setViewHeight(const int winHeight) { viewHeight = winHeight; }
+    void setViewHeight(const int height);
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
     inline int getActiveZone() const { return activeZone; }
