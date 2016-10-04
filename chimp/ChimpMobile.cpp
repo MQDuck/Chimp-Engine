@@ -77,7 +77,7 @@ ChimpMobile::ChimpMobile(SDL_Renderer* const rend, const ChimpTile& til, const i
  * Should be run once for each object after it's added to the game. For Objects added at the start of the game, this
  * should be called only after all Objects are added.
  * 
- * @param screen Current window for this Object's game layer.
+ * [...]
  */
 void ChimpMobile::initialize(const ChimpGame& game)
 {
@@ -192,9 +192,7 @@ void ChimpMobile::reset()
  * 
  * Calls ChimpObject::update(). Updates Mobile's position and platform.
  * 
- * @param objects Vector for the game layer in which this Object resides.
- * @param screen Current window for this Object's game layer.
- * @param world Game world boundaries object.
+ * [...]
  */
 void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {

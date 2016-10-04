@@ -87,7 +87,7 @@ namespace // helper functions for level loading
 
 ChimpGame::ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
                      ChimpCharacter* plyr)
-    : renderer(rend), windowWidth(winWidth), windowHeight(winHeight)
+    : renderer(rend), viewWidth(winWidth), viewHeight(winHeight)
 {
     player = plyr;
     scroll_factor_back = 1.0;
@@ -291,24 +291,24 @@ void ChimpGame::translateWindowX(const int x)
     if(x == 0)
         return;
     
-    midWindow.l += x;
-    midWindow.r += x;
+    midView.l += x;
+    midView.r += x;
     
-    if(midWindow.l < worldBox.l)
+    if(midView.l < worldBox.l)
     {
-        midWindow.r += worldBox.l - midWindow.l;
-        midWindow.l = worldBox.l;
+        midView.r += worldBox.l - midView.l;
+        midView.l = worldBox.l;
     }
-    else if(midWindow.r > worldBox.r)
+    else if(midView.r > worldBox.r)
     {
-        midWindow.l += worldBox.r - midWindow.r;
-        midWindow.r = worldBox.r;
+        midView.l += worldBox.r - midView.r;
+        midView.r = worldBox.r;
     }
     
-    backWindow.l = midWindow.l * scroll_factor_back;
-    backWindow.r = midWindow.r * scroll_factor_back;
-    foreWindow.l = midWindow.l * scroll_factor_fore;
-    foreWindow.r = midWindow.r * scroll_factor_fore;
+    backView.l = midView.l * scroll_factor_back;
+    backView.r = midView.r * scroll_factor_back;
+    foreView.l = midView.l * scroll_factor_fore;
+    foreView.r = midView.r * scroll_factor_fore;
 }
 
 void ChimpGame::translateWindowY(const int y)
@@ -316,34 +316,34 @@ void ChimpGame::translateWindowY(const int y)
     if(y == 0)
         return;
     
-    midWindow.t += y;
-    midWindow.b += y;
+    midView.t += y;
+    midView.b += y;
     
-    if(midWindow.t < worldBox.t)
+    if(midView.t < worldBox.t)
     {
-        midWindow.b += worldBox.t - midWindow.t;
-        midWindow.t = worldBox.t;
+        midView.b += worldBox.t - midView.t;
+        midView.t = worldBox.t;
     }
-    else if(midWindow.b > worldBox.b)
+    else if(midView.b > worldBox.b)
     {
-        midWindow.t += worldBox.b - midWindow.b;
-        midWindow.b = worldBox.b;
+        midView.t += worldBox.b - midView.b;
+        midView.b = worldBox.b;
     }
     
-    backWindow.t = midWindow.t * scroll_factor_back;
-    backWindow.b = midWindow.b * scroll_factor_back;
-    foreWindow.t = midWindow.t * scroll_factor_fore;
-    foreWindow.b = midWindow.b * scroll_factor_fore;
+    backView.t = midView.t * scroll_factor_back;
+    backView.b = midView.b * scroll_factor_back;
+    foreView.t = midView.t * scroll_factor_fore;
+    foreView.b = midView.b * scroll_factor_fore;
 }
 
 void ChimpGame::initialize()
 {
-    midWindow.l = 0;
-    midWindow.r = windowWidth;
-    midWindow.t = 0;
-    midWindow.b = windowHeight;
-    backWindow = midWindow;
-    foreWindow = midWindow;
+    midView.l = 0;
+    midView.r = viewWidth;
+    midView.t = 0;
+    midView.b = viewHeight;
+    backView = midView;
+    foreView = midView;
     
     for(auto& obj : background)
         obj->initialize(*this);
@@ -382,25 +382,33 @@ void ChimpGame::update(const Uint32 time)
             obj->accelerate();
     }
     
-    if(player->getX() + player->getWidth() > midWindow.r - FOLLOW_ZONE_X && midWindow.r < worldBox.r)
-        translateWindowX(player->getX() + player->getWidth() + FOLLOW_ZONE_X - midWindow.r);
-    else if(player->getX() - midWindow.l < FOLLOW_ZONE_X && midWindow.l > worldBox.l)
-        translateWindowX(player->getX() - FOLLOW_ZONE_X - midWindow.l);
-    if(player->getY() - midWindow.t < FOLLOW_ZONE_Y && midWindow.t > worldBox.t)
-        translateWindowY(player->getY() - FOLLOW_ZONE_Y - midWindow.t);
-    else if(player->getY() + player->getHeight() > midWindow.b - FOLLOW_ZONE_Y && midWindow.b < worldBox.b)
-        translateWindowY(player->getY() + player->getHeight() + FOLLOW_ZONE_Y - midWindow.b);
+    if(player->getX() + player->getWidth() > midView.r - FOLLOW_ZONE_X && midView.r < worldBox.r)
+        translateWindowX(player->getX() + player->getWidth() + FOLLOW_ZONE_X - midView.r);
+    else if(player->getX() - midView.l < FOLLOW_ZONE_X && midView.l > worldBox.l)
+        translateWindowX(player->getX() - FOLLOW_ZONE_X - midView.l);
+    if(player->getY() - midView.t < FOLLOW_ZONE_Y && midView.t > worldBox.t)
+        translateWindowY(player->getY() - FOLLOW_ZONE_Y - midView.t);
+    else if(player->getY() + player->getHeight() > midView.b - FOLLOW_ZONE_Y && midView.b < worldBox.b)
+        translateWindowY(player->getY() + player->getHeight() + FOLLOW_ZONE_Y - midView.b);
 }
 
 void ChimpGame::render()
 {
+    static const SDL_Rect borderRight = { viewWidth, -5000, 5000, 10000 };
+    static const SDL_Rect borderBottom = { -5000, viewHeight, 10000, 5000 };
+    
     for(auto& obj : background)
-        obj->render(backWindow);
+        obj->render(backView);
     for(auto& obj : middle)
-        obj->render(midWindow);
-    player->render(midWindow);
+        obj->render(midView);
+    player->render(midView);
     for(auto& obj : foreground)
-        obj->render(foreWindow);
+        obj->render(foreView);
+    
+    //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+    SDL_RenderFillRect(renderer, &borderRight);
+    SDL_RenderFillRect(renderer, &borderBottom);
+    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 }
 
 void ChimpGame::reset()

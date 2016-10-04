@@ -63,13 +63,13 @@ ChimpObject::ChimpObject(SDL_Renderer* const rend, const ChimpTile& til, const i
  * Should be run once for each object after it's added to the game. For Objects added at the start of the game, this
  * should be called only after all Objects are added.
  * 
- * @param screen Current window for this Object's game layer.
+ * [...]
  */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void ChimpObject::initialize(const ChimpGame& game)
 {
-    if( onScreen(game.getMidWindow()) )
+    if( onScreen(game.getMidView()) )
         activate();
 }
 #pragma GCC diagnostic pop
@@ -97,27 +97,25 @@ bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
  * 
  * This method should be called once every frame. Objects 
  * 
- * @param objects Vector for the game layer in which this Object resides.
- * @param screen Current window for this Object's game layer.
- * @param world Game world boundaries object.
+ * [...]
  */
 void ChimpObject::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {
     if(active)
     {
-        if(   coord.x+width < game.getMidWindowLeft() - game.getInactiveZone()
-           || coord.x > game.getMidWindowRight() + game.getInactiveZone()
-           || coord.y > game.getMidWindowBottom() + game.getInactiveZone()
-           || coord.y+height < game.getMidWindowTop() - game.getInactiveZone())
+        if(   coord.x+width < game.getMidViewLeft() - game.getInactiveZone()
+           || coord.x > game.getMidViewRight() + game.getInactiveZone()
+           || coord.y > game.getMidViewBottom() + game.getInactiveZone()
+           || coord.y+height < game.getMidViewTop() - game.getInactiveZone())
             deactivate();
     }
     else
     {
-        if(   coord.x <= game.getMidWindowRight() + game.getActiveZone()
-           && coord.y+height >= game.getMidWindowTop() - game.getActiveZone()
-           && coord.x+width >= game.getMidWindowLeft() - game.getActiveZone()
-           && coord.y <= game.getMidWindowBottom() + game.getActiveZone()
-           && !onScreen(game.getMidWindow()) )
+        if(   coord.x <= game.getMidViewRight() + game.getActiveZone()
+           && coord.y+height >= game.getMidViewTop() - game.getActiveZone()
+           && coord.x+width >= game.getMidViewLeft() - game.getActiveZone()
+           && coord.y <= game.getMidViewBottom() + game.getActiveZone()
+           && !onScreen(game.getMidView()) )
             activate();
     }
 }
@@ -128,7 +126,7 @@ void ChimpObject::update(const ObjectVector& objects, ChimpGame& game, const Uin
  * 
  * Draws this Object to the screen.
  * 
- * @param screen Current window for this Object's game layer.
+ * @param screen Current view for this Object's game layer.
  */
 void ChimpObject::render(const IntBox& screen)
 {
@@ -166,12 +164,12 @@ bool ChimpObject::setEnemies(const int facs)
 /**
  * @brief ChimpObject::onScreen()
  * 
- * @param screen Current window for this Object's game layer.
+ * @param screen Current view for this Object's game layer.
  * @return true if this Object is at least partially inside the passed screen boundaries
  */
-bool ChimpObject::onScreen(const IntBox& window) const
+bool ChimpObject::onScreen(const IntBox& screen) const
 {
-    return coord.x <= window.r && coord.y+height >= window.t && coord.x+width >= window.l && coord.y <= window.b;
+    return coord.x <= screen.r && coord.y+height >= screen.t && coord.x+width >= screen.l && coord.y <= screen.b;
 }
 
 } // namespace chimp

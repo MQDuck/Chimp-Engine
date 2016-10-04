@@ -50,6 +50,7 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y,
 SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer);
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
+void setScale(SDL_Window* const window, SDL_Renderer* const renderer, chimp::ChimpGame& game);
 
 int main(const int argc, char** argv) // Don't mess with the signature, or else suffer "undefined reference to `SDL_main'" errors on Windows
 {
@@ -63,7 +64,8 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
         std::cerr << "SDL_Init error: " << SDL_GetError() << std::endl;
         return 1;
     }
-    window = SDL_CreateWindow("Chimp Out!", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Chimp Out!", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if(window == nullptr)
     {
         std::cerr << "CreateWindow error: " << SDL_GetError() << std::endl;
@@ -164,6 +166,10 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
                 break;
             case SDL_CONTROLLERDEVICEADDED:
                 addController(event.cdevice.which, controllers);
+                break;
+            case SDL_WINDOWEVENT:
+                if(event.window.event == SDL_WINDOWEVENT_RESIZED)
+                    setScale(window, renderer, game);
                 break;
             }
         }
@@ -350,6 +356,18 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
     renderTexture(currentHealthTex, renderer, x + w1, 10);
     if(!game.getPlayer()->isActive())
         renderTexture(gameOverTex, renderer, gameOverX, gameOverY);
+}
+
+void setScale(SDL_Window* const window, SDL_Renderer* const renderer, chimp::ChimpGame& game)
+{
+    int width, height;
+    SDL_GetWindowSize(window, &width, &height);
+    const float ratioWidth = (float)width / (float)game.getViewWidth();
+    const float ratioHeight = (float)height / (float)game.getViewHeight();
+    const float scale = ratioWidth < ratioHeight ? ratioWidth : ratioHeight;
+    SDL_RenderSetScale(renderer, scale, scale);
+    
+    std::cout << "scale: " << (ratioWidth < ratioHeight ? ratioWidth : ratioHeight) << std::endl;
 }
 
 

@@ -202,13 +202,13 @@ int getWorldBottom(lua_State* const state)
 
 int getWindowWidth(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getGame()->getWindowWidth());
+    lua_pushnumber(state, ChimpGame::getGame()->getViewWidth());
     return 1;
 }
 
 int getWindowHeight(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getGame()->getWindowHeight());
+    lua_pushnumber(state, ChimpGame::getGame()->getViewHeight());
     return 1;
 }
 

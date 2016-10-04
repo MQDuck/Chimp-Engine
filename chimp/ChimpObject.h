@@ -107,7 +107,7 @@ public:
     inline void addEnemy(const Faction fac) { enemies |= fac; }
     
     inline bool isActive() const { return active; }
-    inline bool onScreen(const IntBox& window) const;
+    inline bool onScreen(const IntBox& screen) const;
     virtual bool hasPlatform() const { return false; }
     
     virtual void activate() { active = true; }

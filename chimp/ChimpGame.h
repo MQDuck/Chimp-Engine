@@ -59,8 +59,8 @@ private:
     
     static ChimpCharacter* player;
     ObjectVector background, middle, foreground;
-    IntBox midWindow, backWindow, foreWindow, worldBox;
-    int windowWidth, windowHeight;
+    IntBox midView, backView, foreView, worldBox;
+    int viewWidth, viewHeight;
     lua_State* luast;
     Mix_Music* music;
     
@@ -82,25 +82,25 @@ public:
     inline int getWorldRight() const { return worldBox.r; }
     inline int getWorldTop() const { return worldBox.t; }
     inline int getWorldBottom() const { return worldBox.b; }
-    inline int getMidWindowLeft() const { return midWindow.l; }
-    inline int getMidWindowRight() const { return midWindow.r; }
-    inline int getMidWindowTop() const { return midWindow.t; }
-    inline int getMidWindowBottom() const { return midWindow.b; }
+    inline int getMidViewLeft() const { return midView.l; }
+    inline int getMidViewRight() const { return midView.r; }
+    inline int getMidViewTop() const { return midView.t; }
+    inline int getMidViewBottom() const { return midView.b; }
     SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
-    inline int getWindowWidth() const { return windowWidth; }
-    inline void setWindowWidth(const int winWidth) { windowWidth = winWidth; }
-    inline int getWindowHeight() { return windowHeight; }
-    inline void setWindowHeight(const int winHeight) { windowHeight = winHeight; }
+    inline int getViewWidth() const { return viewWidth; }
+    inline void setViewWidth(const int winWidth) { viewWidth = winWidth; }
+    inline int getViewHeight() { return viewHeight; }
+    inline void setViewHeight(const int winHeight) { viewHeight = winHeight; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
     inline int getActiveZone() const { return activeZone; }
     bool setActiveZone(const int zone);
     inline int getInactiveZone() const { return inactiveZone; }
     bool setInactiveZone(const int zone);
-    inline const IntBox& getMidWindow() const { return midWindow; }
-    inline const IntBox& getBackWindow() const { return backWindow; }
-    inline const IntBox& getForeWindow() const { return foreWindow; }
+    inline const IntBox& getMidView() const { return midView; }
+    inline const IntBox& getBackView() const { return backView; }
+    inline const IntBox& getForeView() const { return foreView; }
     inline lua_State* getLuaState() const { return luast; }
     bool setMusic(const std::string& mus);
     

@@ -164,9 +164,7 @@ bool ChimpCharacter::setMaxHealth(const int heal)
  * 
  * Calls ChimpMobile::update(). This method is where Characters take damage and/or die.
  * 
- * @param objects Vector for the game layer in which this Character resides.
- * @param screen Current window for this Character's game layer.
- * @param world Game world boundaries object.
+ * [...]
  */
 void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const Uint32 time)
 {
@@ -208,7 +206,7 @@ void ChimpCharacter::update(const ObjectVector& objects, ChimpGame& game, const 
  * 
  * Calls ChimpMobile::render(). Animates this Character by cycling through the appropriate ChimpTile vector.
  * 
- * @param screen Current window for this Character's game layer.
+ * @param screen Current view for this Character's game layer.
  */
 void ChimpCharacter::render(const IntBox& screen)
 {
@@ -259,10 +257,10 @@ void ChimpCharacter::render(const IntBox& screen)
 
 void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) const
 {
-    const float left = game.getMidWindowLeft() - collisionRight();
-    const float right = collisionLeft() - game.getMidWindowRight();
-    const float top = game.getMidWindowTop() - collisionBottom();
-    const float bottom = collisionTop() - game.getMidWindowBottom();
+    const float left = game.getMidViewLeft() - collisionRight();
+    const float right = collisionLeft() - game.getMidViewRight();
+    const float top = game.getMidViewTop() - collisionBottom();
+    const float bottom = collisionTop() - game.getMidViewBottom();
     const float horiz = left > right ? left : right;
     const float vert = top > bottom ? top : bottom;
     if(horiz > game.getActiveZone() || vert > game.getActiveZone())
