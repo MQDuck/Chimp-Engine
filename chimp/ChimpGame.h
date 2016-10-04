@@ -86,11 +86,11 @@ public:
     inline int getMidViewRight() const { return midView.r; }
     inline int getMidViewTop() const { return midView.t; }
     inline int getMidViewBottom() const { return midView.b; }
-    SDL_Renderer* getRenderer() const { return renderer; }
+    inline SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
     inline int getViewWidth() const { return viewWidth; }
     inline void setViewWidth(const int winWidth) { viewWidth = winWidth; }
-    inline int getViewHeight() { return viewHeight; }
+    inline int getViewHeight() const { return viewHeight; }
     inline void setViewHeight(const int winHeight) { viewHeight = winHeight; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
@@ -124,7 +124,7 @@ public:
     void translateWindowY(const int y);
     
     void initialize();
-    void update(const Uint32 time);
+    void update(Uint32 time);
     void render();
     void reset();
     
@@ -134,10 +134,6 @@ private:
     bool loadTextures(tinyxml2::XMLDocument& levelXML, TextureMap& textures, SDL_Renderer* const renderer);
     bool loadTiles(tinyxml2::XMLDocument& levelXML, TextureMap& textures, TileMap& tiles);
     bool loadSounds(tinyxml2::XMLDocument& levelXML, SoundMap& sounds, MusicMap& musics);
-    /*static Layer getLayer(const tinyxml2::XMLElement* objXML);
-    static bool getBool(const char* const boolStr, bool& result);
-    static bool getString(const char* const cStr, std::string& str);
-    static std::string getMode(const tinyxml2::XMLElement* const tag);*/
     void loadWorldBox(const tinyxml2::XMLElement* const edges);
     bool loadAllAnimations(tinyxml2::XMLElement* const objXML, TileVec& idletiles, TileVec& runtiles,
                            TileVec& jumptiles, TileMap& tiles);

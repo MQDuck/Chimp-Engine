@@ -50,7 +50,7 @@ void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y,
 SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer);
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
-void setScale(SDL_Window* const window, SDL_Renderer* const renderer, chimp::ChimpGame& game);
+void setScale(SDL_Window* const window, SDL_Renderer* const renderer, const chimp::ChimpGame& game);
 
 int main(const int argc, char** argv) // Don't mess with the signature, or else suffer "undefined reference to `SDL_main'" errors on Windows
 {
@@ -358,7 +358,7 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
         renderTexture(gameOverTex, renderer, gameOverX, gameOverY);
 }
 
-void setScale(SDL_Window* const window, SDL_Renderer* const renderer, chimp::ChimpGame& game)
+void setScale(SDL_Window* const window, SDL_Renderer* const renderer, const chimp::ChimpGame& game)
 {
     int width, height;
     SDL_GetWindowSize(window, &width, &height);
@@ -366,8 +366,6 @@ void setScale(SDL_Window* const window, SDL_Renderer* const renderer, chimp::Chi
     const float ratioHeight = (float)height / (float)game.getViewHeight();
     const float scale = ratioWidth < ratioHeight ? ratioWidth : ratioHeight;
     SDL_RenderSetScale(renderer, scale, scale);
-    
-    std::cout << "scale: " << (ratioWidth < ratioHeight ? ratioWidth : ratioHeight) << std::endl;
 }
 
 

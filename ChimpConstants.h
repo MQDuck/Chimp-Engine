@@ -20,7 +20,8 @@ static constexpr int
     HEALTH                     = 1,    // default maximum health for Characters
     DAMAGE                     = 10,   // default damage dealt
     MAX_JUMPS                  = 1,    // default maximum number of Mobile jumps before landing
-    MS_PER_ACCEL               = 17;   // miliseconds between accelerate() calls
+    MS_PER_ACCEL               = 17,   // miliseconds between accelerate() calls
+    MAX_FRAME_TIME             = 50;
 
 static const Uint32
     TIME_PER_IDLE              = 600;  // miliseconds per idle animation frame

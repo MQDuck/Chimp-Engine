@@ -121,8 +121,8 @@ public:
     virtual void render(const IntBox& screen);
     virtual void reset() {}
     
-    float getApproxZeroFloat() const { return approx_zero_float; }
-    float getApproxZeroY() const { return approx_zero_y; }
+    inline float getApproxZeroFloat() const { return approx_zero_float; }
+    inline float getApproxZeroY() const { return approx_zero_y; }
     
     //ChimpObject& operator=(const ChimpObject& rhs);
     

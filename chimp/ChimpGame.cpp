@@ -83,7 +83,7 @@ namespace // helper functions for level loading
         std::string mode;
         return getString(tag->Attribute("mode"), mode) ? mode : "absolute";
     }
-}
+} // helper functions for level loading
 
 ChimpGame::ChimpGame(SDL_Renderer* const rend, const int winWidth, const int winHeight,
                      ChimpCharacter* plyr)
@@ -357,8 +357,11 @@ void ChimpGame::initialize()
         Mix_PlayMusic(music, -1);
 }
 
-void ChimpGame::update(const Uint32 time)
+void ChimpGame::update(Uint32 time)
 {
+    if(time > MAX_FRAME_TIME)
+        time = MAX_FRAME_TIME;
+    
     static Uint32 accelTime = 0;
     
     for(auto& obj : background)
