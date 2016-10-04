@@ -124,7 +124,7 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
     if(argc > 1)
     {
         levelFile = argv[1];
-        if(levelFile[0] != '/' && !( levelFile[0] == '.' && (levelFile[1] == '.' || levelFile[1] == '/') )) //TODO: make windows version of this
+        if(levelFile[0] != '/' && !( levelFile[0] == '.' && (levelFile[1] == '.' || levelFile[1] == '/') )) //TODO: make Windows version of this
             levelFile = ASSETS_PATH + levelFile;
     }
     if(game.loadLevel(levelFile) != tinyxml2::XML_SUCCESS)
@@ -277,20 +277,6 @@ inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game)
         else
             game.getPlayer()->stopRunning();
     }
-}
-
-/**
-* Loads an image into a texture on the rendering device
-* @param file The image file to load
-* @param ren The renderer to load the texture onto
-* @return the loaded texture, or nullptr if something went wrong.
-*/
-SDL_Texture* loadTexture(const std::string& file, SDL_Renderer* const ren)
-{
-    SDL_Texture* texture = IMG_LoadTexture(ren, file.c_str());
-    if (texture == nullptr)
-        std::cerr << "LoadTexture error: " << SDL_GetError() << std::endl;
-    return texture;
 }
 
 /**
