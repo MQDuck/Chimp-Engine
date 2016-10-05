@@ -91,9 +91,9 @@ public:
     inline SDL_Renderer* getRenderer() const { return renderer; }
     bool setRenderer(SDL_Renderer* const rend);
     inline int getViewWidth() const { return viewWidth; }
-    void setViewWidth(const int width);
+    inline void setViewWidth(const int width) { viewWidth = width; }
     inline int getViewHeight() const { return viewHeight; }
-    void setViewHeight(const int height);
+    inline void setViewHeight(const int height) { viewHeight = height; }
     float getScrollFactor(const Layer lay) const;
     bool setScrollFactor(const Layer lay, const float factor);
     inline int getActiveZone() const { return activeZone; }

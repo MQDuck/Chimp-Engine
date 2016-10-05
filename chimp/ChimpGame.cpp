@@ -86,7 +86,7 @@ namespace // helper functions for level loading
 } // helper functions for level loading
 
 ChimpGame::ChimpGame(SDL_Renderer* const rend, const int width, const int height,
-                     ChimpCharacter* plyr) : renderer(rend)
+                     ChimpCharacter* plyr) : renderer(rend), viewWidth(width), viewHeight(height)
 {
     player = plyr;
     scroll_factor_back = 1.0;
@@ -100,8 +100,6 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const int width, const int height
     
     borderRight = { 0, -5000, 5000, 10000 };
     borderBottom = { -5000, 0, 10000, 5000 };
-    setViewWidth(width);
-    setViewHeight(height);
 }
 
 ChimpGame::~ChimpGame()
@@ -167,18 +165,6 @@ bool ChimpGame::setRenderer(SDL_Renderer* const rend)
         return true;
     }
     return false;
-}
-
-void ChimpGame::setViewWidth(const int width)
-{
-    viewWidth = width;
-    borderRight.x = viewWidth;
-}
-
-void ChimpGame::setViewHeight(const int height)
-{
-    viewHeight = height;
-    borderBottom.y = viewHeight;
 }
 
 float ChimpGame::getScrollFactor(const Layer lay) const
@@ -375,7 +361,7 @@ void ChimpGame::initialize()
 
 void ChimpGame::update(Uint32 time)
 {
-    if(time > MAX_FRAME_TIME)
+    if(time > MAX_FRAME_TIME) // Weird things happen when time is too high.
         time = MAX_FRAME_TIME;
     
     static Uint32 accelTime = 0;
@@ -420,11 +406,6 @@ void ChimpGame::render()
     player->render(midView);
     for(auto& obj : foreground)
         obj->render(foreView);
-    
-    //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
-    SDL_RenderFillRect(renderer, &borderRight);
-    SDL_RenderFillRect(renderer, &borderBottom);
-    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 }
 
 void ChimpGame::reset()
