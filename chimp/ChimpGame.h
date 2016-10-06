@@ -64,8 +64,6 @@ private:
     lua_State* luast;
     Mix_Music* music;
     
-    SDL_Rect borderRight, borderBottom;
-    
     int activeZone, inactiveZone;
     float scroll_factor_back, scroll_factor_fore;
     

@@ -46,7 +46,8 @@ inline void buttonUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJu
 inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game);
 
 inline void controllerAdded(const SDL_Event& event, std::vector<SDL_GameController*>& controllers);
-void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y, SDL_Rect* clip = nullptr);
+void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const int x, const int y,
+                   SDL_Rect* const clip = nullptr);
 SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const SDL_Color color,
                         SDL_Renderer* const renderer);
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
@@ -298,7 +299,8 @@ inline void axisMotion(const SDL_Event& event, chimp::ChimpGame& game)
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void renderTexture(SDL_Texture* tex, SDL_Renderer* const renderer, int x, int y, SDL_Rect* clip)
+void renderTexture(SDL_Texture* const tex, SDL_Renderer* const renderer, const int x, const int y,
+                   SDL_Rect* const clip)
 {
     SDL_Rect dst;
     dst.x = x;
@@ -361,33 +363,40 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
 
 void resize(SDL_Event& event, SDL_Window* window, SDL_Renderer* const renderer, const chimp::ChimpGame& game)
 {
-    /*static int width = SCREEN_WIDTH, height = SCREEN_HEIGHT;
+    static int width = SCREEN_WIDTH, height = SCREEN_HEIGHT;
     
-    const int newWidth = event.window.data1;
-    const int newHeight = event.window.data2;
-    
-    int dx = std::abs(newWidth - width);
-    int dy = std::abs(newHeight - height);
-    if(dx > dy)
+    if(event.window.data2 == height) // only width changed
     {
-        height = ((float)newWidth / (float)game.getViewWidth()) * (float)game.getViewHeight();
-        width = newWidth;
+        width = event.window.data1;
+        const float ratioWidth = (float)width / (float)game.getViewWidth();
+        height = ratioWidth * game.getViewHeight();
+        SDL_RenderSetScale(renderer, ratioWidth, ratioWidth);
     }
-    else
+    else if (event.window.data1 == width) // only height changed
     {
-        width = ((float)newHeight / (float)game.getViewHeight()) * (float)game.getViewWidth();
-        height = newHeight;
+        height = event.window.data2;
+        const float ratioHeight = (float)height / (float)game.getViewHeight();
+        width = ratioHeight * game.getViewWidth();
+        SDL_RenderSetScale(renderer, ratioHeight, ratioHeight);
     }
-    const float scale = (float)width / (float)game.getViewWidth();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-    SDL_RenderSetScale(renderer, scale, scale);
+    else // both width and height changed, decrease window size to keep correct width/height ratio
+    {
+        const float ratioWidth = (float)event.window.data1 / (float)game.getViewWidth();
+        const float ratioHeight = (float)event.window.data2 / (float)game.getViewHeight();
+        if(ratioWidth < ratioHeight)
+        {
+            width = event.window.data1;
+            height = ratioWidth * game.getViewHeight();
+            SDL_RenderSetScale(renderer, ratioWidth, ratioWidth);
+        }
+        else
+        {
+            height = event.window.data2;
+            width = ratioHeight * game.getViewWidth();
+            SDL_RenderSetScale(renderer, ratioHeight, ratioHeight);
+        }
+    }
     SDL_SetWindowSize(window, width, height);
-    std::cout << width << '\t' << height << std::endl;*/
-    
-    const float ratioWidth = (float)event.window.data1 / (float)game.getViewWidth();
-    const float ratioHeight = (float)event.window.data2 / (float)game.getViewHeight();
-    const float scale = ratioWidth < ratioHeight ? ratioWidth : ratioHeight;
-    SDL_RenderSetScale(renderer, scale, scale);
-    SDL_SetWindowSize(window, scale*game.getViewWidth(), scale*game.getViewHeight());
 }
 
 

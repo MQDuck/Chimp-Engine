@@ -97,9 +97,6 @@ ChimpGame::ChimpGame(SDL_Renderer* const rend, const int width, const int height
     setupLua(luast);
     self = this;
     music = nullptr;
-    
-    borderRight = { 0, -5000, 5000, 10000 };
-    borderBottom = { -5000, 0, 10000, 5000 };
 }
 
 ChimpGame::~ChimpGame()
