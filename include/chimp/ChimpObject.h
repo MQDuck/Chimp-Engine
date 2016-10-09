@@ -22,9 +22,9 @@
 
 #include "cleanup.h"
 #include "ChimpConstants.h"
-#include "ChimpTile.h"
-#include "ChimpStructs.h"
-#include "ChimpStructs.h"
+#include "chimp/ChimpTile.h"
+#include "chimp/ChimpStructs.h"
+#include "chimp/ChimpStructs.h"
 
 #if defined (__gnu_linux__) || defined (_WIN32)
 #include <SDL2/SDL_mixer.h>

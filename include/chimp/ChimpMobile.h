@@ -20,8 +20,8 @@
 #ifndef CHIMPMOBILE_H
 #define CHIMPMOBILE_H
 
-#include "ChimpObject.h"
-#include "ChimpTile.h"
+#include "chimp/ChimpObject.h"
+#include "chimp/ChimpTile.h"
 
 #include <vector>
 

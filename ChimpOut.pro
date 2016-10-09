@@ -7,29 +7,31 @@ QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
 QMAKE_CXXFLAGS_RELEASE += -O3 -mtune=generic
 
+INCLUDEPATH += $$PWD/include
+
 CONFIG += link_pkgconfig
 
 DESTDIR = $$PWD
 TARGET = ChimpOut
-SOURCES += main.cpp \
-    chimp/ChimpCharacter.cpp \
-    chimp/ChimpGame.cpp \
-    chimp/ChimpMobile.cpp \
-    chimp/ChimpObject.cpp \
-    chimp/ChimpLuaInterface.cpp \
-    tinyxml2.cpp
+SOURCES += src/main.cpp \
+    src/ChimpCharacter.cpp \
+    src/ChimpGame.cpp \
+    src/ChimpLuaInterface.cpp \
+    src/ChimpMobile.cpp \
+    src/ChimpObject.cpp \
+    src/tinyxml2.cpp
 
 HEADERS += \
-    cleanup.h \
-    ChimpConstants.h \
-    chimp/ChimpCharacter.h \
-    chimp/ChimpGame.h \
-    chimp/ChimpMobile.h \
-    chimp/ChimpObject.h \
-    chimp/ChimpStructs.h \
-    chimp/ChimpTile.h \
-    chimp/ChimpLuaInterface.h \
-    tinyxml2.h
+    include/chimp/ChimpCharacter.h \
+    include/chimp/ChimpGame.h \
+    include/chimp/ChimpLuaInterface.h \
+    include/chimp/ChimpMobile.h \
+    include/chimp/ChimpObject.h \
+    include/chimp/ChimpStructs.h \
+    include/chimp/ChimpTile.h \
+    include/cleanup.h \
+    include/tinyxml2.h \
+    include/ChimpConstants.h
 
 linux: LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -ltinyxml2 -llua
 linux: PKGCONFIG += x11

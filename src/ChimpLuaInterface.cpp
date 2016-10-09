@@ -1,6 +1,6 @@
-#include "ChimpLuaInterface.h"
-#include "ChimpGame.h"
-#include "ChimpObject.h"
+#include "chimp/ChimpLuaInterface.h"
+#include "chimp/ChimpGame.h"
+#include "chimp/ChimpObject.h"
 
 namespace chimp
 {

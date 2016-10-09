@@ -17,8 +17,8 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ChimpMobile.h"
-#include "ChimpGame.h"
+#include "chimp/ChimpMobile.h"
+#include "chimp/ChimpGame.h"
 #include "sys/stat.h"
 
 #include <iostream>

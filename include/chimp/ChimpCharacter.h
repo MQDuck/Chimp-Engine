@@ -20,8 +20,8 @@
 #ifndef CHIMPCHARACTER_H
 #define CHIMPCHARACTER_H
 
-#include "ChimpObject.h"
-#include "ChimpMobile.h"
+#include "chimp/ChimpObject.h"
+#include "chimp/ChimpMobile.h"
 
 #if defined (__gnu_linux__) || defined (_WIN32)
 #include <SDL2/SDL_mixer.h>
