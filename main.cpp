@@ -38,6 +38,8 @@
 #include <tinyxml2.h>
 #include <lua.hpp>
 
+typedef chimp::Coordinate Dimensions;
+
 inline void addController(const int id, std::vector<SDL_GameController*>& controllers);
 inline void keyDown(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
 inline void keyUp(const SDL_Event& event, chimp::ChimpGame& game, bool& keyJumpPressed);
@@ -52,7 +54,7 @@ SDL_Texture* renderText(const std::string& message, TTF_Font* const font, const 
                         SDL_Renderer* const renderer);
 void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* font, SDL_Texture* const healthTex);
 
-void resize(SDL_Event& event, SDL_Window* window, SDL_Renderer* const renderer, const chimp::ChimpGame& game);
+void resize(SDL_Event& event, Dimensions& windowDimensions, SDL_Renderer* const renderer, const chimp::ChimpGame& game);
 
 int main(const int argc, char** argv) // Don't mess with the signature, or else suffer "undefined reference to `SDL_main'" errors on Windows
 {
@@ -124,6 +126,7 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
     SDL_Texture* healthTex = renderText(TEXT_HEALTH, font, FONT_COLOR, renderer);
     decltype(SDL_GetTicks()) timeLast, timeNow;
     std::string levelFile = ASSETS_PATH + DEFAULT_LEVEL;
+    Dimensions windowDimensions = { SCREEN_WIDTH, SCREEN_HEIGHT };
     
     if(argc > 1)
     {
@@ -171,7 +174,7 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
                 break;
             case SDL_WINDOWEVENT:
                 if(event.window.event == SDL_WINDOWEVENT_RESIZED)
-                    resize(event, window, renderer, game);
+                    resize(event, windowDimensions, renderer, game);
                 break;
             }
         }
@@ -194,9 +197,11 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
             SDL_Delay(GAME_OVER_TIME);
             game.reset();
         }
+        
+        SDL_SetWindowSize(window, windowDimensions.x, windowDimensions.y);
     }
     
-    cleanup(window, renderer, font);
+    cleanup(window, renderer, font, &controllers);
     SDL_Quit();
     return 0;
 }
@@ -361,22 +366,20 @@ void drawHUD(chimp::ChimpGame& game, SDL_Renderer* const renderer, TTF_Font* fon
         renderTexture(gameOverTex, renderer, gameOverX, gameOverY);
 }
 
-void resize(SDL_Event& event, SDL_Window* window, SDL_Renderer* const renderer, const chimp::ChimpGame& game)
+void resize(SDL_Event& event, Dimensions& windowDimensions, SDL_Renderer* const renderer, const chimp::ChimpGame& game)
 {
-    static int width = SCREEN_WIDTH, height = SCREEN_HEIGHT;
-    
-    if(event.window.data2 == height) // only width changed
+    if(event.window.data2 == windowDimensions.y) // only width changed
     {
-        width = event.window.data1;
-        const float ratioWidth = (float)width / (float)game.getViewWidth();
-        height = ratioWidth * game.getViewHeight();
+        windowDimensions.x = event.window.data1;
+        const float ratioWidth = (float)windowDimensions.x / (float)game.getViewWidth();
+        windowDimensions.y = ratioWidth * game.getViewHeight();
         SDL_RenderSetScale(renderer, ratioWidth, ratioWidth);
     }
-    else if (event.window.data1 == width) // only height changed
+    else if (event.window.data1 == windowDimensions.x) // only height changed
     {
-        height = event.window.data2;
-        const float ratioHeight = (float)height / (float)game.getViewHeight();
-        width = ratioHeight * game.getViewWidth();
+        windowDimensions.y = event.window.data2;
+        const float ratioHeight = (float)windowDimensions.y / (float)game.getViewHeight();
+        windowDimensions.x = ratioHeight * game.getViewWidth();
         SDL_RenderSetScale(renderer, ratioHeight, ratioHeight);
     }
     else // both width and height changed, decrease window size to keep correct width/height ratio
@@ -385,18 +388,17 @@ void resize(SDL_Event& event, SDL_Window* window, SDL_Renderer* const renderer, 
         const float ratioHeight = (float)event.window.data2 / (float)game.getViewHeight();
         if(ratioWidth < ratioHeight)
         {
-            width = event.window.data1;
-            height = ratioWidth * game.getViewHeight();
+            windowDimensions.x = event.window.data1;
+            windowDimensions.y = ratioWidth * game.getViewHeight();
             SDL_RenderSetScale(renderer, ratioWidth, ratioWidth);
         }
         else
         {
-            height = event.window.data2;
-            width = ratioHeight * game.getViewWidth();
+            windowDimensions.y = event.window.data2;
+            windowDimensions.x = ratioHeight * game.getViewWidth();
             SDL_RenderSetScale(renderer, ratioHeight, ratioHeight);
         }
     }
-    SDL_SetWindowSize(window, width, height);
 }
 
 

@@ -4,6 +4,7 @@
 #include "chimp/ChimpTile.h"
 
 #include <utility>
+#include <vector>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -60,10 +61,11 @@ inline void cleanup<SDL_Surface>(SDL_Surface* surface)
 }
 
 template<>
-inline void cleanup<SDL_GameController>(SDL_GameController* controller)
+inline void cleanup<std::vector<SDL_GameController*>>(std::vector<SDL_GameController*>* controllers)
 {
-    if(controller)
-        SDL_GameControllerClose(controller);
+    for(SDL_GameController* controller : *controllers)
+        if(controller)
+            SDL_GameControllerClose(controller);
 }
 
 template<>
