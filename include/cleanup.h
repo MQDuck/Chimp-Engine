@@ -1,7 +1,7 @@
 #ifndef CLEANUP_H
 #define CLEANUP_H
 
-#include "chimp/ChimpTile.h"
+#include "ChimpTile.h"
 
 #include <utility>
 #include <vector>

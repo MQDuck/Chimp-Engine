@@ -17,7 +17,7 @@
     along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "chimp/ChimpGame.h"
+#include "ChimpGame.h"
 
 #if defined (__gnu_linux__) || defined (_WIN32)
 #include <SDL2/SDL_image.h>
@@ -27,7 +27,7 @@
 #endif
 
 #include <iostream>
-#include "chimp/ChimpLuaInterface.h"
+#include "ChimpLuaInterface.h"
 
 namespace chimp
 {

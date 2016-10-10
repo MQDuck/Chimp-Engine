@@ -18,7 +18,7 @@
 */
 
 #include "cleanup.h"
-#include "chimp/ChimpGame.h"
+#include "ChimpGame.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_gamecontroller.h>
@@ -77,6 +77,7 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
         return 1;
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_ShowCursor(false);
     if(renderer == nullptr)
     {
         std::cerr << "CreateRenderer error: " << SDL_GetError() << std::endl;

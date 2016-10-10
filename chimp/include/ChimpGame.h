@@ -21,10 +21,10 @@
 #define CHIMPGAME_H
 
 #include "ChimpConstants.h"
-#include "chimp/ChimpTile.h"
-#include "chimp/ChimpObject.h"
-#include "chimp/ChimpMobile.h"
-#include "chimp/ChimpCharacter.h"
+#include "ChimpTile.h"
+#include "ChimpObject.h"
+#include "ChimpMobile.h"
+#include "ChimpCharacter.h"
 #include "cleanup.h"
 
 #if defined (__gnu_linux__) || defined (_WIN32)
