@@ -1,20 +1,20 @@
 /*
     Copyright 2016 Jeffrey Thomas Piercy
   
-    This file is part of Chimp Out!.
+    This file is part of Chimp Engine.
 
-    Chimp Out! is free software: you can redistribute it and/or modify
+    Chimp Engine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Chimp Out! is distributed in the hope that it will be useful,
+    Chimp Engine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
+    along with Chimp Engine.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ChimpObject.h"
@@ -76,18 +76,18 @@ void ChimpObject::initialize(const ChimpGame& game)
 
 bool ChimpObject::touches(const ChimpObject &other) const
 {
-    return    collisionLeft()   <= other.collisionRight()
-           && collisionRight()  >= other.collisionLeft()
-           && collisionTop()    <= other.collisionBottom()
-           && collisionBottom() >= other.collisionTop();
+    return    getCollisionLeft()   <= other.getCollisionRight()
+           && getCollisionRight()  >= other.getCollisionLeft()
+           && getCollisionTop()    <= other.getCollisionBottom()
+           && getCollisionBottom() >= other.getCollisionTop();
 }
 
 bool ChimpObject::touchesAtBottom(const ChimpObject& other) const
 {
-    return    collisionBottom() - approx_zero_y <= other.collisionTop()
-           && collisionBottom() + approx_zero_y > other.collisionTop()
-           && collisionLeft()                   <= other.collisionRight()
-           && collisionRight()                  >= other.collisionLeft();
+    return    getCollisionBottom() - approx_zero_y <= other.getCollisionTop()
+           && getCollisionBottom() + approx_zero_y > other.getCollisionTop()
+           && getCollisionLeft()                   <= other.getCollisionRight()
+           && getCollisionRight()                  >= other.getCollisionLeft();
 }
 
 #pragma GCC diagnostic push

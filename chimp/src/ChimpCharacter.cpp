@@ -1,20 +1,20 @@
 /*
     Copyright 2016 Jeffrey Thomas Piercy
   
-    This file is part of Chimp Out!.
+    This file is part of Chimp Engine.
 
-    Chimp Out! is free software: you can redistribute it and/or modify
+    Chimp Engine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Chimp Out! is distributed in the hope that it will be useful,
+    Chimp Engine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
+    along with Chimp Engine.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ChimpCharacter.h"
@@ -257,10 +257,10 @@ void ChimpCharacter::render(const IntBox& screen)
 
 void ChimpCharacter::playSound(Mix_Chunk* const sound, const ChimpGame& game) const
 {
-    const float left = game.getMidViewLeft() - collisionRight();
-    const float right = collisionLeft() - game.getMidViewRight();
-    const float top = game.getMidViewTop() - collisionBottom();
-    const float bottom = collisionTop() - game.getMidViewBottom();
+    const float left = game.getMidViewLeft() - getCollisionRight();
+    const float right = getCollisionLeft() - game.getMidViewRight();
+    const float top = game.getMidViewTop() - getCollisionBottom();
+    const float bottom = getCollisionTop() - game.getMidViewBottom();
     const float horiz = left > right ? left : right;
     const float vert = top > bottom ? top : bottom;
     if(horiz > game.getActiveZone() || vert > game.getActiveZone())

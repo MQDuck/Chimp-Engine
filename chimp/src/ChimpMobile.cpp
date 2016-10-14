@@ -1,20 +1,20 @@
 /*
     Copyright 2016 Jeffrey Thomas Piercy
   
-    This file is part of Chimp Out!.
+    This file is part of Chimp Engine.
 
-    Chimp Out! is free software: you can redistribute it and/or modify
+    Chimp Engine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Chimp Out! is distributed in the hope that it will be useful,
+    Chimp Engine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
+    along with Chimp Engine.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ChimpMobile.h"
@@ -206,7 +206,7 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     if(platform)
     {
         coord.x += platform->getVelocityX() * time;
-        coord.y = platform->collisionTop() - height + tile.collisionBox.b;
+        coord.y = platform->getCollisionTop() - height + tile.collisionBox.b;
     }
     if( !jumping && (!platform || !touchesAtBottom(*platform)) )
     {
@@ -228,22 +228,22 @@ void ChimpMobile::update(const ObjectVector& objects, ChimpGame& game, const Uin
     coord.x += velocityX * time;
     coord.y += velocityY * time;
     
-    if(boundBox.l && collisionLeft() < game.getWorldLeft())
+    if(boundBox.l && getCollisionLeft() < game.getWorldLeft())
     {
         velocityX = 0;
         coord.x = game.getWorldLeft() - tile.collisionBox.l;
     }
-    else if(boundBox.r && collisionRight() > game.getWorldRight())
+    else if(boundBox.r && getCollisionRight() > game.getWorldRight())
     {
         velocityX = 0;
         coord.x = game.getWorldRight() - width + tile.collisionBox.r;
     }
-    else if(boundBox.t && collisionTop() < game.getWorldTop())
+    else if(boundBox.t && getCollisionTop() < game.getWorldTop())
     {
         velocityY = 0;
         coord.y = game.getWorldTop() - tile.collisionBox.r;
     }
-    else if(boundBox.b && collisionBottom() > game.getWorldBottom())
+    else if(boundBox.b && getCollisionBottom() > game.getWorldBottom())
     {
         velocityY = 0;
         coord.y = game.getWorldBottom() - height + tile.collisionBox.b;

@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ChimpOut-Editor
+TARGET = ChimpEngine-Editor
 TEMPLATE = app
 
 INCLUDEPATH += $$PWD/include

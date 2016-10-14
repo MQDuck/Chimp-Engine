@@ -1,20 +1,20 @@
 /*
     Copyright 2016 Jeffrey Thomas Piercy
   
-    This file is part of Chimp Out!.
+    This file is part of Chimp Engine.
 
-    Chimp Out! is free software: you can redistribute it and/or modify
+    Chimp Engine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Chimp Out! is distributed in the hope that it will be useful,
+    Chimp Engine is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Chimp Out!.  If not, see <http://www.gnu.org/licenses/>.
+    along with Chimp Engine.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef CHIMPOBJECT_H
@@ -85,10 +85,10 @@ public:
     inline int getHeight() const { return height; }
     inline int getTexRectW() const { return tile.textureRect.w; }
     inline int getTexRectH() const { return tile.textureRect.h; }
-    inline float collisionLeft() const { return coord.x + tile.collisionBox.l; }
-    inline float collisionRight() const { return coord.x + width - tile.collisionBox.r; }
-    inline float collisionTop() const { return coord.y + tile.collisionBox.t; }
-    inline float collisionBottom() const {return coord.y + height - tile.collisionBox.b; }
+    inline float getCollisionLeft() const { return coord.x + tile.collisionBox.l; }
+    inline float getCollisionRight() const { return coord.x + width - tile.collisionBox.r; }
+    inline float getCollisionTop() const { return coord.y + tile.collisionBox.t; }
+    inline float getCollisionBottom() const {return coord.y + height - tile.collisionBox.b; }
     inline bool getDamageLeft() const { return damageBox.l; }
     inline void setDamageLeft(const bool bl) { damageBox.l = bl; }
     inline bool getDamageRight() const { return damageBox.r; }
@@ -128,34 +128,34 @@ public:
     
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunused-parameter"
-    virtual float getAccelerationY() const { return 0; }
+    virtual float getAccelerationY() const { return 0.0f; }
     virtual void setAccelerationY(const float accel) {}
-    virtual float getVelocityX() const { return 0; }
+    virtual float getVelocityX() const { return 0.0f; }
     virtual void setVelocityX(const float velocity) {}
-    virtual float getVelocityY() const { return 0; }
+    virtual float getVelocityY() const { return 0.0f; }
     virtual void setVelocityY(const float velocity) {}
     virtual void runRight() {}
     virtual void runLeft() {}
     virtual void stopRunningRight() {}
     virtual void stopRunningLeft() {}
     virtual void stopRunning() {}
-    virtual float getRunImpulse() const { return 0; }
+    virtual float getRunImpulse() const { return 0.0f; }
     virtual void setRunImpulse(const float impulse) {}
-    virtual float getRunAccel() const { return 0; }
+    virtual float getRunAccel() const { return 0.0f; }
     virtual void setRunAccel(const float accel) {}
-    virtual float getJumpImpulse() const { return 0; }
+    virtual float getJumpImpulse() const { return 0.0f; }
     virtual void setJumpImpulse(const float impulse) {}
-    virtual float getMultiJumpImpulse() const { return 0; }
+    virtual float getMultiJumpImpulse() const { return 0.0f; }
     virtual void setMultiJumpImpulse(const float fraction) {}
-    virtual float getJumpAccel() const { return 0; }
+    virtual float getJumpAccel() const { return 0.0f; }
     virtual void setJumpAccel(const float accel) {}
-    virtual float getStopFactor() const { return 0; }
+    virtual float getStopFactor() const { return 0.0f; }
     virtual void setStopFactor(const float factor) {}
-    virtual float getSprintFactor() const { return 0; }
+    virtual float getSprintFactor() const { return 0.0f; }
     virtual void setSprintFactor(const float factor) {}
-    virtual float getResistanceX() const { return 0; }
+    virtual float getResistanceX() const { return 0.0f; }
     virtual void setResistanceX(const float resistance) {}
-    virtual float getResistanceY() const { return 0; }
+    virtual float getResistanceY() const { return 0.0f; }
     virtual void setResistanceY(const float resistance) {}
     virtual int getHealth() const { return 0; }
     virtual void setHealth(const int heal) {}
@@ -181,8 +181,8 @@ public:
     virtual void stopJumping() {}
     virtual void sprint() {}
     virtual void stopSprinting() {}
-    virtual float getTerminalVelocityRun() { return 0.0; }
-    virtual float getTerminalVelocityFall() { return 0.0; }
+    virtual float getTerminalVelocityRun() { return 0.0f; }
+    virtual float getTerminalVelocityFall() { return 0.0f; }
     virtual void setSoundJump(Mix_Chunk* const sound) {}
     virtual void setSoundMultijump(Mix_Chunk* const sound) {}
     #pragma GCC diagnostic pop

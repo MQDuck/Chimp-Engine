@@ -286,25 +286,25 @@ int getTexRectH(lua_State* const state)
 
 int collisionLeft(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionLeft());
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getCollisionLeft());
     return 1;
 }
 
 int collisionRight(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionRight());
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getCollisionRight());
     return 1;
 }
 
 int collisionTop(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionTop());
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getCollisionTop());
     return 1;
 }
 
 int collisionBottom(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getCurrentObject()->collisionBottom());
+    lua_pushnumber(state, ChimpGame::getCurrentObject()->getCollisionBottom());
     return 1;
 }
 
@@ -762,25 +762,25 @@ int playerGetTexRectH(lua_State* const state)
 
 int playerCollisionLeft(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getPlayer()->collisionLeft());
+    lua_pushnumber(state, ChimpGame::getPlayer()->getCollisionLeft());
     return 1;
 }
 
 int playerCollisionRight(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getPlayer()->collisionRight());
+    lua_pushnumber(state, ChimpGame::getPlayer()->getCollisionRight());
     return 1;
 }
 
 int playerCollisionTop(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getPlayer()->collisionTop());
+    lua_pushnumber(state, ChimpGame::getPlayer()->getCollisionTop());
     return 1;
 }
 
 int playerCollisionBottom(lua_State* const state)
 {
-    lua_pushnumber(state, ChimpGame::getPlayer()->collisionBottom());
+    lua_pushnumber(state, ChimpGame::getPlayer()->getCollisionBottom());
     return 1;
 }
 

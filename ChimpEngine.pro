@@ -13,7 +13,7 @@ INCLUDEPATH += $$PWD/chimp/include
 CONFIG += link_pkgconfig
 
 DESTDIR = $$PWD
-TARGET = ChimpOut
+TARGET = ChimpEngine
 SOURCES += src/main.cpp \
     chimp/src/ChimpCharacter.cpp \
     chimp/src/ChimpGame.cpp \
