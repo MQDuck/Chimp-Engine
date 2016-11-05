@@ -20,7 +20,7 @@ SOURCES += src/main.cpp \
     chimp/src/ChimpLuaInterface.cpp \
     chimp/src/ChimpMobile.cpp \
     chimp/src/ChimpObject.cpp \
-    src/tinyxml2.cpp
+    ../src/tinyxml2.cpp
 
 HEADERS += \
     chimp/include/ChimpCharacter.h \
@@ -32,7 +32,7 @@ HEADERS += \
     chimp/include/ChimpTile.h \
     include/ChimpConstants.h \
     include/cleanup.h \
-    include/tinyxml2.h
+    ../include/tinyxml2.h
 
 linux: LIBS += -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -ltinyxml2 -llua
 linux: PKGCONFIG += x11
