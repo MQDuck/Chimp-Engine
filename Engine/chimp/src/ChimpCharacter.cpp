@@ -38,13 +38,13 @@ namespace chimp
  * @param tilesY How many times the ChimpTile should be tiled down.
  * @param frnds Factions to which the Object belongs.
  * @param enms Factions which the Object can deal damage to.
- * @param maxH Charcter's maximum health
+ * @param maxHlth Charcter's maximum health
  */
 ChimpCharacter::ChimpCharacter(SDL_Renderer* const rend, const TileVec& tilRn, const TileVec& tilJmp,
                                const TileVec& tilIdl, const int pX, const int pY, const int tilesX, const int tilesY,
-                               Faction frnds, Faction enms, const int maxH)
+                               Faction frnds, Faction enms, const int maxHlth)
     : ChimpMobile(rend, tilIdl[0], pX, pY, tilesX, tilesY, frnds, enms), tilesRun(tilRn), tilesJump(tilJmp),
-      tilesIdle(tilIdl), maxHealth(maxH)
+      tilesIdle(tilIdl), maxHealth(maxHlth)
 {
     health = maxHealth;
     vulnerable = true;

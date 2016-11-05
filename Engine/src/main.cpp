@@ -77,7 +77,7 @@ int main(const int argc, char** argv) // Don't mess with the signature, or else 
         return 1;
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_ShowCursor(false);
+    //SDL_ShowCursor(false);
     if(renderer == nullptr)
     {
         std::cerr << "CreateRenderer error: " << SDL_GetError() << std::endl;
@@ -383,7 +383,7 @@ void resize(SDL_Event& event, Dimensions& windowDimensions, SDL_Renderer* const 
         windowDimensions.x = ratioHeight * game.getViewWidth();
         SDL_RenderSetScale(renderer, ratioHeight, ratioHeight);
     }
-    else // both width and height changed, decrease window size to keep correct width/height ratio
+    else // both width and height changed, round down window size to keep correct width/height ratio
     {
         const float ratioWidth = (float)event.window.data1 / (float)game.getViewWidth();
         const float ratioHeight = (float)event.window.data2 / (float)game.getViewHeight();
